@@ -32,7 +32,7 @@ module.exports.verifyToken = async (req, res, next) => {
     const sections = req.originalUrl.split("?")[0].split("/")
       .filter(Boolean)
       .slice(1);
-    res.locals.adminSection = sections[0] === "setting" && ["account-admin", "role"].includes(
+    res.locals.adminSection = sections[0] === "setting" && ["account-admin", "role", "branding"].includes(
       sections[1]) ? `setting/${sections[1]}` : sections[0];
     res.locals.permissions = req.permissions;
     req.account = account;

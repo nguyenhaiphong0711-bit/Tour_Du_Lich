@@ -1507,3 +1507,49 @@ test("Tour cũ chưa gán danh mục vẫn xuất hiện ở danh sách tổng h
   assert.match(response.text, /Khám phá Hà Giang/);
   await assert.rejects(booking.create(payload()));
 });
+
+test("Quản lý logo tải ảnh, giữ cấu hình khác, hiển thị trang chủ và gỡ ảnh", async () => {
+  const Setting = require("../models/setting-website-info.model");
+  const cloudinary = require("cloudinary").v2;
+  const { Writable } = require("node:stream");
+  const previous = cloudinary.uploader.upload_stream;
+  await Setting.create({ websiteName: "Tên website thử", phone: "0901234567", bankName: "Ngân hàng thử" });
+
+  try {
+    cloudinary.uploader.upload_stream = (options, callback) => new Writable({
+      write(chunk, encoding, next) {
+        next();
+      },
+      final(next) {
+        callback(null, { secure_url: "/assets/images/logo.png", public_id: "logo-test", bytes: 10 });
+        next();
+      }
+    });
+
+    const form = await request(app).get("/admin/setting/branding").set("Cookie", cookie);
+    assert.equal(form.status, 200);
+    assert.match(form.text, /Logo trang chủ/);
+    const uploaded = await request(app).patch("/admin/setting/branding").set("Cookie", cookie)
+      .attach("logo", Buffer.from("image-fixture"), { filename: "logo.png", contentType: "image/png" });
+    assert.equal(uploaded.body.code, "success");
+    let saved = await Setting.findOne();
+    assert.equal(saved.logo, "/assets/images/logo.png");
+    assert.equal(saved.phone, "0901234567");
+    assert.equal(saved.bankName, "Ngân hàng thử");
+    const home = await request(app).get("/");
+    assert.match(home.text, /class="site-logo-image"[^>]*src="\/assets\/images\/logo.png"/);
+    const removed = await request(app).patch("/admin/setting/branding").set("Cookie", cookie)
+      .field("clearLogo", "true");
+    assert.equal(removed.body.code, "success");
+    saved = await Setting.findOne();
+    assert.equal(saved.logo, "");
+    const fallback = await request(app).get("/");
+    assert.match(fallback.text, /class="site-logo-name">Tên website thử/);
+    assert.doesNotMatch(fallback.text, /class="site-logo-image"/);
+    await Role.updateOne({ _id: account.role }, { permissions: ["tour-view"] });
+    const denied = await request(app).patch("/admin/setting/branding").set("Cookie", cookie).field("clearLogo", "true");
+    assert.equal(denied.status, 403);
+  } finally {
+    cloudinary.uploader.upload_stream = previous;
+  }
+});

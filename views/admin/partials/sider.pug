@@ -51,6 +51,10 @@ nav.sider#admin-sidebar(aria-label="Điều hướng quản trị")
       .nav-label QUẢN TRỊ HỆ THỐNG
       ul.inner-menu
         li
+          a(class=(adminSection === "setting/branding" ? "active" : null) aria-current=(adminSection === "setting/branding" ? "page" : null) href=`/${pathAdmin}/setting/branding` title="Logo trang chủ")
+            +icon("plane")
+            span Logo trang chủ
+        li
           a(class=(adminSection === "setting/account-admin" ? "active" : null) aria-current=(adminSection === "setting/account-admin" ? "page" : null) href=`/${pathAdmin}/setting/account-admin/list` title="Tài khoản quản trị")
             +icon("users")
             span Tài khoản quản trị

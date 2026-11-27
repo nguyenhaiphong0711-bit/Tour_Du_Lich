@@ -1817,3 +1817,94 @@ const updateSelectionCount = () => {
 };
 document.querySelectorAll("[check-all], [check-item]")
   .forEach(input => input.addEventListener("change", updateSelectionCount));
+
+// Logo trang chủ
+const brandingForm = document.querySelector("#setting-branding-form");
+if(brandingForm) {
+  const pond = filePond.logo;
+  const previewImage = document.querySelector("#branding-preview-image");
+  const previewName = document.querySelector("#branding-preview-name");
+  const submitButton = brandingForm.querySelector("button[type=submit]");
+  let previewUrl = "";
+
+  const updateLogoPreview = () => {
+    if(previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      previewUrl = "";
+    }
+
+    const item = pond.getFile();
+    let source = item?.getMetadata("originalUrl") || "";
+
+    if(!source && item?.file instanceof Blob) {
+      previewUrl = URL.createObjectURL(item.file);
+      source = previewUrl;
+    }
+
+    previewImage.hidden = !source;
+    previewName.hidden = Boolean(source);
+    if(source) {
+      previewImage.src = source;
+    } else {
+      previewImage.removeAttribute("src");
+    }
+  };
+
+  previewImage.addEventListener("error", () => {
+    previewImage.hidden = true;
+    previewName.hidden = false;
+  });
+  if(previewImage.complete && previewImage.naturalWidth === 0) {
+    previewImage.hidden = true;
+    previewName.hidden = false;
+  }
+  pond.setOptions({
+    acceptedFileTypes: ["image/png", "image/jpeg", "image/webp", "image/gif"]
+  });
+  pond.on("updatefiles", updateLogoPreview);
+  pond.on("addfile", updateLogoPreview);
+
+  brandingForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if(submitButton.disabled) {
+      return;
+    }
+
+    const item = pond.getFile();
+    const logo = getUploadFile("logo");
+    if(item && !item.getMetadata("originalUrl") && !(logo instanceof Blob)) {
+      notify.error("Vui lòng chờ ảnh tải xong trước khi lưu.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("clearLogo", String(pond.getFiles().length === 0));
+    if(logo) {
+      formData.append("logo", logo);
+    }
+
+    submitButton.disabled = true;
+    try {
+      const response = await fetch(`/${pathAdmin}/setting/branding`, {
+        method: "PATCH",
+        body: formData
+      });
+      const data = await response.json();
+      if(!response.ok || data.code !== "success") {
+        notify.error(data.message || "Chưa lưu được logo.");
+        return;
+      }
+
+      if(data.logo && pond.getFile()) {
+        pond.getFile().setMetadata("originalUrl", data.logo);
+      }
+      updateLogoPreview();
+      notify.success(data.message);
+    } catch(error) {
+      notify.error("Không kết nối được máy chủ. Vui lòng thử lại.");
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+}
+// Hết Logo trang chủ

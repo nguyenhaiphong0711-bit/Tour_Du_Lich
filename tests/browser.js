@@ -398,6 +398,71 @@ let mongo, server, browser, dbPath;
     throw Error("Cart total is stale after returning from payment");
   }
   await page.unroute("**/order/payment-zalopay?**");
+  // Tải logo từ admin và kiểm tra kích thước hiển thị trên trang chủ.
+  const cloudinary = req("cloudinary").v2;
+  const previousLogoUpload = cloudinary.uploader.upload_stream;
+  cloudinary.uploader.upload_stream = (options, callback) => new (req("node:stream").Writable)({
+    write(chunk, encoding, next) {
+      next();
+    },
+    final(next) {
+      callback(null, {
+        secure_url: "/assets/images/blog-2.jpg",
+        public_id: "logo-browser-test",
+        bytes: 100
+      });
+      next();
+    }
+  });
+
+  try {
+    await page.goto("http://127.0.0.1:5051/admin/setting/branding", {
+      waitUntil: "networkidle"
+    });
+    await page.locator(".filepond--browser").setInputFiles("public/assets/images/blog-2.jpg");
+    await page.waitForFunction(() => filePond.logo.getFile()?.file?.size > 0);
+    const saveLogoResponse = page.waitForResponse(response => response.url().endsWith("/setting/branding") && response.request().method() === "PATCH");
+    await page.locator("#setting-branding-form button[type=submit]").click();
+    const logoResult = await (await saveLogoResponse).json();
+    if(logoResult.code !== "success") {
+      throw Error("Logo upload failed: " + JSON.stringify(logoResult));
+    }
+
+    await page.goto("http://127.0.0.1:5051/", {
+      waitUntil: "networkidle"
+    });
+    const desktopLogo = await page.locator(".header .site-logo-image").evaluate(image => ({
+      width: image.clientWidth,
+      height: image.clientHeight,
+      fit: getComputedStyle(image).objectFit,
+      loaded: image.naturalWidth > 0
+    }));
+    if(!desktopLogo.loaded || desktopLogo.width > 180 || desktopLogo.height > 60 || desktopLogo.fit !== "contain") {
+      throw Error("Desktop logo size incorrect: " + JSON.stringify(desktopLogo));
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileLogo = await page.locator(".header .site-logo-image").evaluate(image => ({
+      width: image.clientWidth,
+      height: image.clientHeight
+    }));
+    if(mobileLogo.width > 120 || mobileLogo.height > 40) {
+      throw Error("Mobile logo size incorrect: " + JSON.stringify(mobileLogo));
+    }
+    await page.setViewportSize({ width: 1440, height: 1100 });
+    await page.goto("http://127.0.0.1:5051/admin/setting/branding", {
+      waitUntil: "networkidle"
+    });
+    await page.screenshot({ path: "docs/screenshots/admin-logo.png", fullPage: true });
+    await page.locator(".filepond--action-remove-item").click();
+    const removeLogoResponse = page.waitForResponse(response => response.url().endsWith("/setting/branding") && response.request().method() === "PATCH");
+    await page.locator("#setting-branding-form button[type=submit]").click();
+    if((await (await removeLogoResponse).json()).logo !== "") {
+      throw Error("Logo removal failed");
+    }
+  } finally {
+    cloudinary.uploader.upload_stream = previousLogoUpload;
+  }
+
   for(const broken of ["{", "{}", '[null,1,{"tourId":"bad"}]']) {
     await page.evaluate(value => localStorage.setItem("cart", value), broken);
     await page.goto("http://127.0.0.1:5051/cart", {

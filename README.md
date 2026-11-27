@@ -90,3 +90,7 @@ Cloudinary, Gmail SMTP, VNPay và ZaloPay vẫn cần kiểm thử sandbox bằn
 ## Hiển thị dữ liệu cũ và quy ước code
 
 Tour active chưa có lịch hoặc hết chỗ vẫn được xem; kiểm tra lịch/chỗ áp dụng khi đặt. Khối tổng hợp trang chủ dùng dữ liệu tour hoạt động, không bắt buộc giảm giá hay khởi hành trong 30 ngày. Xem [báo cáo sửa hiển thị và trình bày code](docs/SUA_HIEN_THI_VA_PHONG_CACH_CODE.md) và [quy ước code](AGENTS.md). Quy tắc này thay cho việc ẩn toàn bộ tour thiếu lịch/chỗ của bản sửa trước.
+
+## Logo trang chủ
+
+Vào Admin → Logo trang chủ (hoặc Cài đặt chung → Logo trang chủ), chọn ảnh rồi nhấn Lưu logo. Trang tại `/admin/setting/branding`, cần quyền setting-manage. PNG/JPG/WebP/GIF tối đa 5 MB, tải qua Cloudinary đang dùng cho ảnh tour. Logo dùng chung ở đầu/chân trang, tự co trong khung 180×60 px trên máy tính và 120×40 px trên điện thoại, giữ tỷ lệ và không cắt ảnh. Chưa có logo hoặc ảnh hỏng thì hiển thị tên website. Có thể gỡ ảnh bằng dấu × rồi lưu.

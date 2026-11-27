@@ -11,6 +11,14 @@ const upload = multer(cloudinaryHelper.options);
 
 router.get('/list', settingController.list)
 
+router.get('/branding', settingController.branding)
+
+router.patch(
+  '/branding',
+  upload.single('logo'),
+  settingController.brandingPatch
+)
+
 router.get('/website-info', settingController.websiteInfo)
 
 router.patch(

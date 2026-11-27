@@ -929,3 +929,19 @@ window.addEventListener("storage", (event) => {
     }
   }
 });
+
+// Hiển thị tên website nếu ảnh logo không tải được.
+document.querySelectorAll(".site-logo-image").forEach(image => {
+  const showWebsiteName = () => {
+    image.hidden = true;
+    const name = image.parentElement.querySelector(".site-logo-name");
+    if(name) {
+      name.hidden = false;
+    }
+  };
+
+  image.addEventListener("error", showWebsiteName);
+  if(image.complete && image.naturalWidth === 0) {
+    showWebsiteName();
+  }
+});

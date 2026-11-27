@@ -1,0 +1,24 @@
+extends ../layouts/default.pug
+include ../mixins/page-header.pug
+
+block main
+  +page-header("Logo trang chủ", "Tải logo lên để hiển thị trên đầu trang và chân trang website.")
+    a.btn.btn-outline(href=`/${pathAdmin}/setting/list`) Cài đặt chung
+  .section-8.branding-settings
+    form#setting-branding-form
+      .inner-group
+        label.inner-label(for="logo") Ảnh logo
+        .inner-upload-image(image-default=record.logo)
+          input#logo(type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/gif" filepond-image)
+        p.field-hint Chọn PNG, JPG, WebP hoặc GIF, tối đa 5 MB. Ưu tiên ảnh PNG nền trong suốt.
+        p.field-hint Logo tự co vừa khung 180 × 60 px trên máy tính và 120 × 40 px trên điện thoại, giữ nguyên tỷ lệ ảnh.
+      .inner-group
+        label.inner-label Xem trước trên website
+        .branding-preview
+          .branding-preview-frame
+            img#branding-preview-image(src=record.logo alt="Xem trước logo" hidden=!record.logo)
+            span#branding-preview-name(hidden=!!record.logo) #{record.websiteName || "Tên website"}
+        p.field-hint Ảnh ngang, vuông hoặc dọc đều được căn giữa, không kéo giãn và không cắt mất nội dung.
+      .inner-button.inner-two-col
+        button(type="submit") Lưu logo
+    p.field-hint Nhấn dấu × trên ảnh rồi lưu để gỡ logo. Khi chưa có ảnh, website hiển thị tên website.

@@ -12,11 +12,11 @@ Ngày bàn giao: **27/11/2026**. Repository: [nguyenhaiphong0711-bit/Tour_Du_Lic
 | `9d78b69622064b4d62e8e333e207ecf5a8e89616` | Hoàn thiện responsive và rà dữ liệu cũ; bộ ảnh UI trong báo cáo lấy từ CI tại mốc này. |
 | `efe948b67c3bbf40f0a4e94ca55cbfe7e491d978` | Mã nghiệp vụ hoàn chỉnh sau rà soát: bổ sung cờ đối soát khi xác nhận trả tiền thủ công cho đơn hủy; 45 test tích hợp. |
 
-**Lũy kế so với bản gốc: 133 file, gồm 38 file thêm và 95 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
+**Lũy kế so với bản gốc: 134 file, gồm 39 file thêm và 95 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
 
-Riêng đợt thiết kế lại và báo cáo này có **116 đường dẫn** thay đổi so với `1d87a4b`: 12 thêm, 103 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 133 file.
+Riêng đợt thiết kế lại và báo cáo này có **116 đường dẫn** thay đổi so với `1d87a4b`: 12 thêm, 103 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 134 file.
 
-[Bảng CSV đầy đủ 133 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
+[Bảng CSV đầy đủ 134 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
 
 ## 2. Giao diện admin được làm lại như thế nào
 
@@ -386,3 +386,7 @@ Khôi phục section-8 và mixin blog theo bố cục gốc: một bài lớn �
 ## 12. Giỏ hàng khi chuyển sang thanh toán
 
 Đồng bộ lại giỏ và tổng tiền sau khi tạo đơn, khi quay lại từ thanh toán hoặc thay đổi tab. Chặn bấm gửi đơn lặp khi đang xử lý, bỏ phản hồi tải giỏ cũ đến muộn và xử lý lỗi kết nối. Browser có ca ZaloPay ngay lần đầu gửi một tour hợp lệ rồi quay lại giỏ; trang chuyển thanh toán được giả lập, không gọi cổng thật. Việc này không xác nhận merchant ZaloPay thực tế đã hoạt động.
+
+## 13. Mục Logo trang chủ
+
+Thêm trang `/admin/setting/branding` và nút trên menu/Cài đặt chung. Dùng lại trường logo trong cấu hình website và luồng upload Cloudinary, không tạo collection mới. Cho tải/thay/gỡ ảnh, xem trước khung, cập nhật đầu/chân trang, tự co giữ tỷ lệ theo desktop/mobile và dự phòng bằng tên website khi ảnh thiếu/hỏng. API chỉ thay logo, không ghi đè thông tin liên hệ/ngân hàng. Cần quyền setting-manage và ảnh PNG/JPG/WebP/GIF tối đa 5 MB. Test upload dùng Cloudinary giả lập, không gọi tài khoản dịch vụ thật.

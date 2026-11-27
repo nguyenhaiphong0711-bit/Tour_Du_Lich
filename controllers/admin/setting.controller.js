@@ -569,3 +569,60 @@ module.exports.roleDeletePatch = async (req, res) => {
     message: "Đã xóa nhóm quyền."
   });
 };
+
+// Logo trang chủ
+module.exports.branding = async (req, res) => {
+  const record = await SettingWebsiteInfo.findOne({}) || {};
+
+  res.render("admin/pages/setting-branding", {
+    pageTitle: "Logo trang chủ",
+    record: record
+  });
+};
+
+module.exports.brandingPatch = async (req, res) => {
+  const { error } = Joi.object({
+    clearLogo: Joi.string().valid("true", "false")
+  }).validate(req.body);
+
+  if(error) {
+    return res.status(400).json({
+      code: "error",
+      message: "Thông tin logo không hợp lệ."
+    });
+  }
+
+  const record = await SettingWebsiteInfo.findOne({});
+  let logo = record?.logo || "";
+
+  if(req.file) {
+    logo = req.file.path;
+  } else if(req.body.clearLogo === "true") {
+    logo = "";
+  } else {
+    return res.json({
+      code: "success",
+      message: "Logo chưa thay đổi.",
+      logo: logo
+    });
+  }
+
+  await SettingWebsiteInfo.findOneAndUpdate({}, {
+    $set: {
+      logo: logo
+    },
+    $setOnInsert: {
+      websiteName: "Travel Studio"
+    }
+  }, {
+    upsert: true,
+    runValidators: true
+  });
+
+  res.json({
+    code: "success",
+    message: logo ? "Đã cập nhật logo trang chủ!" : "Đã gỡ logo trang chủ!",
+    logo: logo
+  });
+};
+// Hết Logo trang chủ

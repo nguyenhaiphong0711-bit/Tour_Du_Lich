@@ -7,7 +7,7 @@ module.exports.websiteInfo = async (req, res, next) => {
     phone: "",
     email: "",
     address: "",
-    logo: "/assets/images/logo.png",
+    logo: "",
     favicon: "",
     categoryIdSection4: "",
     ...(record?.toObject() || {})

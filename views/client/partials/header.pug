@@ -8,10 +8,9 @@ header.header
       // Logo
       .inner-logo
         a(href="/")
-          img(
-            alt=settingWebsiteInfo.websiteName
-            src=settingWebsiteInfo.logo
-            )
+          if settingWebsiteInfo.logo
+            img.site-logo-image(alt=settingWebsiteInfo.websiteName src=settingWebsiteInfo.logo width="180" height="60")
+          span.site-logo-name(hidden=!!settingWebsiteInfo.logo) #{settingWebsiteInfo.websiteName}
       // Menu
       nav.inner-menu
         .inner-overlay
