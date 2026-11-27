@@ -20,7 +20,7 @@ block main
           //-     .inner-image
           //-       a(href="#")
           //-         img(
-          //-           alt="" 
+          //-           alt=""
           //-           src="/assets/images/banner-16.png"
           //-           )
           //-     .inner-content
@@ -43,7 +43,7 @@ block main
           //-         .inner-item-label Người lớn:
           //-         .inner-item-input
           //-           input(
-          //-             value="1" 
+          //-             value="1"
           //-             type="number"
           //-             )
           //-         .inner-item-price
@@ -54,7 +54,7 @@ block main
           //-         .inner-item-label Trẻ em:
           //-         .inner-item-input
           //-           input(
-          //-             value="0" 
+          //-             value="0"
           //-             type="number"
           //-             )
           //-         .inner-item-price
@@ -65,7 +65,7 @@ block main
           //-         .inner-item-label Em bé:
           //-         .inner-item-input
           //-           input(
-          //-             value="0" 
+          //-             value="0"
           //-             type="number"
           //-             )
           //-         .inner-item-price
@@ -75,8 +75,8 @@ block main
         .inner-coupon
           form#coupon-form(action="")
             input#coupon-input(
-              name="coupon" 
-              placeholder="Nhập mã giảm giá" 
+              name="coupon"
+              placeholder="Nhập mã giảm giá"
               type="text"
               )
             button Dùng Mã
@@ -88,7 +88,9 @@ block main
               span đ
           .inner-item
             .inner-label Giảm:
-            .inner-price -0đ
+            .inner-price
+              span(cart-discount) -0
+              span đ
           .inner-item
             .inner-label Thanh toán:
             .inner-price-hl
@@ -105,19 +107,19 @@ block main
             .inner-list-group
               .inner-group
                 input#fullname-input(
-                  placeholder="Họ và tên" 
-                  name="fullName" 
+                  placeholder="Họ và tên"
+                  name="fullName"
                   type="text"
                   )
               .inner-group
                 input#phone-input(
-                  placeholder="Số điện thoại" 
-                  name="phone" 
+                  placeholder="Số điện thoại"
+                  name="phone"
                   type="text"
                   )
               .inner-group.inner-two-col
                 textarea(
-                  placeholder="Ghi chú" 
+                  placeholder="Ghi chú"
                   name="note"
                   )
           .inner-method
@@ -125,46 +127,42 @@ block main
             .inner-list
               .inner-item
                 input#methodMoney(
-                  checked="" 
-                  value="money" 
-                  name="method" 
+                  checked=""
+                  value="money"
+                  name="method"
                   type="radio"
                   )
                 label(for="methodMoney") Thanh toán tiền mặt khi đi tour
-              .inner-item
-                input#methodMomo(
-                  value="momo" 
-                  name="method" 
-                  type="radio"
-                  )
-                label(for="methodMomo") Ví MoMo
-              .inner-item
-                input#methodZaloPay(
-                  value="zalopay" 
-                  name="method" 
-                  type="radio"
-                  )
-                label(for="methodZaloPay") ZaloPay
-              .inner-item
-                input#methodVNPay(
-                  value="vnpay" 
-                  name="method" 
-                  type="radio"
-                  )
-                label(for="methodVNPay") VNPay
-              .inner-item
-                input#methodBank(
-                  value="bank" 
-                  name="method" 
-                  type="radio"
-                  )
-                label(for="methodBank") Chuyển khoản ngân hàng
+              if paymentAvailable.zalopay
+                .inner-item
+                  input#methodZaloPay(
+                    value="zalopay"
+                    name="method"
+                    type="radio"
+                    )
+                  label(for="methodZaloPay") ZaloPay
+              if paymentAvailable.vnpay
+                .inner-item
+                  input#methodVNPay(
+                    value="vnpay"
+                    name="method"
+                    type="radio"
+                    )
+                  label(for="methodVNPay") VNPay
+              if settingWebsiteInfo.bankName && settingWebsiteInfo.bankAccountName && settingWebsiteInfo.bankAccountNumber
+                .inner-item
+                  input#methodBank(
+                    value="bank"
+                    name="method"
+                    type="radio"
+                    )
+                  label(for="methodBank") Chuyển khoản ngân hàng
             .inner-info-bank
               .inner-title Thông tin chuyển khoản
               .inner-desc
-                div Ngân hàng : Vietcombank
-                div Tên tài khoản: Le Van A
-                div STK: 0123456789
+                div Ngân hàng: #{settingWebsiteInfo.bankName}
+                div Chủ tài khoản: #{settingWebsiteInfo.bankAccountName}
+                div Số tài khoản: #{settingWebsiteInfo.bankAccountNumber}
           .inner-button
             button ĐẶT TOUR
   // End Section 12

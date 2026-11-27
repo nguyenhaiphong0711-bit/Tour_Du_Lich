@@ -1,7 +1,14 @@
 extends ../layouts/default.pug
 
 block main
-  
+  if orderDetail.paymentReview
+    .container
+      p.payment-warning Thanh toán cần được đối soát: đơn đã hủy, hết thời gian giữ chỗ hoặc có giao dịch thanh toán lặp. Vui lòng liên hệ để xác nhận / hoàn tiền.
+  if orderDetail.status === "cancel" && orderDetail.paymentStatus === "unpaid"
+    .container
+      p.payment-warning Đơn đã hủy. Nếu đơn thanh toán trực tuyến hết hạn giữ chỗ, vui lòng đặt lại.
+
+
   h1.box-title Đơn hàng: #{orderDetail.code}
 
   //- Section 8
@@ -52,24 +59,44 @@ block main
           each item in orderDetail.items
             .inner-order-item
               .inner-order-image
-                img(src=item.avatar)
+                img(src=(item.avatar || "/assets/images/tour-placeholder.svg"))
               .inner-order-content
                 .inner-order-name #{item.name}
                 .inner-order-text
-                  div Người lớn: #{item.quantityAdult} x #{item.priceNewAdult.toLocaleString("vi-VN")}đ
-                  div Trẻ em: #{item.quantityChildren} x #{item.priceNewChildren.toLocaleString("vi-VN")}đ
-                  div Em bé: #{item.quantityBaby} x #{item.priceNewBaby.toLocaleString("vi-VN")}đ
+                  div Người lớn: #{item.quantityAdult} x #{Number(item.priceNewAdult || 0).toLocaleString("vi-VN")}đ
+                  div Trẻ em: #{item.quantityChildren} x #{Number(item.priceNewChildren || 0).toLocaleString("vi-VN")}đ
+                  div Em bé: #{item.quantityBaby} x #{Number(item.priceNewBaby || 0).toLocaleString("vi-VN")}đ
                   div Ngày khởi hành: #{item.departureDateFormat}
                   div Khởi hành tại: #{item.cityName}
       .inner-group
         label(class="inner-label") Thanh toán
         .inner-order-total
-          div Tạm tính: #{orderDetail.subTotal.toLocaleString("vi-VN")}đ
-          div Giảm: #{orderDetail.discount.toLocaleString("vi-VN")}đ
+          div Tạm tính: #{Number(orderDetail.subTotal || 0).toLocaleString("vi-VN")}đ
+          div Giảm: #{Number(orderDetail.discount || 0).toLocaleString("vi-VN")}đ
           //- div Mã giảm: TOURMUAHE2024
-          div Thanh toán: <span class="inner-hl">#{orderDetail.total.toLocaleString("vi-VN")}đ</span>
+          div Thanh toán: <span class="inner-hl">#{Number(orderDetail.total || 0).toLocaleString("vi-VN")}đ</span>
       .inner-button.inner-two-col
         button Cập nhật
     .inner-back
       a(href=`/${pathAdmin}/order/list`) Quay lại danh sách
   //- End Section 8
+  if payments.length
+    .section-3
+      .inner-title Lịch sử giao dịch trực tuyến
+      .table-2
+        table
+          thead
+            tr
+              th Cổng thanh toán
+              th Mã giao dịch nội bộ
+              th Mã giao dịch cổng
+              th Số tiền
+              th Trạng thái
+          tbody
+            each payment in payments
+              tr
+                td #{payment.provider}
+                td #{payment.reference}
+                td #{payment.providerTransaction || "—"}
+                td #{payment.amount.toLocaleString("vi-VN")}đ
+                td #{payment.status === "paid" ? "Đã thanh toán" : payment.status === "failed" ? "Thất bại" : "Đang chờ"}

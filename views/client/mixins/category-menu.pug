@@ -1,0 +1,8 @@
+mixin category-menu(list)
+  each item in list
+    li
+      a(href=`/category/${item.slug}`) #{item.name}
+      if item.children && item.children.length
+        i.fa-solid.fa-caret-down
+        ul
+          +category-menu(item.children)

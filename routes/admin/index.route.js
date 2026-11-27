@@ -20,8 +20,15 @@ router.use('/order', authMiddleware.verifyToken, orderRoutes)
 router.use('/user', authMiddleware.verifyToken, userRoutes)
 router.use('/contact', authMiddleware.verifyToken, contactRoutes)
 router.use('/setting', authMiddleware.verifyToken, settingRoutes)
+router.use('/coupon', authMiddleware.verifyToken, require('./coupon.route'))
 router.use('/profile', authMiddleware.verifyToken, profileRoutes)
 router.use('/upload', authMiddleware.verifyToken, uploadRoutes)
+
+router.get('/', authMiddleware.verifyToken, (req, res) => {
+  const pages = [["dashboard-view", "dashboard"], ["tour-view", "tour/list"], ["category-view", "category/list"], ["order-view", "order/list"], ["setting-manage", "setting/list"]];
+  const page = pages.find(item => req.permissions.includes(item[0]));
+  res.redirect(`/${pathAdmin}/${page ? page[1] : "profile/edit"}`);
+});
 
 router.use(authMiddleware.verifyToken, (req, res) => {
   res.render("admin/pages/error-404", {

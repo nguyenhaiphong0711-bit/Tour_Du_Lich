@@ -5,7 +5,7 @@ module.exports.list = async (req, res, next) => {
   const categoryList = await Category.find({
     deleted: false,
     status: "active"
-  });
+  }).sort({ position: -1, _id: 1 });
 
   const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 

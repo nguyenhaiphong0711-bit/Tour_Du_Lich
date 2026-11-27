@@ -1,13 +1,11 @@
+const tourHelper = require("../../helpers/tour.helper");
 const Tour = require("../../models/tour.model");
 const moment = require("moment");
 const slugify = require('slugify');
 
 module.exports.list = async (req, res) => {
   try {
-    const find = {
-      deleted: false,
-      status: "active"
-    };
+    const find = await tourHelper.visibleFilter();
 
     // Điểm đi
     if(req.query.locationFrom) {
@@ -18,14 +16,16 @@ module.exports.list = async (req, res) => {
     // Điểm đến
     if(req.query.locationTo) {
       const keyword = slugify(req.query.locationTo);
-      const keywordRegex = new RegExp(keyword, "i");
+      const keywordRegex = new RegExp(require("../../helpers/data.helper").escapeRegex(keyword), "i");
       find.slug = keywordRegex;
     }
     // Hết Điểm đến
 
     // Ngày khởi hành
     if(req.query.departureDate) {
-      find.departureDate = new Date(req.query.departureDate);
+      const date = moment(req.query.departureDate, "YYYY-MM-DD", true);
+      if(!date.isValid() || date.isBefore(moment().startOf("day"))) return res.redirect("/");
+      find.departureDate = { $gte: date.startOf("day").toDate(), $lte: date.clone().endOf("day").toDate() };
     }
     // Hết Ngày khởi hành
 
@@ -69,7 +69,7 @@ module.exports.list = async (req, res) => {
       })
 
     for (const item of tourList) {
-      item.discount = Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100);
+      item.discount = item.priceAdult > 0 ? Math.max(0, Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100)) : 0;
 
       if(item.departureDate) {
         item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");

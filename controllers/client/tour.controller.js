@@ -1,3 +1,4 @@
+const tourHelper = require("../../helpers/tour.helper");
 const Tour = require("../../models/tour.model");
 const City = require("../../models/city.model");
 const categoryHelper = require("../../helpers/category.helper");
@@ -9,9 +10,8 @@ module.exports.detail = async (req, res) => {
   // Thông tin chi tiết tour
   const tourDetail = await Tour
     .findOne({
-      slug: slug,
-      deleted: false,
-      status: "active"
+      ...await tourHelper.visibleFilter(),
+      slug: slug
     })
 
   if(!tourDetail) {
@@ -50,7 +50,7 @@ module.exports.detail = async (req, res) => {
       .sort({
         name: "asc"
       })
-    
+
     tourDetail.cityList = cityList;
   }
 

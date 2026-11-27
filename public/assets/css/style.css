@@ -2860,3 +2860,7 @@ input, select, textarea, button {
 .just-validate-error-label {
   font-size: 12px;
 }
+/* Nested category navigation */
+.header .inner-menu ul ul ul { top: 0; left: 100%; }
+.header .inner-menu li { position: relative; }
+@media (max-width: 991.98px) { .header .inner-menu ul ul ul { position: static; padding-left: 16px; } }

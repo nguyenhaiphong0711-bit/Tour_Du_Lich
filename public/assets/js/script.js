@@ -1,3 +1,7 @@
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
+let appliedCoupon = "";
+let couponDiscount = 0;
+
 // Menu Mobile
 const buttonMenuMobile = document.querySelector(".header .inner-menu-mobile");
 if(buttonMenuMobile) {
@@ -30,7 +34,7 @@ const boxAddressSection1 = document.querySelector(".section-1 .inner-form .inner
 if(boxAddressSection1) {
   // Ẩn/Hiện box suggest
   const input = boxAddressSection1.querySelector(".inner-input");
-  
+
   input.addEventListener("focus", () => {
     boxAddressSection1.classList.add("active");
   })
@@ -57,7 +61,7 @@ const boxUserSection1 = document.querySelector(".section-1 .inner-form .inner-us
 if(boxUserSection1) {
   // Hiện box quantity
   const input = boxUserSection1.querySelector(".inner-input");
-  
+
   input.addEventListener("focus", () => {
     boxUserSection1.classList.add("active");
   })
@@ -287,7 +291,7 @@ if(emailForm) {
     ])
     .onSuccess((event) => {
       const email = event.target.email.value;
-      
+
       const dataFinal = {
         email: email
       };
@@ -328,7 +332,12 @@ if(couponForm) {
     ])
     .onSuccess((event) => {
       const coupon = event.target.coupon.value;
-      console.log(coupon);
+      fetch("/cart/coupon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ couponCode: coupon, items: JSON.parse(localStorage.getItem("cart") || "[]").filter(item => item.checked) }) })
+        .then(res => res.json()).then(data => {
+          if(data.code !== "success") { appliedCoupon = ""; couponDiscount = 0; notify.error(data.message); }
+          else { appliedCoupon = coupon; couponDiscount = data.discount; notify.success("Đã áp dụng mã giảm giá. Giá trị sẽ được kiểm tra lại khi đặt tour."); }
+          drawCart();
+        }).catch(() => notify.error("Không thể kiểm tra mã giảm giá."));
     })
 }
 // End Coupon Form
@@ -383,9 +392,10 @@ if(orderForm) {
           phone: phone,
           note: note,
           paymentMethod: paymentMethod,
-          items: cart
+          items: cart,
+          couponCode: appliedCoupon
         };
-        
+
         fetch(`/order/create`, {
           method: "POST",
           headers: {
@@ -402,7 +412,8 @@ if(orderForm) {
             if(data.code == "success") {
               // Cập nhật giỏ hàng
               let cart = JSON.parse(localStorage.getItem("cart"));
-              cart = cart.filter(item => item.checked == false);
+              const placed = new Set(dataFinal.items.map(item => item.tourId + ":" + item.locationFrom));
+              cart = cart.filter(item => !placed.has(item.tourId + ":" + item.locationFrom));
               localStorage.setItem("cart", JSON.stringify(cart));
 
               switch (paymentMethod) {
@@ -420,7 +431,7 @@ if(orderForm) {
                   window.location.href = `/order/payment-vnpay?orderCode=${data.orderCode}&phone=${data.phone}`;
                   break;
               }
-              
+
             }
           })
       } else {
@@ -428,7 +439,7 @@ if(orderForm) {
       }
     })
 
-  
+
   // List Input Method
   const listInputMethod = orderForm.querySelectorAll(`input[name="method"]`);
   const innerInfoBank = orderForm.querySelector(".inner-info-bank");
@@ -646,26 +657,26 @@ const drawCart = () => {
           return `
             <div class="inner-tour-item">
               <div class="inner-actions">
-                <button class="inner-delete" button-delete tour-id="${item.tourId}">
+                <button class="inner-delete" button-delete tour-id="${escapeHtml(item.tourId)}">
                   <i class="fa-solid fa-xmark"></i>
                 </button>
-                <input class="inner-check" type="checkbox" ${item.checked ? "checked" : ""} input-check tour-id="${item.tourId}">
+                <input class="inner-check" type="checkbox" ${item.checked ? "checked" : ""} input-check tour-id="${escapeHtml(item.tourId)}">
               </div>
               <div class="inner-product">
                 <div class="inner-image">
-                  <a href="/tour/detail/${item.slug}">
-                    <img alt="${item.name}" src="${item.avatar}">
+                  <a href="/tour/detail/${escapeHtml(item.slug)}">
+                    <img alt="${escapeHtml(item.name)}" src="${escapeHtml(item.avatar)}">
                   </a>
                 </div>
                 <div class="inner-content">
                   <div class="inner-title">
-                    <a href="/tour/detail/${item.slug}">
-                      ${item.name}
+                    <a href="/tour/detail/${escapeHtml(item.slug)}">
+                      ${escapeHtml(item.name)}
                     </a>
                   </div>
                   <div class="inner-meta">
                     <div>Ngày Khởi Hành: <b>${item.departureDate}</b></div>
-                    <div>Khởi Hành Tại: <b>${item.cityName}</b></div>
+                    <div>Khởi Hành Tại: <b>${escapeHtml(item.cityName)}</b></div>
                   </div>
                 </div>
               </div>
@@ -675,10 +686,10 @@ const drawCart = () => {
                     <div class="inner-item">
                       <div class="inner-item-label">Người lớn:</div>
                       <div class="inner-item-input">
-                        <input value="${item.quantityAdult}" min="0" max="${item.stockAdult}" type="number" name="quantityAdult" tour-id="${item.tourId}">
+                        <input value="${escapeHtml(item.quantityAdult)}" min="0" max="${escapeHtml(item.stockAdult)}" type="number" name="quantityAdult" tour-id="${escapeHtml(item.tourId)}">
                       </div>
                       <div class="inner-item-price">
-                        <span>${item.quantityAdult}</span>
+                        <span>${escapeHtml(item.quantityAdult)}</span>
                         <span>x</span>
                         <span class="inner-hl">${item.priceNewAdult.toLocaleString("vi-VN")}</span>
                       </div>
@@ -686,10 +697,10 @@ const drawCart = () => {
                     <div class="inner-item">
                       <div class="inner-item-label">Trẻ em:</div>
                       <div class="inner-item-input">
-                        <input value="${item.quantityChildren}" min="0" max="${item.stockChildren}" type="number" name="quantityChildren" tour-id="${item.tourId}">
+                        <input value="${escapeHtml(item.quantityChildren)}" min="0" max="${escapeHtml(item.stockChildren)}" type="number" name="quantityChildren" tour-id="${escapeHtml(item.tourId)}">
                       </div>
                       <div class="inner-item-price">
-                        <span>${item.quantityChildren}</span>
+                        <span>${escapeHtml(item.quantityChildren)}</span>
                         <span>x</span>
                         <span class="inner-hl">${item.priceNewChildren.toLocaleString("vi-VN")}</span>
                       </div>
@@ -697,10 +708,10 @@ const drawCart = () => {
                     <div class="inner-item">
                       <div class="inner-item-label">Em bé:</div>
                       <div class="inner-item-input">
-                        <input value="${item.quantityBaby}" min="0" max="${item.stockBaby}" type="number" name="quantityBaby" tour-id="${item.tourId}">
+                        <input value="${escapeHtml(item.quantityBaby)}" min="0" max="${escapeHtml(item.stockBaby)}" type="number" name="quantityBaby" tour-id="${escapeHtml(item.tourId)}">
                       </div>
                       <div class="inner-item-price">
-                        <span>${item.quantityBaby}</span>
+                        <span>${escapeHtml(item.quantityBaby)}</span>
                         <span>x</span>
                         <span class="inner-hl">${item.priceNewBaby.toLocaleString("vi-VN")}</span>
                       </div>
@@ -711,7 +722,7 @@ const drawCart = () => {
           `;
         })
 
-        const discount = 0;
+        const discount = Math.min(subTotal, couponDiscount);
         const total = subTotal - discount;
 
         const elementCartList = pageCart.querySelector("[cart-list]");
@@ -726,6 +737,8 @@ const drawCart = () => {
         elementSubTotal.innerHTML = subTotal.toLocaleString("vi-VN");
         const elementTotal = pageCart.querySelector("[cart-total]");
         elementTotal.innerHTML = total.toLocaleString("vi-VN");
+        const elementDiscount = pageCart.querySelector("[cart-discount]");
+        if(elementDiscount) elementDiscount.textContent = "-" + discount.toLocaleString("vi-VN");
 
         // Sự kiện cập nhật số lượng
         const listInputQuantity = elementCartList.querySelectorAll(`.inner-tour-item .inner-quantity input`);
@@ -752,6 +765,7 @@ const drawCart = () => {
             const cart = JSON.parse(localStorage.getItem("cart"));
             const indexItem = cart.findIndex(item => item.tourId == tourId);
             if(indexItem != -1) {
+              appliedCoupon = ""; couponDiscount = 0;
               cart[indexItem][fieldName] = quantity;
               localStorage.setItem("cart", JSON.stringify(cart));
               drawCart();
@@ -765,6 +779,7 @@ const drawCart = () => {
           button.addEventListener("click", () => {
             const tourId = button.getAttribute("tour-id");
             let cart = JSON.parse(localStorage.getItem("cart"));
+            appliedCoupon = ""; couponDiscount = 0;
             cart = cart.filter(item => item.tourId != tourId);
             localStorage.setItem("cart", JSON.stringify(cart));
             notify.success("Đã xóa tour khỏi giỏ hàng!");
@@ -782,6 +797,7 @@ const drawCart = () => {
             const cart = JSON.parse(localStorage.getItem("cart"));
             const indexItem = cart.findIndex(item => item.tourId == tourId);
             if(indexItem != -1) {
+              appliedCoupon = ""; couponDiscount = 0;
               cart[indexItem]["checked"] = checked;
               localStorage.setItem("cart", JSON.stringify(cart));
               drawCart();

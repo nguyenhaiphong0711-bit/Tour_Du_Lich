@@ -10,26 +10,26 @@ module.exports.list = async (req, res) => {
   };
 
   // Lọc theo Trạng thái
-  if(req.query.status) {
+  if(["active", "inactive"].includes(req.query.status)) {
     find.status = req.query.status;
   }
   // Hết Lọc theo Trạng thái
 
   // Lọc theo Người tạo
-  if(req.query.createdBy) {
+  if(/^[a-f0-9]{24}$/i.test(req.query.createdBy || "")) {
     find.createdBy = req.query.createdBy;
   }
   // Hết Lọc theo Người tạo
 
   // Lọc theo Ngày tạo
   const filterDate = {};
-  if(req.query.startDate) {
+  if(moment(req.query.startDate, "YYYY-MM-DD", true).isValid()) {
     const startDate = moment(req.query.startDate).toDate();
     filterDate.$gte = startDate;
     find.createdAt = filterDate;
   }
-  if(req.query.endDate) {
-    const endDate = moment(req.query.endDate).toDate();
+  if(moment(req.query.endDate, "YYYY-MM-DD", true).isValid()) {
+    const endDate = moment(req.query.endDate).endOf("day").toDate();
     filterDate.$lte = endDate;
     find.createdAt = filterDate;
   }
@@ -38,25 +38,14 @@ module.exports.list = async (req, res) => {
   // Tìm kiếm
   if(req.query.keyword) {
     const keyword = slugify(req.query.keyword);
-    const keywordRegex = new RegExp(keyword, "i");
+    const keywordRegex = new RegExp(require("../../helpers/data.helper").escapeRegex(keyword), "i");
     find.slug = keywordRegex;
   }
   // Hết Tìm kiếm
 
   // Phân trang
-  const limitItems = 4;
-  let page = 1;
-  if(req.query.page && parseInt(req.query.page) > 0) {
-    page = parseInt(req.query.page);
-  }
-  const skip = (page - 1) * limitItems;
-  const totalRecord = await Category.countDocuments(find);
-  const totalPage = Math.ceil(totalRecord/limitItems);
-  const pagination = {
-    skip: skip,
-    totalRecord: totalRecord,
-    totalPage: totalPage
-  };
+  const pagination = await require("../../helpers/data.helper").pagination(Category, find, req.query);
+  const { limit: limitItems, page, skip } = pagination;
   // Hết Phân trang
 
   const categoryList = await Category
@@ -67,20 +56,18 @@ module.exports.list = async (req, res) => {
     .limit(limitItems)
     .skip(skip)
 
+  const authorIds = [...new Set(categoryList.flatMap(item => [item.createdBy, item.updatedBy, item.deletedBy]).filter(id => /^[a-f0-9]{24}$/i.test(id || "")))];
+  const authors = new Map((await AccountAdmin.find({ _id: { $in: authorIds } }).select("fullName")).map(item => [item.id, item]));
   for (const item of categoryList) {
     if(item.createdBy) {
-      const infoAccount = await AccountAdmin.findOne({
-        _id: item.createdBy
-      })
+      const infoAccount = authors.get(item.createdBy)
       if(infoAccount) {
         item.createdByFullName = infoAccount.fullName;
       }
     }
 
     if(item.updatedBy) {
-      const infoAccount = await AccountAdmin.findOne({
-        _id: item.updatedBy
-      })
+      const infoAccount = authors.get(item.updatedBy)
       if(infoAccount) {
         item.updatedByFullName = infoAccount.fullName;
       }
@@ -98,12 +85,13 @@ module.exports.list = async (req, res) => {
     pageTitle: "Quản lý danh mục",
     categoryList: categoryList,
     accountAdminList: accountAdminList,
+    listCount: categoryList.length,
     pagination: pagination
   });
 }
 
 module.exports.create = async (req, res) => {
-  const categoryList = await Category.find({});
+  const categoryList = await Category.find({ deleted: false }).sort({ position: -1, _id: 1 });
 
   const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
@@ -148,7 +136,7 @@ module.exports.edit = async (req, res) => {
       return;
     }
 
-    const categoryList = await Category.find({});
+    const categoryList = await Category.find({ deleted: false }).sort({ position: -1, _id: 1 });
 
     const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
@@ -169,8 +157,7 @@ module.exports.editPatch = async (req, res) => {
     if(req.body.position) {
       req.body.position = parseInt(req.body.position);
     } else {
-      const totalRecord = await Category.countDocuments({});
-      req.body.position = totalRecord + 1;
+      delete req.body.position;
     }
 
     req.body.updatedBy = req.account.id;
@@ -184,7 +171,7 @@ module.exports.editPatch = async (req, res) => {
       _id: id,
       deleted: false
     }, req.body);
-    
+
     res.json({
       code: "success",
       message: "Cập nhật thành công!"
@@ -208,7 +195,7 @@ module.exports.deletePatch = async (req, res) => {
       deletedAt: Date.now(),
       deletedBy: req.account.id
     });
-    
+
     res.json({
       code: "success",
       message: "Xóa danh mục thành công!"
@@ -224,6 +211,11 @@ module.exports.deletePatch = async (req, res) => {
 module.exports.changeMultiPatch = async (req, res) => {
   try {
     const { value, ids } = req.body;
+    const action = ["active", "inactive"].includes(value) ? "edit" : ["undo"].includes(value) ? "trash" : "delete";
+    if(!req.permissions.includes("category-" + action)) return res.status(403).json({ code: "error", message: "Không có quyền!" });
+    if(!Array.isArray(ids) || !ids.length || ids.length > 100 || ids.some(id => !/^[a-f0-9]{24}$/i.test(id))) {
+      return res.status(400).json({ code: "error", message: "Chọn từ 1 đến 100 bản ghi hợp lệ." });
+    }
 
     switch (value) {
       case "active":

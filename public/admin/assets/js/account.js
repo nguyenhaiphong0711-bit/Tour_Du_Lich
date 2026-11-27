@@ -24,7 +24,7 @@ if(loginForm) {
       const email = event.target.email.value;
       const password = event.target.password.value;
       const rememberPassword = event.target.rememberPassword.checked;
-      
+
       const dataFinal = {
         email: email,
         password: password,
@@ -46,7 +46,7 @@ if(loginForm) {
 
           if(data.code == "success") {
             drawNotify(data.code, data.message);
-            window.location.href = `/${pathAdmin}/dashboard`;
+            window.location.href = `/${pathAdmin}`;
           }
         })
     })
@@ -173,7 +173,7 @@ if(forgotPasswordForm) {
     ])
     .onSuccess((event) => {
       const email = event.target.email.value;
-      
+
       const dataFinal = {
         email: email
       };
@@ -293,7 +293,7 @@ if(resetPasswordForm) {
     ])
     .onSuccess((event) => {
       const password = event.target.password.value;
-      
+
       const dataFinal = {
         password: password,
       };
@@ -313,7 +313,7 @@ if(resetPasswordForm) {
 
           if(data.code == "success") {
             drawNotify(data.code, data.message);
-            window.location.href = `/${pathAdmin}/dashboard`;
+            window.location.href = `/${pathAdmin}/account/login`;
           }
         })
     })

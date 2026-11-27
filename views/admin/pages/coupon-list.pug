@@ -1,0 +1,52 @@
+extends ../layouts/default.pug
+
+block main
+  h1.box-title Mã giảm giá
+  p.page-description Tạo mã mới hoặc nhập lại mã đã có để cập nhật. Mã được kiểm tra lại khi đặt tour.
+  .section-8
+    form#coupon-admin-form
+      .inner-group
+        label.inner-label(for="code") Mã giảm giá
+        input#code(name="code" required pattern="[A-Za-z0-9_-]{3,40}" placeholder="VD: HEMOI")
+      .inner-group
+        label.inner-label(for="percent") Phần trăm giảm
+        input#percent(name="percent" type="number" min="1" max="100" required)
+      .inner-group
+        label.inner-label(for="minTotal") Giá trị đơn tối thiểu
+        input#minTotal(name="minTotal" type="number" min="0" value="0" required)
+      .inner-group
+        label.inner-label(for="maxDiscount") Giảm tối đa (0 = không giới hạn)
+        input#maxDiscount(name="maxDiscount" type="number" min="0" value="0" required)
+      .inner-group
+        label.inner-label(for="expiresAt") Hết hạn
+        input#expiresAt(name="expiresAt" type="datetime-local" required)
+      .inner-group
+        label.inner-label(for="status") Trạng thái
+        select#status(name="status")
+          option(value="active") Hoạt động
+          option(value="inactive") Tạm dừng
+      .inner-button.inner-two-col
+        button Lưu mã giảm giá
+  .table-2(style="margin-top: 24px")
+    table
+      thead
+        tr
+          th Mã
+          th Giảm
+          th Đơn tối thiểu
+          th Tối đa
+          th Hết hạn
+          th Trạng thái
+      tbody
+        each coupon in couponList
+          tr
+            td #{coupon.code}
+            td #{coupon.percent}%
+            td #{coupon.minTotal.toLocaleString("vi-VN")}đ
+            td #{coupon.maxDiscount ? coupon.maxDiscount.toLocaleString("vi-VN") + "đ" : "Không giới hạn"}
+            td #{new Date(coupon.expiresAt).toLocaleString("vi-VN")}
+            td
+              button.coupon-toggle(data-id=coupon.id data-status=coupon.status) #{coupon.status === "active" ? "Đang bật · Tạm dừng" : "Đang tắt · Bật lại"}
+        if !couponList.length
+          tr
+            td.empty-cell(colspan="6") Chưa có mã giảm giá.

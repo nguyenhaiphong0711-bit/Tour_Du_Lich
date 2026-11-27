@@ -1,7 +1,5 @@
 extends ../layouts/default.pug
 include ../mixins/product.pug
-include ../mixins/section-5.pug
-include ../mixins/blog.pug
 
 block main
   // Section 1
@@ -9,22 +7,22 @@ block main
     .container
       .inner-wrap
         h1.inner-title(
-          data-aos-duration="800" 
+          data-aos-duration="800"
           data-aos="fade-up"
           )
-          | Du lịch Châu Á - Khám phá Mỹ, Úc, Âu
+          | Một hành trình mới đang chờ bạn
           br
           | Đi nơi đâu bạn muốn
         p.inner-desc(
-          data-aos-delay="150" 
-          data-aos-duration="800" 
+          data-aos-delay="150"
+          data-aos-duration="800"
           data-aos="fade-up"
           )
-          | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+          | Chọn điểm đến, tìm lịch khởi hành và lên kế hoạch cho chuyến đi theo cách của bạn.
         form.inner-form(
-          data-aos-delay="300" 
-          data-aos-duration="800" 
-          data-aos="fade-up" 
+          data-aos-delay="300"
+          data-aos-duration="800"
+          data-aos="fade-up"
           action=""
           form-search
           )
@@ -32,7 +30,7 @@ block main
             .inner-input-group
               img.inner-icon(src="/assets/images/icon-address.svg")
               input.inner-input(
-                placeholder="Bạn muốn đi đâu?" 
+                placeholder="Bạn muốn đi đâu?"
                 type="text"
                 name="locationTo"
                 )
@@ -45,7 +43,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-1.jpg"
                       )
                   .inner-item-content
@@ -54,7 +52,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-2.jpg"
                       )
                   .inner-item-content
@@ -63,7 +61,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -72,7 +70,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -81,7 +79,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -90,7 +88,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -99,7 +97,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -108,7 +106,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -117,7 +115,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -126,7 +124,7 @@ block main
                 .inner-item
                   .inner-item-image
                     img(
-                      alt="" 
+                      alt=""
                       src="/assets/images/product-3.jpg"
                       )
                   .inner-item-content
@@ -136,9 +134,9 @@ block main
             .inner-input-group
               img.inner-icon(src="/assets/images/icon-user.svg")
               input.inner-input(
-                readonly="" 
-                value="NL: 1, TE: 0, EB: 0" 
-                placeholder="Số lượng" 
+                readonly=""
+                value="NL: 1, TE: 0, EB: 0"
+                placeholder="Số lượng"
                 type="text"
                 )
               i.fa-solid.fa-angle-down.inner-down
@@ -148,7 +146,7 @@ block main
                 .inner-count
                   span.inner-down -
                   input.inner-number(
-                    value="0" 
+                    value="0"
                     readonly
                     name="stockAdult"
                     )
@@ -158,7 +156,7 @@ block main
                 .inner-count
                   span.inner-down -
                   input.inner-number(
-                    value="0" 
+                    value="0"
                     readonly
                     name="stockChildren"
                     )
@@ -168,7 +166,7 @@ block main
                 .inner-count
                   span.inner-down -
                   input.inner-number(
-                    value="0" 
+                    value="0"
                     readonly
                     name="stockBaby"
                     )
@@ -177,7 +175,7 @@ block main
             .inner-input-group
               img.inner-icon(src="/assets/images/icon-calendar.svg")
               input.inner-input(
-                placeholder="Lịch khởi hành" 
+                placeholder="Lịch khởi hành"
                 type="date"
                 name="departureDate"
                 )
@@ -185,165 +183,38 @@ block main
             i.fa-solid.fa-magnifying-glass
             | Tìm Kiếm
   // End Section 1
-  // Section 2
-  .section-2(
-    data-aos-duration="800" 
-    data-aos="fade-up"
-    )
-    .container
-      .inner-wrap
-        .inner-info
-          h2.inner-title
-            | ƯU ĐÃI 2025
-            br
-            | TOUR GIỜ CHÓT
-          .inner-desc Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-          .inner-clock-title Kết thúc sau
-          .inner-clock-number(clock-expire="2025-10-20T20:00:00")
-            .inner-item
-              .inner-number 00
-              .inner-label Ngày
-            .inner-item
-              .inner-number 00
-              .inner-label Giờ
-            .inner-item
-              .inner-number 00
-              .inner-label Phút
-            .inner-item
-              .inner-number 00
-              .inner-label Giây
-          .inner-discount-title GIẢM ĐẾN
-          .inner-discount-price
-            | 990.000
-            span.inner-unit đ
-        .inner-list
-          .swiper.swiper-section-2
-            .swiper-wrapper
-              each item in tourListSection2
-                .swiper-slide
-                  +product-item(item)
-  // End Section 2
-  // Section 3
-  .section-3
-    .container
-      h2.box-title(
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        ) Khuyến Mại Bùng Nổ - Đánh Tan Nóng Bức
-      .inner-wrap(
-        data-aos-delay="150" 
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        )
-        .swiper.swiper-section-3
-          .swiper-wrapper
-            .swiper-slide
-              .inner-item
-                a(href="#")
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-1.png"
-                    )
-            .swiper-slide
-              .inner-item
-                a(href="#")
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-2.png"
-                    )
-            .swiper-slide
-              .inner-item
-                a(href="#")
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-3.png"
-                    )
-            .swiper-slide
-              .inner-item
-                a(href="#")
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-2.png"
-                    )
-            .swiper-slide
-              .inner-item
-                a(href="#")
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-3.png"
-                    )
-          .swiper-pagination
-  // End Section 3
-  // Section 4
-  if(categorySection4)
+  if tourListSection2.length
+    .section-2
+      .container
+        .inner-wrap
+          .inner-info
+            h2.inner-title Tour giờ chót
+            .inner-desc Ưu đãi cho các chuyến khởi hành trong 30 ngày tới.
+            a.button-outline(href="/search") Khám phá chuyến đi
+          .inner-list
+            .swiper.swiper-section-2
+              .swiper-wrapper
+                each item in tourListSection2
+                  .swiper-slide
+                    +product-item(item)
+  each section in categorySections
     .section-4
       .container
-        h2.box-title(
-          data-aos-duration="800" 
-          data-aos="fade-up"
-          ) #{categorySection4.name}
-        if (tourListSection4.length > 0)
-          .inner-wrap(
-            data-aos-delay="150" 
-            data-aos-duration="800" 
-            data-aos="fade-up"
-            )
-              each item in tourListSection4
-                +product-item(item)
+        h2.box-title #{section.category.name}
+        if section.tours.length
+          .inner-wrap
+            each item in section.tours
+              +product-item(item)
         else
-          div.no-data(
-            data-aos-delay="150" 
-            data-aos-duration="800" 
-            data-aos="fade-up"
-          ) Không có dữ liệu.
-        .inner-button(
-          data-aos-delay="300" 
-          data-aos-duration="800" 
-          data-aos="fade-up"
-          )
-          a.button-outline(href=`/category/${categorySection4.slug}`) Xem tất cả
-  // End Section 4
-  // Section 5
-  +section-5("/assets/images/banner-4.png")
-  // End Section 5
-  // Section 6
-  .section-4
+          p.no-data Chưa có tour đang mở bán trong danh mục này.
+        .inner-button
+          a.button-outline(href=`/category/${section.category.slug}`) Xem tất cả
+  .section-4#lien-he
     .container
-      h2.box-title(
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        ) Tour Nước Ngoài
-      .inner-wrap(
-        data-aos-delay="150" 
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        )
-        //- +product-item()
-      .inner-button(
-        data-aos-delay="300" 
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        )
-        a.button-outline(href="#") Xem tất cả
-  // End Section 6
-  // Section 7
-  +section-5("/assets/images/banner-5.png")
-  // End Section 7
-  // Section 8
-  .section-8
-    .container
-      h2.box-title(
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        ) Tin Tức Mới
-      .inner-wrap(
-        data-aos-delay="150" 
-        data-aos-duration="800" 
-        data-aos="fade-up"
-        )
-        +blog-item-1()
-        +blog-item-2()
-        +blog-item-1()
-        +blog-item-1()
-        +blog-item-1()
-  // End Section 8
+      h2.box-title Cùng lên kế hoạch cho chuyến đi
+      p Liên hệ để được tư vấn lịch trình và điểm khởi hành phù hợp.
+      if settingWebsiteInfo.phone
+        a.button-outline(href=`tel:${settingWebsiteInfo.phone}`) Gọi #{settingWebsiteInfo.phone}
+      if settingWebsiteInfo.email
+        p
+          a(href=`mailto:${settingWebsiteInfo.email}`) #{settingWebsiteInfo.email}

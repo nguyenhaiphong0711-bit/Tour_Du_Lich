@@ -11,32 +11,25 @@ block main
         .inner-item
           <i class="fa-solid fa-filter"></i> Bộ lọc
         .inner-item
-          select
+          select(filter-status)
             option(value="") Trạng thái
-            option(value="") Hoạt động
-            option(value="") Tạm dừng
+            option(value="active") Hoạt động
+            option(value="inactive") Tạm dừng
         .inner-item
-          select
+          select(filter-created-by)
             option(value="") Người tạo
-            option(value="") Lê Văn A
-            option(value="") Lê Văn B
+            each author in accountAdminList
+              option(value=author.id) #{author.fullName}
         .inner-item
-          input(type="date")
-          span -
-          input(type="date")
+          input(type="date" filter-start-date aria-label="Từ ngày")
+          span –
+          input(type="date" filter-end-date aria-label="Đến ngày")
         .inner-item
-          select
+          select(filter-category)
             option(value="") Danh mục
-            option(value="") Danh mục 1
-            option(value="") Danh mục 2
-        .inner-item
-          select
-            option(value="") Mức giá
-            option(value="") Dưới 2tr
-            option(value="") 2tr đến 4tr
-            option(value="") 4tr đến 8tr
-            option(value="") Trên 8tr
-        .inner-item.inner-reset
+            each category in categoryList
+              option(value=category.id) #{category.name}
+        .inner-item.inner-reset(filter-reset)
           <i class="fa-solid fa-rotate-left"></i> Xóa bộ lọc
     //- End Section 4
 
@@ -63,7 +56,7 @@ block main
           )
         .inner-search
           <i class="fa-solid fa-magnifying-glass"></i>
-          input(type="text" placeholder="Tìm kiếm")
+          input(type="text" placeholder="Tìm tour theo tên" search aria-label="Tìm tour")
         if (permissions.includes("tour-create"))
           .inner-button-create
             a(href=`/${pathAdmin}/tour/create`) + Tạo mới
@@ -96,11 +89,11 @@ block main
                   input(type="checkbox" class="inner-check" check-item=item.id)
                 td #{item.name}
                 td(class="inner-center")
-                  img(src=item.avatar class="inner-avatar")
+                  img(src=(item.avatar || "/assets/images/tour-placeholder.svg") class="inner-avatar")
                 td
-                  div NL: #{item.priceNewAdult.toLocaleString("vi-VN")}đ
-                  div TE: #{item.priceNewChildren.toLocaleString("vi-VN")}đ
-                  div EB: #{item.priceNewBaby.toLocaleString("vi-VN")}đ
+                  div NL: #{Number(item.priceNewAdult || 0).toLocaleString("vi-VN")}đ
+                  div TE: #{Number(item.priceNewChildren || 0).toLocaleString("vi-VN")}đ
+                  div EB: #{Number(item.priceNewBaby || 0).toLocaleString("vi-VN")}đ
                 td
                   div NL: #{item.stockAdult}
                   div TE: #{item.stockChildren}
@@ -131,11 +124,4 @@ block main
                         <i class="fa-regular fa-trash-can"></i>
     //- End Section 6
 
-    //- Section 7
-    .section-7
-      span.inner-label Hiển thị 1 - 9 của 78
-      select(class="inner-pagination")
-        option(value="") Trang 1
-        option(value="") Trang 2
-        option(value="") Trang 3
-    //- End Section 7
+    include ../partials/section-7.pug

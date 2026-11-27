@@ -15,7 +15,8 @@ module.exports.loginPost = async (req, res) => {
   const { email, password, rememberPassword } = req.body;
 
   const existAccount = await AccountAdmin.findOne({
-    email: email
+    email: email,
+    deleted: false
   })
 
   if(!existAccount) {
@@ -48,6 +49,8 @@ module.exports.loginPost = async (req, res) => {
     {
       id: existAccount.id,
       email: existAccount.email,
+      tokenVersion: existAccount.tokenVersion || 0,
+      purpose: "login",
     },
     process.env.JWT_SECRET,
     {
@@ -58,6 +61,7 @@ module.exports.loginPost = async (req, res) => {
   res.cookie("token", token, {
     maxAge: rememberPassword ? (7 * 24 * 60 * 60 * 1000) : (24 * 60 * 60 * 1000),
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "strict"
   });
 
@@ -92,7 +96,7 @@ module.exports.registerPost = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   req.body.password = await bcrypt.hash(req.body.password, salt);
 
-  const newAccount = new AccountAdmin(req.body);
+  const newAccount = new AccountAdmin({ fullName: req.body.fullName, email: req.body.email, password: req.body.password, status: "initial" });
   await newAccount.save();
 
   res.json({
@@ -119,7 +123,8 @@ module.exports.forgotPasswordPost = async (req, res) => {
   // Kiểm tra email có tồn tại trong CSDL
   const existAccount = await AccountAdmin.findOne({
     email: email,
-    status: "active"
+    status: "active",
+    deleted: false
   })
 
   if(!existAccount) {
@@ -132,7 +137,7 @@ module.exports.forgotPasswordPost = async (req, res) => {
 
   // Kiểm tra email đã tồn tại trong ForgotPassword hay chưa
   const existEmailInForgotPassword = await ForgotPassword.findOne({
-    email: email
+    email: email, expireAt: { $gt: new Date() }
   })
 
   if(existEmailInForgotPassword) {
@@ -149,7 +154,7 @@ module.exports.forgotPasswordPost = async (req, res) => {
   // Lưu vào CSDL: email và otp (lưu trong 5 phút)
   const newRecord = new ForgotPassword({
     email: email,
-    otp: otp,
+    otp: require("crypto").createHash("sha256").update(otp).digest("hex"),
     expireAt: Date.now() + 5*60*1000
   });
   await newRecord.save();
@@ -157,7 +162,7 @@ module.exports.forgotPasswordPost = async (req, res) => {
   // Gửi mã OTP qua email
   const title = `Mã OTP lấy lại mật khẩu`;
   const content = `Mã OTP của bạn là <b style="color: green; font-size: 20px;">${otp}</b>. Mã OTP có hiệu lực trong 5 phút, vui lòng không cung cấp cho bất kỳ ai.`;
-  mailHelper.sendMail(email, title, content);
+  await mailHelper.sendMail(email, title, content);
 
   res.json({
     code: "success",
@@ -177,7 +182,8 @@ module.exports.otpPasswordPost = async (req, res) => {
   // Kiểm tra email có tồn tại trong CSDL
   const existAccount = await AccountAdmin.findOne({
     email: email,
-    status: "active"
+    status: "active",
+    deleted: false
   })
 
   if(!existAccount) {
@@ -188,36 +194,17 @@ module.exports.otpPasswordPost = async (req, res) => {
     return;
   }
 
-  // Xác thực mã OTP
-  const existRecordInForgotPassword = await ForgotPassword.findOne({
-    email: email,
-    otp: otp,
-  })
-
-  if(!existRecordInForgotPassword) {
-    res.json({
-      code: "error",
-      message: "Mã OTP không hợp lệ!"
-    })
-    return;
+  const otpHash = require("crypto").createHash("sha256").update(otp).digest("hex");
+  const record = await ForgotPassword.findOneAndUpdate({
+    email, expireAt: { $gt: new Date() }, attempts: { $lt: 5 }
+  }, { $inc: { attempts: 1 } }, { new: true, sort: { createdAt: -1 } });
+  if(!record || record.otp !== otpHash) {
+    return res.json({ code: "error", message: "Mã OTP không hợp lệ hoặc đã hết hạn." });
   }
-
-  const token = jwt.sign(
-    {
-      id: existAccount.id,
-      email: existAccount.email,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1d"
-    }
-  );
-
-  res.cookie("token", token, {
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    sameSite: "strict"
-  });
+  const consumed = await ForgotPassword.findOneAndDelete({ _id: record.id, otp: otpHash });
+  if(!consumed) return res.json({ code: "error", message: "Mã OTP đã được sử dụng." });
+  const token = jwt.sign({ id: existAccount.id, purpose: "reset", tokenVersion: existAccount.tokenVersion || 0 }, process.env.JWT_SECRET, { expiresIn: "10m" });
+  res.cookie("resetToken", token, { maxAge: 10 * 60 * 1000, httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
 
   res.json({
     code: "success",
@@ -241,12 +228,15 @@ module.exports.resetPasswordPost = async (req, res) => {
   await AccountAdmin.updateOne({
     _id: req.account.id
   }, {
-    password: hashPassword
+    $set: { password: hashPassword },
+    $inc: { tokenVersion: 1 }
   });
 
+  res.clearCookie("resetToken");
+  res.clearCookie("token");
   res.json({
     code: "success",
-    message: "Đã đổi mật khẩu thành công!"
+    message: "Đã đổi mật khẩu thành công. Vui lòng đăng nhập lại!"
   })
 }
 

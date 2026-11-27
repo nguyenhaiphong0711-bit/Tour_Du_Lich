@@ -2,12 +2,13 @@ extends ../layouts/default.pug
 include ../mixins/options.pug
 
 block main
-  
+
   h1.box-title Chỉnh sửa tour
 
   //- Section 8
   .section-8
     form(id="tour-edit-form")
+      input(type="hidden" name="updatedAt" value=tourDetail.updatedAt.toISOString())
       .inner-group(style="display: none;")
         label(for="id" class="inner-label") Id
         input(type="text" id="id" name="id" value=tourDetail.id)
@@ -17,7 +18,7 @@ block main
       .inner-group
         label(for="category" class="inner-label") Danh mục
         select(id="category" name="category")
-          option(value="") -- Chọn danh mục -- 
+          option(value="") -- Chọn danh mục --
           +options(categoryList, 0, tourDetail.category)
       .inner-group
         label(for="position" class="inner-label") Vị trí
@@ -26,18 +27,18 @@ block main
         label(for="status" class="inner-label") Trạng thái
         select(id="status" name="status")
           option(
-            value="active" 
+            value="active"
             selected=(tourDetail.status == "active" ? true : false)
             ) Hoạt động
           option(
-            value="inactive" 
+            value="inactive"
             selected=(tourDetail.status == "inactive" ? true : false)
             ) Tạm dừng
       .inner-group.inner-two-col
         label(for="avatar" class="inner-label") Ảnh đại diện
         .inner-upload-image(image-default=tourDetail.avatar)
           input(
-            type="file" 
+            type="file"
             id="avatar"
             name="avatar"
             filepond-image
@@ -46,7 +47,7 @@ block main
         label(for="images" class="inner-label") Danh sách ảnh
         .inner-upload-image-multi(list-image-default=tourDetail.images)
           input(
-            type="file" 
+            type="file"
             id="images"
             name="images"
             filepond-image-multi
@@ -96,9 +97,9 @@ block main
           each item in cityList
             .inner-checkbox-item
               input(
-                type="checkbox" 
+                type="checkbox"
                 id=`location-${item.id}`
-                name="locations" 
+                name="locations"
                 value=item.id
                 checked=(tourDetail.locations.includes(item.id))
                 )

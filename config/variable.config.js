@@ -1,6 +1,13 @@
 module.exports.pathAdmin = "admin";
 
 module.exports.permissionList = [
+  { label: "Quản lý cài đặt và tài khoản", value: "setting-manage" },
+  { label: "Xem đơn hàng", value: "order-view" },
+  { label: "Sửa đơn hàng", value: "order-edit" },
+  { label: "Xem khách hàng", value: "user-view" },
+  { label: "Xem liên hệ", value: "contact-view" },
+  { label: "Xóa liên hệ", value: "contact-delete" },
+  { label: "Quản lý mã giảm giá", value: "coupon-manage" },
   {
     label: "Xem trang Tổng quan",
     value: "dashboard-view"
@@ -55,10 +62,6 @@ module.exports.paymentMethodList = [
   {
     label: "Chuyển khoản",
     value: "bank"
-  },
-  {
-    label: "Ví Momo",
-    value: "momo"
   },
   {
     label: "VNPay",
