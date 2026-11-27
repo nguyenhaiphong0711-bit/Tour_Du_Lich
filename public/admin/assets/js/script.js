@@ -184,19 +184,25 @@ const drawRevenueChart = (currentDate) => {
             {
               label: `Tháng ${prevMonth}/${prevYear}`,
               data: data.dataPrevMonth,
-              borderColor: "#FE6383",
+              borderColor: "#a0b8c6",
               borderWidth: 1.5
             },
             {
               label: `Tháng ${currentMonth}/${currentYear}`,
               data: data.dataCurrentMonth,
-              borderColor: "#36A1EA",
+              borderColor: "#087f8c",
               borderWidth: 1.5
             }
           ]
         },
         options: {
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          elements: { point: { radius: 1.5, hoverRadius: 4 } },
+          plugins: { legend: { labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } } },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } },
+            y: { beginAtZero: true, ticks: { maxTicksLimit: 5, callback: value => value >= 1000000 ? (value / 1000000).toLocaleString("vi-VN") + " tr" : Number(value).toLocaleString("vi-VN") } }
+          }
         }
       });
     })
@@ -207,6 +213,8 @@ if(revenueChart) {
   drawRevenueChart(new Date());
 
   const inputChangeMonth = document.querySelector("[input-change-month]");
+  const today = new Date();
+  inputChangeMonth.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
   inputChangeMonth.addEventListener("change", () => {
     drawRevenueChart(new Date(inputChangeMonth.value));
   })

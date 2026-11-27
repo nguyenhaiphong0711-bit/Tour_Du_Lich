@@ -35,7 +35,7 @@ Bản sửa dựa trên commit `676cd2029a7b76b6aa71734ec35541eafbd856ef`. Giữ
 - `npm audit`: 0 lỗ hổng được công cụ báo tại thời điểm kiểm tra.
 - Nodemailer JSON transport smoke test: đạt. Không gửi email thật.
 - Có kiểm thử trình duyệt cho đăng nhập, tìm tour, menu mobile, overflow và ảnh giao diện; CI thực hiện bằng `npm run test:browser`.
-- Chưa thể chạy kiểm thử trình duyệt tại môi trường sửa code vì giới hạn Unix socket của Chromium và giới hạn truy cập localhost ở trình duyệt từ xa. Không có ảnh chụp thực tế được xác nhận tại đây. Kết quả CI cần được xem trước khi merge.
+- Kiểm thử trình duyệt đã đạt trên GitHub Actions Ubuntu 24.04: đăng nhập, tìm tour, menu mobile hoạt động; viewport 390px không tràn ngang; không ghi nhận lỗi JavaScript. Đã xem lại ảnh desktop/mobile do CI tạo. Môi trường sửa code cục bộ bị giới hạn Chromium/localhost nên phần xác minh trực quan thực hiện bằng artifact CI.
 
 ## Cần cấu hình/kiểm tra khi triển khai
 

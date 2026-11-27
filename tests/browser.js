@@ -57,8 +57,8 @@ let mongo, server, browser, dbPath;
         category: categories[0].id,
         status: i === 4 ? "inactive" : "active",
         position: 10 - i,
-        avatar: "/assets/images/banner-" + [7, 8, 12, 7, 8, 12][i] + ".jpg",
-        images: ["/assets/images/banner-7.jpg"],
+        avatar: "/assets/images/product-" + [1, 2, 3, 1, 2, 3][i] + ".jpg",
+        images: ["/assets/images/product-1.jpg"],
         schedules: [
           { title: "Ngày 1", description: "Khởi hành và tham quan." },
         ],
@@ -129,7 +129,7 @@ let mongo, server, browser, dbPath;
   await page.fill("#password", "Preview123!");
   await page.click("#login-form button");
   await page.waitForURL("**/admin/dashboard", { timeout: 20000 });
-  await page.waitForTimeout(2000);
+  await page.locator(".notyf__toast").waitFor({ state: "hidden", timeout: 10000 });
   fs.mkdirSync("docs/screenshots", { recursive: true });
   await page.screenshot({
     path: "docs/screenshots/admin-dashboard.png",
