@@ -26,7 +26,7 @@ let mongo, server, browser, dbPath;
   const city = await City.create({ name: "Hà Nội" });
   const categories = await Category.create([
     { name: "Hành trình Việt Nam", parent: "", status: "active", position: 2 },
-    { name: "Khám phá châu Á", parent: "", status: "active", position: 1 },
+    { name: "Hành trình mùa hè", parent: "", status: "active", position: 1 },
   ]);
   const role = await Role.create({
     name: "Quản trị viên",
@@ -214,6 +214,12 @@ let mongo, server, browser, dbPath;
   await mobilePage.screenshot({ path: "docs/screenshots/admin-mobile-edit.png", fullPage: true });
   const formWidth = await mobilePage.evaluate(() => document.documentElement.scrollWidth);
   if(formWidth > 391) throw Error("Mobile form overflow " + formWidth);
+  for(const broken of ["{", "{}", '[null,1,{"tourId":"bad"}]']) {
+    await page.evaluate(value => localStorage.setItem("cart", value), broken);
+    await page.goto("http://127.0.0.1:5051/cart", { waitUntil: "networkidle", timeout: 45000 });
+    const cartSize = await page.evaluate(() => JSON.parse(localStorage.getItem("cart")).length);
+    if(cartSize !== 0) throw Error("Invalid old cart was not reset");
+  }
   await page.goto("http://127.0.0.1:5051/", {
     waitUntil: "networkidle",
     timeout: 45000,

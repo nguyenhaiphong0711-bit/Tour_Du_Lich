@@ -313,14 +313,15 @@ module.exports.deletePatch = async (req, res) => {
 
     const id = req.params.id;
 
-    await Tour.updateOne({
-      _id: id
+    const result = await Tour.updateOne({
+      _id: id, deleted: false
     }, {
       deleted: true,
       deletedAt: Date.now(),
       deletedBy: req.account.id
     });
 
+    if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Tour không tồn tại trong danh sách này." });
     res.json({
       code: "success",
       message: "Xóa tour thành công!"
@@ -337,12 +338,13 @@ module.exports.undoPatch = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Tour.updateOne({
-      _id: id
+    const result = await Tour.updateOne({
+      _id: id, deleted: true
     }, {
       deleted: false
     });
 
+    if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Tour không tồn tại trong danh sách này." });
     res.json({
       code: "success",
       message: "Đã khôi phục!"
@@ -359,8 +361,9 @@ module.exports.destroyDelete = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Tour.deleteOne({ _id: id, deleted: true });
+    const result = await Tour.deleteOne({ _id: id, deleted: true });
 
+    if(!result.deletedCount) return res.status(404).json({ code: "error", message: "Tour không tồn tại trong thùng rác." });
     res.json({
       code: "success",
       message: "Đã xóa vĩnh viễn!"

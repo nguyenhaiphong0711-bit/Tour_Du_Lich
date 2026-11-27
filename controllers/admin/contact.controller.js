@@ -10,6 +10,7 @@ module.exports.list = async (req, res) => {
   res.render("admin/pages/contact-list", { pageTitle: "Đăng ký nhận tin", contactList, pagination: pageInfo, listCount: contactList.length });
 };
 module.exports.deletePatch = async (req, res) => {
-  await Contact.updateOne({ _id: req.params.id, deleted: false }, { deleted: true, deletedBy: req.account.id, deletedAt: new Date() });
+  const result = await Contact.updateOne({ _id: req.params.id, deleted: false }, { deleted: true, deletedBy: req.account.id, deletedAt: new Date() });
+  if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Đăng ký nhận tin không tồn tại hoặc đã xóa." });
   res.json({ code: "success", message: "Đã xóa đăng ký nhận tin." });
 };

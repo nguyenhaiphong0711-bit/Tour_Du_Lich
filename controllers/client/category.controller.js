@@ -1,3 +1,4 @@
+const { cleanHtml } = require("../../helpers/data.helper");
 const tourHelper = require("../../helpers/tour.helper");
 const Category = require("../../models/category.model");
 const categoryHelper = require("../../helpers/category.helper");
@@ -18,6 +19,7 @@ module.exports.list = async (req, res) => {
     res.redirect("/");
     return;
   }
+  categoryDetail.description = cleanHtml(categoryDetail.description);
   // Hết Thông tin chi tiết danh mục
 
   // Breadcrumb

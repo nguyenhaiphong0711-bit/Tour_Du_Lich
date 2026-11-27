@@ -1,3 +1,4 @@
+const { cleanHtml } = require("../../helpers/data.helper");
 const tourHelper = require("../../helpers/tour.helper");
 const Tour = require("../../models/tour.model");
 const City = require("../../models/city.model");
@@ -18,6 +19,8 @@ module.exports.detail = async (req, res) => {
     res.redirect("/");
     return;
   }
+  tourDetail.information = cleanHtml(tourDetail.information);
+  for(const item of tourDetail.schedules) item.description = cleanHtml(item.description);
   // Hết Thông tin chi tiết tour
 
   // Breadcrumb

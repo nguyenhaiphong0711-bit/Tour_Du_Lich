@@ -5,9 +5,12 @@ module.exports.list = async (req, res) => {
     { $group: { _id: "$phone", fullName: { $first: "$fullName" }, orderCount: { $sum: 1 },
       paidTotal: { $sum: { $cond: [{ $and: [{ $eq: ["$paymentStatus", "paid"] }, { $ne: ["$status", "cancel"] }] }, "$total", 0] } }, lastOrder: { $first: "$createdAt" } } } ];
   if(req.query.keyword) pipeline.push({ $match: { $or: [{ fullName: new RegExp(escapeRegex(String(req.query.keyword).slice(0, 100)), "i") }, { _id: new RegExp(escapeRegex(String(req.query.keyword).slice(0, 100)), "i") }] } });
-  const page = Math.max(1, parseInt(req.query.page) || 1), limit = 12;
-  const [result] = await Order.aggregate([...pipeline, { $sort: { lastOrder: -1 } }, { $facet: { total: [{ $count: "count" }], list: [{ $skip: (page - 1) * limit }, { $limit: limit }] } }]);
-  const totalRecord = result.total[0]?.count || 0;
-  res.render("admin/pages/user-list", { pageTitle: "Khách hàng", customerList: result.list, listCount: result.list.length,
-    pagination: { page, limit, skip: (page - 1) * limit, totalRecord, totalPage: Math.max(1, Math.ceil(totalRecord / limit)) } });
+  const [count] = await Order.aggregate([...pipeline, { $count: "count" }]);
+  const totalRecord = count?.count || 0;
+  const limit = 12;
+  const totalPage = Math.max(1, Math.ceil(totalRecord / limit));
+  const page = Math.min(totalPage, Math.max(1, parseInt(req.query.page) || 1));
+  const customerList = await Order.aggregate([...pipeline, { $sort: { lastOrder: -1 } }, { $skip: (page - 1) * limit }, { $limit: limit }]);
+  res.render("admin/pages/user-list", { pageTitle: "Khách hàng", customerList: customerList, listCount: customerList.length,
+    pagination: { page, limit, skip: (page - 1) * limit, totalRecord, totalPage: totalPage } });
 };

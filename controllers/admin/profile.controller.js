@@ -28,9 +28,11 @@ module.exports.editPatch = async (req, res) => {
 
     const { error } = Joi.object({ fullName: Joi.string().trim().min(2).max(80).required(), email: Joi.string().email().required(), phone: Joi.string().pattern(/^0[0-9]{9}$/).required() }).validate(pick(req.body, ["fullName", "email", "phone"]));
     if(error) return res.json({ code: "error", message: "Thông tin cá nhân không hợp lệ." });
+    const clearAvatar = req.body.clearAvatar === "true";
     req.body = pick(req.body, ["fullName", "email", "phone"]);
     req.body.updatedBy = id;
     if(req.file) req.body.avatar = req.file.path;
+    else if(clearAvatar) req.body.avatar = "";
 
     await AccountAdmin.updateOne({
       _id: id

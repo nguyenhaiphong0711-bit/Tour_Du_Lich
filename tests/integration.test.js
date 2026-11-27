@@ -913,3 +913,57 @@ test("Đơn cũ có địa điểm dạng chữ vẫn mở được, người ch
   assert.match(response.text, /order-view-form/);
   assert.doesNotMatch(response.text, /type="submit"/);
 });
+
+test("HTML nguy hiểm có sẵn từ dữ liệu cũ được lọc khi hiển thị", async () => {
+  const unsafe = '<p>Nội dung cũ hợp lệ</p><script>legacyAttack()</script><img src="x" onerror="legacyAttack()">';
+  await Tour.updateOne({ _id: tour.id }, { information: unsafe, schedules: [{ title: "Ngày 1", description: unsafe }] });
+  await Category.updateOne({ _id: root.id }, { description: unsafe });
+  for(const path of [`/tour/detail/${tour.slug}`, `/category/${root.slug}`]) {
+    const response = await request(app).get(path);
+    assert.equal(response.status, 200);
+    assert.match(response.text, /Nội dung cũ hợp lệ/);
+    assert.doesNotMatch(response.text, /legacyAttack|onerror=/);
+  }
+});
+test("Xóa ảnh danh mục, hồ sơ và logo dùng cờ riêng, bỏ qua upload vẫn giữ ảnh", async () => {
+  const Setting = require("../models/setting-website-info.model");
+  await Category.updateOne({ _id: leaf.id }, { avatar: "/old-category.jpg" });
+  let response = await request(app).patch(`/admin/category/edit/${leaf.id}`).set("Cookie", cookie)
+    .field("name", leaf.name).field("status", "active").field("parent", child.id).field("clearAvatar", "true");
+  assert.equal(response.body.code, "success");
+  assert.equal((await Category.findById(leaf.id)).avatar, "");
+  await Account.updateOne({ _id: account.id }, { avatar: "/old-avatar.jpg" });
+  response = await request(app).patch("/admin/profile/edit").set("Cookie", cookie)
+    .field("fullName", account.fullName).field("email", account.email).field("phone", "0901234567").field("clearAvatar", "true");
+  assert.equal(response.body.code, "success");
+  assert.equal((await Account.findById(account.id)).avatar, "");
+  await Setting.create({ websiteName: "Website cũ", logo: "/old-logo.jpg", favicon: "/old-icon.png" });
+  response = await request(app).patch("/admin/setting/website-info").set("Cookie", cookie)
+    .field("websiteName", "Website mới").field("clearLogo", "true");
+  assert.equal(response.body.code, "success");
+  const setting = await Setting.findOne();
+  assert.equal(setting.logo, "");
+  assert.equal(setting.favicon, "/old-icon.png");
+});
+test("Phân trang khách hàng quá giới hạn được đưa về trang cuối hợp lệ", async () => {
+  await booking.create(payload({ paymentMethod: "money" }));
+  const response = await request(app).get("/admin/user/list?page=999999999999999999").set("Cookie", cookie);
+  assert.equal(response.status, 200);
+  assert.match(response.text, /Khách kiểm thử/);
+  assert.match(response.text, /Hiển thị 1–1 \/ 1/);
+});
+test("Xóa hoặc khôi phục bản ghi không tồn tại trả lỗi thay vì thành công giả", async () => {
+  const id = new mongoose.Types.ObjectId().toString();
+  for(const path of [`/admin/tour/delete/${id}`, `/admin/tour/undo/${id}`, `/admin/category/delete/${id}`, `/admin/contact/delete/${id}`, `/admin/setting/account-admin/delete/${id}`, `/admin/setting/role/delete/${id}`]) {
+    const response = await request(app).patch(path).set("Cookie", cookie);
+    assert.equal(response.status, 404, path);
+    assert.equal(response.body.code, "error", path);
+  }
+  assert.equal((await request(app).delete(`/admin/tour/destroy/${id}`).set("Cookie", cookie)).status, 404);
+});
+test("Tài khoản có mã nhóm quyền cũ không hợp lệ vẫn mở được hồ sơ", async () => {
+  await Account.updateOne({ _id: account.id }, { role: "nhom-cu" });
+  const response = await request(app).get("/admin/profile/edit").set("Cookie", cookie);
+  assert.equal(response.status, 200);
+  assert.match(response.text, /Chưa gán nhóm quyền/);
+});

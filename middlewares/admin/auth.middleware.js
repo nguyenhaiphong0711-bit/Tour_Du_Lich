@@ -9,7 +9,7 @@ module.exports.verifyToken = async (req, res, next) => {
     const account = await AccountAdmin.findOne({ _id: decoded.id, email: decoded.email, status: "active", deleted: false });
     if(!account || (decoded.tokenVersion || 0) !== (account.tokenVersion || 0)) throw new Error("Phiên đăng nhập hết hạn");
     req.permissions = [];
-    if(account.role) {
+    if(require("mongoose").isValidObjectId(account.role)) {
       const role = await Role.findOne({ _id: account.role, deleted: false });
       if(role) {
         account.roleName = role.name;

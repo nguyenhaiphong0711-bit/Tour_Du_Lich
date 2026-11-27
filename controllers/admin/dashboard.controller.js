@@ -16,7 +16,8 @@ module.exports.dashboard = async (req, res) => {
   const overview = { totalOrder: 0, totalRevenue: 0, pendingOrders: 0, doneOrders: 0, cancelledOrders: 0, ...totals };
   overview.activeTours = await require("../../models/tour.model").countDocuments({
     deleted: false, status: "active", category: { $in: visibleCategories },
-    departureDate: { $gte: new Date() }, stockAdult: { $gt: 0 }
+    departureDate: { $gte: require("moment")().startOf("day").toDate() },
+    $or: [{ stockAdult: { $gt: 0 } }, { stockChildren: { $gt: 0 } }, { stockBaby: { $gt: 0 } }]
   });
 
   res.render("admin/pages/dashboard", {

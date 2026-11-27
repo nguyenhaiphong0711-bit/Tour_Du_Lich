@@ -30,6 +30,7 @@ module.exports.websiteInfo = async (req, res) => {
 }
 
 module.exports.websiteInfoPatch = async (req, res) => {
+  const clearLogo = req.body.clearLogo === "true", clearFavicon = req.body.clearFavicon === "true";
   req.body = pick(req.body, ["websiteName", "phone", "email", "address", "categoryIdSection4", "bankName", "bankAccountName", "bankAccountNumber"]);
   const validation = Joi.object({ websiteName: Joi.string().trim().min(2).max(150).required(), phone: Joi.string().max(30).allow(""), email: Joi.string().email().allow(""), address: Joi.string().max(500).allow(""), categoryIdSection4: Joi.string().hex().length(24).allow(""), bankName: Joi.string().max(100).allow(""), bankAccountName: Joi.string().max(100).allow(""), bankAccountNumber: Joi.string().pattern(/^[0-9 ]*$/).max(40).allow("") }).validate(req.body);
   if(validation.error) return res.status(400).json({ code: "error", message: "Thông tin website hoặc tài khoản ngân hàng không hợp lệ." });
@@ -38,11 +39,11 @@ module.exports.websiteInfoPatch = async (req, res) => {
   }
   if(req.files && req.files.logo) {
     req.body.logo = req.files.logo[0].path;
-  }
+  } else if(clearLogo) req.body.logo = "";
 
   if(req.files && req.files.favicon) {
     req.body.favicon = req.files.favicon[0].path;
-  }
+  } else if(clearFavicon) req.body.favicon = "";
 
   const countRecord = await SettingWebsiteInfo.countDocuments({});
   if(countRecord > 0) {
@@ -163,6 +164,7 @@ module.exports.accountAdminEdit = async (req, res) => {
 
 module.exports.accountAdminEditPatch = async (req, res) => {
   try {
+    const clearAvatar = req.body.clearAvatar === "true";
     req.body = pick(req.body, ["fullName", "email", "phone", "role", "positionCompany", "status", "password"]);
     await validateAccount(req.body, false);
     if(req.params.id === req.account.id) {
@@ -206,6 +208,7 @@ module.exports.accountAdminEditPatch = async (req, res) => {
 
     req.body.updatedBy = req.account.id;
     if(req.file) req.body.avatar = req.file.path;
+    else if(clearAvatar) req.body.avatar = "";
 
     await AccountAdmin.updateOne({ _id: id }, { $set: req.body, $inc: { tokenVersion: 1 } }, { runValidators: true });
 
@@ -343,11 +346,13 @@ async function validateAccount(data, creating) {
 
 module.exports.accountAdminDeletePatch = async (req, res) => {
   if(req.params.id === req.account.id) return res.status(400).json({ code: "error", message: "Không thể tự xóa tài khoản đang đăng nhập." });
-  await AccountAdmin.updateOne({ _id: req.params.id, deleted: false }, { $set: { deleted: true, status: "inactive", deletedBy: req.account.id, deletedAt: new Date() }, $inc: { tokenVersion: 1 } });
+  const result = await AccountAdmin.updateOne({ _id: req.params.id, deleted: false }, { $set: { deleted: true, status: "inactive", deletedBy: req.account.id, deletedAt: new Date() }, $inc: { tokenVersion: 1 } });
+  if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Tài khoản không tồn tại hoặc đã xóa." });
   res.json({ code: "success", message: "Đã xóa tài khoản quản trị." });
 };
 module.exports.roleDeletePatch = async (req, res) => {
   if(await AccountAdmin.exists({ role: req.params.id, deleted: false })) return res.status(400).json({ code: "error", message: "Nhóm quyền đang được sử dụng. Hãy chuyển tài khoản sang nhóm khác trước." });
-  await Role.updateOne({ _id: req.params.id, deleted: false }, { deleted: true, deletedBy: req.account.id, deletedAt: new Date() });
+  const result = await Role.updateOne({ _id: req.params.id, deleted: false }, { deleted: true, deletedBy: req.account.id, deletedAt: new Date() });
+  if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Nhóm quyền không tồn tại hoặc đã xóa." });
   res.json({ code: "success", message: "Đã xóa nhóm quyền." });
 };

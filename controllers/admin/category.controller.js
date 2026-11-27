@@ -163,14 +163,15 @@ module.exports.editPatch = async (req, res) => {
     req.body.updatedBy = req.account.id;
     if(req.file) {
       req.body.avatar = req.file.path;
+    } else if(req.body.clearAvatar === "true") {
+      req.body.avatar = "";
     } else {
       delete req.body.avatar;
     }
+    delete req.body.clearAvatar;
 
-    await Category.updateOne({
-      _id: id,
-      deleted: false
-    }, req.body);
+    const result = await Category.updateOne({ _id: id, deleted: false }, req.body);
+    if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Danh mục không tồn tại hoặc đã xóa." });
 
     res.json({
       code: "success",
@@ -188,14 +189,15 @@ module.exports.deletePatch = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Category.updateOne({
-      _id: id
+    const result = await Category.updateOne({
+      _id: id, deleted: false
     }, {
       deleted: true,
       deletedAt: Date.now(),
       deletedBy: req.account.id
     });
 
+    if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Danh mục không tồn tại hoặc đã xóa." });
     res.json({
       code: "success",
       message: "Xóa danh mục thành công!"

@@ -106,6 +106,7 @@ if(scheduleSection8) {
 // Filepond Image
 const listFilepondImage = document.querySelectorAll("[filepond-image]");
 const filePond = {};
+const originalImages = {};
 if(listFilepondImage.length > 0) {
   FilePond.registerPlugin(FilePondPluginImagePreview);
   FilePond.registerPlugin(FilePondPluginFileValidateType);
@@ -115,6 +116,7 @@ if(listFilepondImage.length > 0) {
     const elementImageDefault = filepondImage.closest("[image-default]");
     if(elementImageDefault) {
       const imageDefault = elementImageDefault.getAttribute("image-default");
+      originalImages[filepondImage.name] = imageDefault;
       if(imageDefault) {
         files = [
           {
@@ -170,6 +172,11 @@ if(listFilepondImageMulti.length > 0) {
 // End Filepond Image Multi
 
 // FilePond giữ URL ảnh cũ trong metadata, chỉ gửi những tệp vừa thêm.
+const appendImageRemoval = formData => {
+  for(const [name, pond] of Object.entries(filePond)) {
+    if(originalImages[name] && !pond.getFiles().length) formData.set(`clear${name.charAt(0).toUpperCase()}${name.slice(1)}`, "true");
+  }
+};
 const getUploadFile = name => {
   const item = filePond[name]?.getFile();
   return item && !item.getMetadata("originalUrl") ? item.file : null;
@@ -256,6 +263,7 @@ if(categoryCreateForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("name", name);
       formData.append("parent", parent);
       formData.append("position", position);
@@ -306,6 +314,7 @@ if(categoryEditForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("name", name);
       formData.append("parent", parent);
       formData.append("position", position);
@@ -392,6 +401,7 @@ if(tourCreateForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("name", name);
       formData.append("category", category);
       formData.append("position", position);
@@ -504,9 +514,10 @@ if(tourEditForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("name", name);
       formData.append("updatedAt", event.target.elements.namedItem("updatedAt").value);
-      formData.append("clearAvatar", String(filePond.avatar.getFiles().length === 0));
+      formData.set("clearAvatar", String(filePond.avatar.getFiles().length === 0));
       formData.append("category", category);
       formData.append("position", position);
       formData.append("status", status);
@@ -662,6 +673,7 @@ if(settingWebsiteInfoForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("websiteName", websiteName);
       for(const field of ["bankName", "bankAccountName", "bankAccountNumber"]) formData.append(field, event.target[field].value);
       formData.append("phone", phone);
@@ -775,6 +787,7 @@ if(settingAccountAdminCreateForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("fullName", fullName);
       formData.append("email", email);
       formData.append("phone", phone);
@@ -887,6 +900,7 @@ if(settingAccountAdminEditForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("fullName", fullName);
       formData.append("email", email);
       formData.append("phone", phone);
@@ -1074,6 +1088,7 @@ if(profileEditForm) {
 
       // Tạo FormData
       const formData = new FormData();
+      appendImageRemoval(formData);
       formData.append("fullName", fullName);
       formData.append("email", email);
       formData.append("phone", phone);
