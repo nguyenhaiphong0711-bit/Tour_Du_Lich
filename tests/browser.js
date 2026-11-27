@@ -384,11 +384,14 @@ let mongo, server, browser, dbPath;
   if(sent.paymentMethod !== "zalopay" || sent.items.length !== 1 || sent.items[0].quantityAdult !== 1) {
     throw Error("Wrong first ZaloPay checkout payload");
   }
-  const createdOrder = await checkout.json();
-  if(createdOrder.code !== "success") {
-    throw Error("ZaloPay order creation failed: " + JSON.stringify(createdOrder));
-  }
   await page.waitForURL("**/order/payment-zalopay?**");
+  const createdOrder = await Order.findOne({
+    phone: "0901234567",
+    paymentMethod: "zalopay"
+  });
+  if(checkout.status() !== 200 || !createdOrder || createdOrder.items.length !== 1) {
+    throw Error("ZaloPay order creation failed");
+  }
   await page.goBack({ waitUntil: "networkidle" });
   await page.waitForFunction(() => document.querySelectorAll("[cart-list] .inner-tour-item").length === 0);
   if(await page.locator("[cart-total]").textContent() !== "0") {
