@@ -28,7 +28,7 @@ module.exports.createPost = async (req, res, next) => {
       req.body[`priceNew${type}`] = String(newPrice);
     }
     if(req.body.status === "active" && Number(req.body.priceNewAdult) <= 0) throw new Error("Tour đang bán phải có giá người lớn lớn hơn 0.");
-    if(!await Category.exists({ _id: req.body.category, deleted: false, status: "active" })) throw new Error("Danh mục không tồn tại hoặc đang tạm dừng.");
+    if(!await Category.exists({ _id: req.body.category, deleted: false })) throw new Error("Danh mục không tồn tại hoặc đã xóa.");
     const locations = JSON.parse(req.body.locations);
     if(!Array.isArray(locations) || !locations.length || locations.length > 100 || locations.some(id => !/^[a-f0-9]{24}$/i.test(id))) throw new Error("Chọn ít nhất một điểm khởi hành hợp lệ.");
     if(await City.countDocuments({ _id: { $in: locations } }) !== new Set(locations).size) throw new Error("Điểm khởi hành không tồn tại.");

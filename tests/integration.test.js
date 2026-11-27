@@ -787,3 +787,13 @@ test("Tạo tour từ form admin có thể mở chi tiết phía khách", async 
     200,
   );
 });
+
+test("Tour trong danh mục tạm dừng vẫn sửa được ở admin, không hiện phía khách", async () => {
+  await Category.updateOne({ _id: leaf.id }, { status: "inactive" });
+  const response = await request(app).patch(`/admin/tour/edit/${tour.id}`).set("Cookie", cookie)
+    .field("updatedAt", tour.updatedAt.toISOString()).field("name", "Tour đang chuẩn bị").field("category", leaf.id).field("status", "inactive")
+    .field("priceAdult", "1200000").field("priceNewAdult", "1000000").field("stockAdult", "2")
+    .field("locations", JSON.stringify([city.id])).field("departureDate", tour.departureDate.toISOString()).field("schedules", "[]");
+  assert.equal(response.body.code, "success");
+  assert.equal((await request(app).get(`/tour/detail/${tour.slug}`)).status, 302);
+});

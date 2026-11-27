@@ -91,7 +91,7 @@ module.exports.list = async (req, res) => {
 }
 
 module.exports.create = async (req, res) => {
-  const categoryList = await Category.find({ deleted: false, status: "active" }).sort({ position: -1, _id: 1 });
+  const categoryList = await Category.find({ deleted: false }).sort({ position: -1, _id: 1 });
 
   const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
@@ -136,7 +136,7 @@ module.exports.edit = async (req, res) => {
       return;
     }
 
-    const categoryList = await Category.find({ deleted: false, status: "active" }).sort({ position: -1, _id: 1 });
+    const categoryList = await Category.find({ deleted: false }).sort({ position: -1, _id: 1 });
 
     const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 

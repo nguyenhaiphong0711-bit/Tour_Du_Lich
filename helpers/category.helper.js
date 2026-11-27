@@ -5,7 +5,7 @@ const buildCategoryTree = (categories, parentId = "", visited = new Set()) => {
   for (const item of categories) {
     if((item.parent || "") === parentId && !visited.has(item.id)) {
       const nextVisited = new Set(visited).add(item.id);
-      tree.push({ id: item.id, name: item.name, slug: item.slug,
+      tree.push({ id: item.id, name: item.name, slug: item.slug, status: item.status,
         children: buildCategoryTree(categories, item.id, nextVisited) });
     }
   }

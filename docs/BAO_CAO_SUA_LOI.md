@@ -30,7 +30,7 @@ Bản sửa dựa trên commit `676cd2029a7b76b6aa71734ec35541eafbd856ef`. Giữ
 
 ## Kiểm chứng
 
-- 29 bài kiểm thử tích hợp chạy với MongoDB replica set tạm: đều đạt.
+- 30 bài kiểm thử tích hợp chạy với MongoDB replica set tạm: đều đạt.
 - Kiểm tra cú pháp 81 file JavaScript và biên dịch 56 template Pug: đạt.
 - `npm audit`: 0 lỗ hổng được công cụ báo tại thời điểm kiểm tra.
 - Nodemailer JSON transport smoke test: đạt. Không gửi email thật.
