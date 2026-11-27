@@ -2,6 +2,14 @@
 
 Website đặt tour với Express, MongoDB/Mongoose và Pug. Backend giữ cấu trúc `routes`, `controllers`, `models`, `middlewares`, `validates` và `helpers`; JavaScript trình duyệt dùng `fetch`, giao diện dùng Pug và CSS.
 
+## Báo cáo và giao diện admin
+
+- [Báo cáo toàn bộ thay đổi, trước/sau và kết quả rà soát](docs/BAO_CAO_THAY_DOI_TOAN_BO.md).
+- [Danh sách từng file thay đổi, mở bằng Excel](docs/DANH_SACH_FILE_THAY_DOI.csv).
+- [Ảnh danh sách tour mới](docs/admin-preview/tours.png), [dashboard](docs/admin-preview/dashboard.png), [form sửa tour](docs/admin-preview/tour-edit.png) và [mobile](docs/admin-preview/mobile.png).
+
+Giao diện admin dùng sidebar trắng, điểm nhấn indigo, bảng ghép ảnh/tên tour và biểu mẫu theo nhóm. Vẫn dùng Pug, CSS và JavaScript hiện có. `index.js` là điểm khởi động; `app.js` cấu hình Express để kiểm thử mà không tự mở server.
+
 ## Chạy dự án
 
 Yêu cầu Node.js 22 trở lên và MongoDB Atlas hoặc MongoDB replica set. Đặt tour, hoàn chỗ và xử lý thanh toán dùng transaction; MongoDB standalone không hỗ trợ các luồng này.
@@ -11,6 +19,16 @@ npm ci
 cp .env.example .env
 npm run dev
 ```
+
+Nếu đang dùng Yarn trên Windows CMD:
+
+```bat
+yarn install --frozen-lockfile
+if not exist .env copy .env.example .env
+yarn dev
+```
+
+Chỉ tạo `.env` khi chưa có; giữ cấu hình đang dùng và bổ sung các biến thiếu. Sau mỗi lần cập nhật dependency phải cài lại theo lockfile, kể cả khi trước đó đã có `node_modules`.
 
 Điền `DATABASE`, `JWT_SECRET` (ít nhất 32 ký tự ngẫu nhiên), `WEBSITE_DOMAIN` và các dịch vụ cần dùng. Production dùng `npm start`; cổng lấy từ `PORT`. `TRUST_PROXY=1` chỉ phù hợp khi có đúng một reverse proxy tin cậy trước ứng dụng. Mặc định ngày được xử lý theo `Asia/Ho_Chi_Minh`.
 
@@ -35,7 +53,7 @@ Tài khoản chưa có nhóm quyền vẫn vào được thông tin cá nhân, n
 
 Tự tạo danh mục với tên tùy ý rồi gán tour vào danh mục. Trang chủ hiển thị các danh mục gốc đang hoạt động, lấy tối đa 8 tour mỗi nhóm và bao gồm tour trong danh mục con nhiều cấp. Danh mục ưu tiên được đưa lên trước. Menu sắp theo vị trí và hỗ trợ nhiều cấp. Danh mục bị xóa/tạm dừng làm cả nhánh ẩn phía khách nhưng giữ dữ liệu tour trong admin để có thể khôi phục.
 
-Khu tour giờ chót lấy tour giảm giá, còn chỗ và khởi hành trong 30 ngày tới. Tour quá ngày đi/hết chỗ bị ẩn khỏi danh sách mở bán. Form sửa tour có kiểm tra thời điểm cập nhật để không ghi đè số chỗ vừa có khách đặt; khi báo xung đột cần tải lại biểu mẫu.
+Khu tour giờ chót lấy tour giảm giá, còn chỗ và khởi hành trong 30 ngày tới. Tour quá ngày đi/hết chỗ bị ẩn khỏi danh sách mở bán. Form sửa tour có kiểm tra thời điểm cập nhật để không ghi đè số chỗ vừa có khách đặt; khi báo xung đột cần tải lại biểu mẫu. Sau mỗi lần lưu thành công form nhận phiên bản mới để lưu tiếp. Ảnh cũ được giữ theo URL đã có của chính tour; chỉ ảnh mới được tải lên. Bỏ ảnh khỏi biểu mẫu rồi lưu sẽ xóa tham chiếu trong dữ liệu tour.
 
 ## Đơn hàng và thanh toán
 
@@ -43,7 +61,7 @@ Giá được lấy từ database, không nhận giá/tổng tiền do trình du
 
 Giao dịch thanh toán được lưu riêng theo mã tham chiếu, cổng và số tiền. VNPay kiểm tra chữ ký, merchant, số tiền và cả hai mã thành công; ZaloPay kiểm tra MAC, app và số tiền. Callback lặp không xử lý lại. Giao dịch đến sau khi đơn đã hủy/hết giữ chỗ hoặc có thanh toán trùng được đánh dấu **cần đối soát**, không tự chiếm lại chỗ. Lịch sử giao dịch hiển thị trong trang sửa đơn. Hoàn tiền cần xử lý ở cổng thanh toán và đối soát riêng; ứng dụng không tự gọi hoàn tiền.
 
-Doanh thu chỉ tính đơn đã trả và chưa hủy. Danh sách khách hàng tổng hợp từ đơn theo số điện thoại, không tạo hệ thống tài khoản khách hàng riêng.
+Doanh thu chỉ tính đơn đã trả và chưa hủy. Biểu đồ ghi nhận theo ngày thanh toán `paidAt`; đơn cũ chưa có trường này tạm dùng ngày tạo, không tự suy đoán ngày đã thu tiền. Danh sách khách hàng tổng hợp từ đơn theo số điện thoại, không tạo hệ thống tài khoản khách hàng riêng.
 
 ## Kiểm tra
 
