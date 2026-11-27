@@ -1,4 +1,6 @@
-const { cleanHtml } = require("../../helpers/data.helper");
+const {
+  cleanHtml
+} = require("../../helpers/data.helper");
 const tourHelper = require("../../helpers/tour.helper");
 const Category = require("../../models/category.model");
 const categoryHelper = require("../../helpers/category.helper");
@@ -11,11 +13,13 @@ module.exports.list = async (req, res) => {
   // Thông tin chi tiết danh mục
   const categoryDetail = await Category
     .findOne({
-      deleted: false, status: "active",
+      deleted: false,
+      status: "active",
       slug: slug
     })
 
-  if(!categoryDetail || !(await categoryHelper.visibleIds()).includes(categoryDetail.id)) {
+  if(!categoryDetail || !(await categoryHelper.visibleIds())
+    .includes(categoryDetail.id)) {
     res.redirect("/");
     return;
   }
@@ -27,7 +31,7 @@ module.exports.list = async (req, res) => {
 
   if(categoryDetail.parent) {
     const categoryParentList = await categoryHelper.getCategoryParent(categoryDetail.parent);
-    for (const item of categoryParentList) {
+    for(const item of categoryParentList) {
       breadcrumb.push(item);
     }
   }
@@ -61,11 +65,13 @@ module.exports.list = async (req, res) => {
       position: "desc"
     })
 
-  for (const item of tourList) {
-    item.discount = item.priceAdult > 0 ? Math.max(0, Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100)) : 0;
+  for(const item of tourList) {
+    item.discount = item.priceAdult > 0 ? Math.max(0, Math.floor(((item.priceAdult - item
+      .priceNewAdult) / item.priceAdult) * 100)) : 0;
 
     if(item.departureDate) {
-      item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");
+      item.departureDateFormat = moment(item.departureDate)
+        .format("DD/MM/YYYY");
     }
   }
   // Hết Danh sách tour

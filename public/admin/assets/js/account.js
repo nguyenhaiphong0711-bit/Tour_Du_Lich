@@ -4,8 +4,7 @@ if(loginForm) {
   const validator = new JustValidate('#login-form');
 
   validator
-    .addField('#email', [
-      {
+    .addField('#email', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -14,12 +13,10 @@ if(loginForm) {
         errorMessage: "Email không đúng định dạng!"
       },
     ])
-    .addField('#password', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập mật khẩu!"
-      },
-    ])
+    .addField('#password', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập mật khẩu!"
+    }, ])
     .onSuccess((event) => {
       const email = event.target.email.value;
       const password = event.target.password.value;
@@ -32,12 +29,12 @@ if(loginForm) {
       };
 
       fetch(`/${pathAdmin}/account/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -59,8 +56,7 @@ if(registerForm) {
   const validator = new JustValidate('#register-form');
 
   validator
-    .addField('#fullName', [
-      {
+    .addField('#fullName', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập họ tên!"
       },
@@ -75,8 +71,7 @@ if(registerForm) {
         errorMessage: "Họ tên không được vượt quá 50 ký tự!"
       },
     ])
-    .addField('#email', [
-      {
+    .addField('#email', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -85,8 +80,7 @@ if(registerForm) {
         errorMessage: "Email không đúng định dạng!"
       },
     ])
-    .addField('#password', [
-      {
+    .addField('#password', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập mật khẩu!"
       },
@@ -116,12 +110,10 @@ if(registerForm) {
         errorMessage: "Mật khẩu phải có ít nhất một ký tự đặc biệt! (~!@#$%^&*)"
       },
     ])
-    .addField('#agree', [
-      {
-        rule: 'required',
-        errorMessage: "Bạn phải đồng ý với các điều khoản và điều kiện!"
-      },
-    ])
+    .addField('#agree', [{
+      rule: 'required',
+      errorMessage: "Bạn phải đồng ý với các điều khoản và điều kiện!"
+    }, ])
     .onSuccess((event) => {
       const fullName = event.target.fullName.value;
       const email = event.target.email.value;
@@ -134,12 +126,12 @@ if(registerForm) {
       };
 
       fetch(`/${pathAdmin}/account/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -161,8 +153,7 @@ if(forgotPasswordForm) {
   const validator = new JustValidate('#forgot-password-form');
 
   validator
-    .addField('#email', [
-      {
+    .addField('#email', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -179,12 +170,12 @@ if(forgotPasswordForm) {
       };
 
       fetch(`/${pathAdmin}/account/forgot-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -206,12 +197,10 @@ if(otpPasswordForm) {
   const validator = new JustValidate('#otp-password-form');
 
   validator
-    .addField('#otp', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập mã OTP!"
-      },
-    ])
+    .addField('#otp', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập mã OTP!"
+    }, ])
     .onSuccess((event) => {
       const otp = event.target.otp.value;
 
@@ -224,12 +213,12 @@ if(otpPasswordForm) {
       };
 
       fetch(`/${pathAdmin}/account/otp-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -251,8 +240,7 @@ if(resetPasswordForm) {
   const validator = new JustValidate('#reset-password-form');
 
   validator
-    .addField('#password', [
-      {
+    .addField('#password', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập mật khẩu mới!"
       },
@@ -282,15 +270,13 @@ if(resetPasswordForm) {
         errorMessage: "Mật khẩu phải có ít nhất một ký tự đặc biệt! (~!@#$%^&*)"
       },
     ])
-    .addField('#confirm-password', [
-      {
-        validator: (value, fields) => {
-          const password = fields["#password"].elem.value;
-          return password == value;
-        },
-        errorMessage: "Mật khẩu xác nhận không khớp!"
-      }
-    ])
+    .addField('#confirm-password', [{
+      validator: (value, fields) => {
+        const password = fields["#password"].elem.value;
+        return password == value;
+      },
+      errorMessage: "Mật khẩu xác nhận không khớp!"
+    }])
     .onSuccess((event) => {
       const password = event.target.password.value;
 
@@ -299,12 +285,12 @@ if(resetPasswordForm) {
       };
 
       fetch(`/${pathAdmin}/account/reset-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {

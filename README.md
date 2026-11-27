@@ -86,3 +86,7 @@ npm audit
 Kiểm thử tích hợp tạo MongoDB replica set tạm trong thư mục `.test-db-*`, không đọc `.env` và không kết nối database thật. Kiểm thử trình duyệt tạo dữ liệu minh họa riêng, đăng nhập, kiểm tra lọc tour và menu mobile, chụp ảnh vào `docs/screenshots`, rồi đóng database. Lần đầu MongoDB/Chromium cần tải binary.
 
 Cloudinary, Gmail SMTP, VNPay và ZaloPay vẫn cần kiểm thử sandbox bằng cấu hình merchant/tài khoản thật trước khi nhận giao dịch thực tế. Không đưa `.env` hoặc khóa dịch vụ lên GitHub.
+
+## Hiển thị dữ liệu cũ và quy ước code
+
+Tour active chưa có lịch hoặc hết chỗ vẫn được xem; kiểm tra lịch/chỗ áp dụng khi đặt. Khối tổng hợp trang chủ dùng dữ liệu tour hoạt động, không bắt buộc giảm giá hay khởi hành trong 30 ngày. Xem [báo cáo sửa hiển thị và trình bày code](docs/SUA_HIEN_THI_VA_PHONG_CACH_CODE.md) và [quy ước code](AGENTS.md). Quy tắc này thay cho việc ẩn toàn bộ tour thiếu lịch/chỗ của bản sửa trước.

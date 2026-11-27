@@ -38,98 +38,17 @@ block main
             .inner-suggest
               .inner-suggest-title
                 i.fa-solid.fa-location-dot
-                | Địa Điểm Hot
+                | Gợi ý hành trình
               .inner-suggest-list
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-1.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Nhật Bản
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-2.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Phú Quốc
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
-                .inner-item
-                  .inner-item-image
-                    img(
-                      alt=""
-                      src="/assets/images/product-3.jpg"
-                      )
-                  .inner-item-content
-                    .inner-item-title Singapore
-                    .inner-item-desc 50 tours
+                each item in tourListSection2
+                  .inner-item
+                    .inner-item-image
+                      img(alt=item.name src=(item.avatar || "/assets/images/tour-placeholder.svg"))
+                    .inner-item-content
+                      .inner-item-title #{item.name}
+                      .inner-item-desc #{item.time || "Xem thông tin hành trình"}
+                if !tourListSection2.length
+                  p.no-data Chưa có tour để gợi ý.
           .inner-box.inner-user
             .inner-input-group
               img.inner-icon(src="/assets/images/icon-user.svg")
@@ -188,8 +107,8 @@ block main
       .container
         .inner-wrap
           .inner-info
-            h2.inner-title Tour giờ chót
-            .inner-desc Ưu đãi cho các chuyến khởi hành trong 30 ngày tới.
+            h2.inner-title Khám phá các tour
+            .inner-desc Các hành trình được cập nhật từ danh sách tour của chúng tôi.
             a.button-outline(href="/search") Khám phá chuyến đi
           .inner-list
             .swiper.swiper-section-2

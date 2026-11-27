@@ -16,7 +16,8 @@ module.exports.list = async (req, res) => {
     // Điểm đến
     if(req.query.locationTo) {
       const keyword = slugify(req.query.locationTo);
-      const keywordRegex = new RegExp(require("../../helpers/data.helper").escapeRegex(keyword), "i");
+      const keywordRegex = new RegExp(require("../../helpers/data.helper")
+        .escapeRegex(keyword), "i");
       find.slug = keywordRegex;
     }
     // Hết Điểm đến
@@ -24,8 +25,17 @@ module.exports.list = async (req, res) => {
     // Ngày khởi hành
     if(req.query.departureDate) {
       const date = moment(req.query.departureDate, "YYYY-MM-DD", true);
-      if(!date.isValid() || date.isBefore(moment().startOf("day"))) return res.redirect("/");
-      find.departureDate = { $gte: date.startOf("day").toDate(), $lte: date.clone().endOf("day").toDate() };
+      if(!date.isValid() || date.isBefore(moment()
+          .startOf("day"))) {
+        return res.redirect("/");
+      }
+      find.departureDate = {
+        $gte: date.startOf("day")
+          .toDate(),
+        $lte: date.clone()
+          .endOf("day")
+          .toDate()
+      };
     }
     // Hết Ngày khởi hành
 
@@ -54,7 +64,8 @@ module.exports.list = async (req, res) => {
 
     // Khoảng giá
     if(req.query.price) {
-      const [priceMin, priceMax] = req.query.price.split("-").map(item => parseInt(item));
+      const [priceMin, priceMax] = req.query.price.split("-")
+        .map(item => parseInt(item));
       find.priceNewAdult = {
         $gte: priceMin,
         $lte: priceMax
@@ -68,11 +79,13 @@ module.exports.list = async (req, res) => {
         position: "desc"
       })
 
-    for (const item of tourList) {
-      item.discount = item.priceAdult > 0 ? Math.max(0, Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100)) : 0;
+    for(const item of tourList) {
+      item.discount = item.priceAdult > 0 ? Math.max(0, Math.floor(((item.priceAdult - item
+        .priceNewAdult) / item.priceAdult) * 100)) : 0;
 
       if(item.departureDate) {
-        item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");
+        item.departureDateFormat = moment(item.departureDate)
+          .format("DD/MM/YYYY");
       }
     }
 

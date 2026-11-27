@@ -46,7 +46,10 @@ module.exports.registerPost = async (req, res, next) => {
       }),
   })
 
-  const { error, value } = schema.validate(req.body);
+  const {
+    error,
+    value
+  } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
@@ -59,7 +62,10 @@ module.exports.registerPost = async (req, res, next) => {
   }
 
   req.body = value;
-  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
+  if(req.body.email) {
+    req.body.email = req.body.email.trim()
+      .toLowerCase();
+  }
   next();
 }
 
@@ -80,7 +86,10 @@ module.exports.loginPost = async (req, res, next) => {
     rememberPassword: Joi.boolean(),
   })
 
-  const { error, value } = schema.validate(req.body);
+  const {
+    error,
+    value
+  } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
@@ -93,7 +102,10 @@ module.exports.loginPost = async (req, res, next) => {
   }
 
   req.body = value;
-  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
+  if(req.body.email) {
+    req.body.email = req.body.email.trim()
+      .toLowerCase();
+  }
   next();
 }
 
@@ -108,7 +120,10 @@ module.exports.forgotPasswordPost = async (req, res, next) => {
       }),
   })
 
-  const { error, value } = schema.validate(req.body);
+  const {
+    error,
+    value
+  } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
@@ -121,7 +136,10 @@ module.exports.forgotPasswordPost = async (req, res, next) => {
   }
 
   req.body = value;
-  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
+  if(req.body.email) {
+    req.body.email = req.body.email.trim()
+      .toLowerCase();
+  }
   next();
 }
 
@@ -141,7 +159,10 @@ module.exports.otpPasswordPost = async (req, res, next) => {
       }),
   })
 
-  const { error, value } = schema.validate(req.body);
+  const {
+    error,
+    value
+  } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
@@ -154,7 +175,10 @@ module.exports.otpPasswordPost = async (req, res, next) => {
   }
 
   req.body = value;
-  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
+  if(req.body.email) {
+    req.body.email = req.body.email.trim()
+      .toLowerCase();
+  }
   next();
 }
 
@@ -188,7 +212,10 @@ module.exports.resetPasswordPost = async (req, res, next) => {
       }),
   })
 
-  const { error, value } = schema.validate(req.body);
+  const {
+    error,
+    value
+  } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
@@ -201,6 +228,9 @@ module.exports.resetPasswordPost = async (req, res, next) => {
   }
 
   req.body = value;
-  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
+  if(req.body.email) {
+    req.body.email = req.body.email.trim()
+      .toLowerCase();
+  }
   next();
 }

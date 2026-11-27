@@ -1,4 +1,5 @@
-const router = require("express").Router();
+const router = require("express")
+  .Router();
 const accountRoutes = require("./account.route");
 const dashboardRoutes = require("./dashboard.route");
 const categoryRoutes = require("./category.route");
@@ -25,7 +26,13 @@ router.use('/profile', authMiddleware.verifyToken, profileRoutes)
 router.use('/upload', authMiddleware.verifyToken, uploadRoutes)
 
 router.get('/', authMiddleware.verifyToken, (req, res) => {
-  const pages = [["dashboard-view", "dashboard"], ["tour-view", "tour/list"], ["category-view", "category/list"], ["order-view", "order/list"], ["setting-manage", "setting/list"]];
+  const pages = [
+    ["dashboard-view", "dashboard"],
+    ["tour-view", "tour/list"],
+    ["category-view", "category/list"],
+    ["order-view", "order/list"],
+    ["setting-manage", "setting/list"]
+  ];
   const page = pages.find(item => req.permissions.includes(item[0]));
   res.redirect(`/${pathAdmin}/${page ? page[1] : "profile/edit"}`);
 });

@@ -1,6 +1,7 @@
-const router = require("express").Router();
+const router = require("express")
+  .Router();
 const profileController = require("../../controllers/admin/profile.controller");
-const multer  = require('multer');
+const multer = require('multer');
 const cloudinaryHelper = require("../../helpers/cloudinary.helper");
 const upload = multer(cloudinaryHelper.options);
 

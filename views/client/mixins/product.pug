@@ -4,7 +4,7 @@ mixin product-item(item)
       a(href=`/tour/detail/${item.slug}`)
         img(
           alt=item.name
-          src=item.avatar
+          src=(item.avatar || "/assets/images/tour-placeholder.svg")
           )
     .inner-discount
       i.fa-solid.fa-bolt
@@ -14,7 +14,7 @@ mixin product-item(item)
         a(href=`/tour/detail/${item.slug}`) #{item.name}
       .inner-prices
         .inner-price-old
-          | #{item.priceAdult.toLocaleString("vi-VN")}
+          | #{Number(item.priceAdult || 0).toLocaleString("vi-VN")}
           span.inner-unit đ
         .inner-price-new
           | #{Number(item.priceNewAdult || 0).toLocaleString("vi-VN")}

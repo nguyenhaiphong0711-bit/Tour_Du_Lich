@@ -1,5 +1,8 @@
-const { checkPermission } = require("../../middlewares/admin/auth.middleware");
-const router = require("express").Router();
+const {
+  checkPermission
+} = require("../../middlewares/admin/auth.middleware");
+const router = require("express")
+  .Router();
 const orderController = require("../../controllers/admin/order.controller");
 
 router.get('/list', checkPermission("order-view"), orderController.list)

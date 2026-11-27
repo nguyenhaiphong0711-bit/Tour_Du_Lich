@@ -1,13 +1,33 @@
 module.exports.pathAdmin = "admin";
 
-module.exports.permissionList = [
-  { label: "Quản lý cài đặt và tài khoản", value: "setting-manage" },
-  { label: "Xem đơn hàng", value: "order-view" },
-  { label: "Sửa đơn hàng", value: "order-edit" },
-  { label: "Xem khách hàng", value: "user-view" },
-  { label: "Xem liên hệ", value: "contact-view" },
-  { label: "Xóa liên hệ", value: "contact-delete" },
-  { label: "Quản lý mã giảm giá", value: "coupon-manage" },
+module.exports.permissionList = [{
+    label: "Quản lý cài đặt và tài khoản",
+    value: "setting-manage"
+  },
+  {
+    label: "Xem đơn hàng",
+    value: "order-view"
+  },
+  {
+    label: "Sửa đơn hàng",
+    value: "order-edit"
+  },
+  {
+    label: "Xem khách hàng",
+    value: "user-view"
+  },
+  {
+    label: "Xem liên hệ",
+    value: "contact-view"
+  },
+  {
+    label: "Xóa liên hệ",
+    value: "contact-delete"
+  },
+  {
+    label: "Quản lý mã giảm giá",
+    value: "coupon-manage"
+  },
   {
     label: "Xem trang Tổng quan",
     value: "dashboard-view"
@@ -54,8 +74,7 @@ module.exports.permissionList = [
   },
 ];
 
-module.exports.paymentMethodList = [
-  {
+module.exports.paymentMethodList = [{
     label: "Tiền mặt",
     value: "money"
   },
@@ -73,8 +92,7 @@ module.exports.paymentMethodList = [
   },
 ]
 
-module.exports.paymentStatusList = [
-  {
+module.exports.paymentStatusList = [{
     label: "Chưa thanh toán",
     value: "unpaid"
   },
@@ -84,8 +102,7 @@ module.exports.paymentStatusList = [
   },
 ]
 
-module.exports.statusList = [
-  {
+module.exports.statusList = [{
     label: "Khởi tạo",
     value: "initial",
     color: "orange"

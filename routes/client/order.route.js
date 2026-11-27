@@ -1,7 +1,9 @@
-const router = require("express").Router();
+const router = require("express")
+  .Router();
 const orderController = require("../../controllers/client/order.controller");
 
-router.post('/create', require('../../middlewares/admin/rate-limit.middleware').order, orderController.createPost)
+router.post('/create', require('../../middlewares/admin/rate-limit.middleware')
+  .order, orderController.createPost)
 
 router.get('/success', orderController.success)
 

@@ -1,8 +1,11 @@
-const { checkPermission } = require("../../middlewares/admin/auth.middleware");
-const router = require("express").Router();
+const {
+  checkPermission
+} = require("../../middlewares/admin/auth.middleware");
+const router = require("express")
+  .Router();
 const tourController = require("../../controllers/admin/tour.controller");
 const tourValidate = require("../../validates/admin/tour.validate");
-const multer  = require('multer');
+const multer = require('multer');
 const cloudinaryHelper = require("../../helpers/cloudinary.helper");
 const upload = multer(cloudinaryHelper.options);
 
@@ -12,9 +15,14 @@ router.get('/create', checkPermission("tour-create"), tourController.create)
 
 router.post(
   '/create', checkPermission("tour-create"),
-  upload.fields([
-    { name: 'avatar', maxCount: 1 },
-    { name: 'images', maxCount: 10 },
+  upload.fields([{
+      name: 'avatar',
+      maxCount: 1
+    },
+    {
+      name: 'images',
+      maxCount: 10
+    },
   ]),
   tourValidate.createPost,
   tourController.createPost
@@ -26,9 +34,14 @@ router.get('/edit/:id', checkPermission("tour-edit"), tourController.edit)
 
 router.patch(
   '/edit/:id', checkPermission("tour-edit"),
-  upload.fields([
-    { name: 'avatar', maxCount: 1 },
-    { name: 'images', maxCount: 10 },
+  upload.fields([{
+      name: 'avatar',
+      maxCount: 1
+    },
+    {
+      name: 'images',
+      maxCount: 10
+    },
   ]),
   tourValidate.createPost,
   tourController.editPatch

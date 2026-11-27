@@ -1,8 +1,23 @@
 const Contact = require("../../models/contact.model");
 
 module.exports.createPost = async (req, res) => {
-  const { error, value } = require("joi").string().trim().lowercase().email().required().validate(req.body.email);
-  if(error) return res.status(400).json({ code: "error", message: "Email không hợp lệ." });
+  const {
+    error,
+    value
+  } = require("joi")
+    .string()
+    .trim()
+    .lowercase()
+    .email()
+    .required()
+    .validate(req.body.email);
+  if(error) {
+    return res.status(400)
+      .json({
+        code: "error",
+        message: "Email không hợp lệ."
+      });
+  }
   const email = value;
 
   const existEmail = await Contact.findOne({

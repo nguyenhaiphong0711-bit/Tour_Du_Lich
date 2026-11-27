@@ -1,29 +1,43 @@
 const mongoose = require("mongoose");
 
-const schema = new mongoose.Schema(
-  {
-    tokenVersion: { type: Number, default: 0 },
-    fullName: { type: String, required: true, trim: true },
-    email: { type: String, required: true, trim: true, lowercase: true, unique: true },
-    phone: String,
-    role: String,
-    positionCompany: String,
-    status: { type: String, enum: ["initial", "active", "inactive"], default: "initial" }, // initial: Khởi tạo, active: Hoạt động, inactive: Tạm dừng
-    password: String,
-    avatar: String,
-    createdBy: String,
-    updatedBy: String,
-    deleted: {
-      type: Boolean,
-      default: false
-    },
-    deletedBy: String,
-    deletedAt: Date
+const schema = new mongoose.Schema({
+  tokenVersion: {
+    type: Number,
+    default: 0
   },
-  {
-    timestamps: true, // Tự động sinh ra trường createdAt và updatedAt
-  }
-);
+  fullName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    unique: true
+  },
+  phone: String,
+  role: String,
+  positionCompany: String,
+  status: {
+    type: String,
+    enum: ["initial", "active", "inactive"],
+    default: "initial"
+  }, // initial: Khởi tạo, active: Hoạt động, inactive: Tạm dừng
+  password: String,
+  avatar: String,
+  createdBy: String,
+  updatedBy: String,
+  deleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedBy: String,
+  deletedAt: Date
+}, {
+  timestamps: true, // Tự động sinh ra trường createdAt và updatedAt
+});
 
 const AccountAdmin = mongoose.model('AccountAdmin', schema, "accounts-admin");
 

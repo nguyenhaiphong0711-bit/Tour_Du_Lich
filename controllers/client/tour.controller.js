@@ -1,4 +1,6 @@
-const { cleanHtml } = require("../../helpers/data.helper");
+const {
+  cleanHtml
+} = require("../../helpers/data.helper");
 const tourHelper = require("../../helpers/tour.helper");
 const Tour = require("../../models/tour.model");
 const City = require("../../models/city.model");
@@ -20,7 +22,9 @@ module.exports.detail = async (req, res) => {
     return;
   }
   tourDetail.information = cleanHtml(tourDetail.information);
-  for(const item of tourDetail.schedules) item.description = cleanHtml(item.description);
+  for(const item of tourDetail.schedules) {
+    item.description = cleanHtml(item.description);
+  }
   // Hết Thông tin chi tiết tour
 
   // Breadcrumb
@@ -28,7 +32,7 @@ module.exports.detail = async (req, res) => {
 
   if(tourDetail.category) {
     const categoryList = await categoryHelper.getCategoryParent(tourDetail.category);
-    for (const item of categoryList) {
+    for(const item of categoryList) {
       breadcrumb.push(item);
     }
   }
@@ -41,14 +45,24 @@ module.exports.detail = async (req, res) => {
   });
   // Hết Breadcrumb
 
+  tourDetail.departureDateFormat = "Đang cập nhật";
+  tourDetail.cityList = [];
+  tourDetail.canBook = await Tour.exists({
+    ...await tourHelper.bookableFilter(),
+    _id: tourDetail.id
+  });
+
   if(tourDetail.departureDate) {
-    tourDetail.departureDateFormat = moment(tourDetail.departureDate).format("DD/MM/YYYY");
+    tourDetail.departureDateFormat = moment(tourDetail.departureDate)
+      .format("DD/MM/YYYY");
   }
 
   if(tourDetail.locations && tourDetail.locations.length > 0) {
     const cityList = await City
       .find({
-        _id: { $in: tourDetail.locations }
+        _id: {
+          $in: tourDetail.locations.filter(id => /^[a-f0-9]{24}$/i.test(id))
+        }
       })
       .sort({
         name: "asc"

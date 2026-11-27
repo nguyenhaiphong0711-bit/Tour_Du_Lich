@@ -8,7 +8,8 @@ if(buttonMenuMobile) {
     sider.classList.remove("active");
     siderOverlay.classList.remove("active");
     document.body.classList.remove("sidebar-open");
-    buttonMenuMobile.setAttribute("aria-expanded", String(!mobileNav.matches && !document.body.classList.contains("nav-collapsed")));
+    buttonMenuMobile.setAttribute("aria-expanded", String(!mobileNav.matches && !document.body
+      .classList.contains("nav-collapsed")));
   };
   buttonMenuMobile.setAttribute("aria-expanded", String(!mobileNav.matches));
   buttonMenuMobile.addEventListener("click", () => {
@@ -20,7 +21,8 @@ if(buttonMenuMobile) {
       buttonMenuMobile.setAttribute("aria-expanded", String(open));
     } else {
       document.body.classList.toggle("nav-collapsed");
-      buttonMenuMobile.setAttribute("aria-expanded", String(!document.body.classList.contains("nav-collapsed")));
+      buttonMenuMobile.setAttribute("aria-expanded", String(!document.body.classList.contains(
+        "nav-collapsed")));
     }
   });
   siderOverlay.addEventListener("click", closeMenu);
@@ -34,7 +36,8 @@ if(buttonMenuMobile) {
 }
 document.addEventListener("keydown", event => {
   const searchInput = document.querySelector("#global-search");
-  if((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k" && searchInput?.offsetParent) {
+  if((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k" && searchInput
+    ?.offsetParent) {
     event.preventDefault();
     searchInput.focus();
   }
@@ -50,9 +53,11 @@ if(scheduleSection8) {
   buttonCreate.addEventListener("click", () => {
     const firstItem = listItem.querySelector(".inner-schedule-item");
     const cloneItem = firstItem.cloneNode(true);
-    cloneItem.querySelector(".inner-schedule-head input").value = "";
+    cloneItem.querySelector(".inner-schedule-head input")
+      .value = "";
     cloneItem.classList.remove("hidden");
-    cloneItem.querySelector(".inner-more").setAttribute("aria-expanded", "true");
+    cloneItem.querySelector(".inner-more")
+      .setAttribute("aria-expanded", "true");
 
     const innerBody = cloneItem.querySelector(".inner-schedule-body");
     const id = `mce_${Date.now()}`;
@@ -69,17 +74,23 @@ if(scheduleSection8) {
       const parentItem = event.target.closest(".inner-schedule-item");
       if(parentItem) {
         parentItem.classList.toggle("hidden");
-        parentItem.querySelector(".inner-more").setAttribute("aria-expanded", String(!parentItem.classList.contains("hidden")));
+        parentItem.querySelector(".inner-more")
+          .setAttribute("aria-expanded", String(!parentItem.classList.contains("hidden")));
       }
     }
 
     // Xóa item
     if(event.target.closest(".inner-remove")) {
       const parentItem = event.target.closest(".inner-schedule-item");
-      const totalItem = listItem.querySelectorAll(".inner-schedule-item").length;
+      const totalItem = listItem.querySelectorAll(".inner-schedule-item")
+        .length;
       if(parentItem && totalItem > 1) {
-        const id = parentItem.querySelector("textarea").id;
-        if(typeof tinymce !== "undefined") tinymce.get(id)?.remove();
+        const id = parentItem.querySelector("textarea")
+          .id;
+        if(typeof tinymce !== "undefined") {
+          tinymce.get(id)
+            ?.remove();
+        }
         parentItem.remove();
       }
     }
@@ -92,7 +103,10 @@ if(scheduleSection8) {
     onStart: (event) => {
       const textarea = event.item.querySelector(".inner-schedule-body textarea");
       const id = textarea.id;
-      if(typeof tinymce !== "undefined") tinymce.get(id)?.remove();
+      if(typeof tinymce !== "undefined") {
+        tinymce.get(id)
+          ?.remove();
+      }
     },
     onEnd: (event) => {
       const textarea = event.item.querySelector(".inner-schedule-body textarea");
@@ -118,18 +132,24 @@ if(listFilepondImage.length > 0) {
       const imageDefault = elementImageDefault.getAttribute("image-default");
       originalImages[filepondImage.name] = imageDefault;
       if(imageDefault) {
-        files = [
-          {
-            source: imageDefault, options: { metadata: { originalUrl: imageDefault } }
+        files = [{
+          source: imageDefault,
+          options: {
+            metadata: {
+              originalUrl: imageDefault
+            }
           }
-        ]
+        }]
       }
     }
 
     filePond[filepondImage.name] = FilePond.create(filepondImage, {
       labelIdle: 'Thả ảnh vào đây hoặc <span class="filepond--label-action">chọn ảnh</span>',
-      labelFileLoading: "Đang tải ảnh", labelFileLoadError: "Không tải được ảnh", labelTapToRetry: "Nhấn để thử lại",
-      labelFileTypeNotAllowed: "Vui lòng chọn tệp hình ảnh", imagePreviewHeight: 140,
+      labelFileLoading: "Đang tải ảnh",
+      labelFileLoadError: "Không tải được ảnh",
+      labelTapToRetry: "Nhấn để thử lại",
+      labelFileTypeNotAllowed: "Vui lòng chọn tệp hình ảnh",
+      imagePreviewHeight: 140,
       acceptedFileTypes: ['image/*'],
       files: files
     });
@@ -154,7 +174,12 @@ if(listFilepondImageMulti.length > 0) {
         files = [];
         listImageDefault.forEach(image => {
           files.push({
-            source: image, options: { metadata: { originalUrl: image } }
+            source: image,
+            options: {
+              metadata: {
+                originalUrl: image
+              }
+            }
           });
         })
       }
@@ -162,8 +187,11 @@ if(listFilepondImageMulti.length > 0) {
 
     filePondMulti[filepondImage.name] = FilePond.create(filepondImage, {
       labelIdle: 'Thả ảnh vào đây hoặc <span class="filepond--label-action">chọn ảnh</span>',
-      labelFileLoading: "Đang tải ảnh", labelFileLoadError: "Không tải được ảnh", labelTapToRetry: "Nhấn để thử lại",
-      labelFileTypeNotAllowed: "Vui lòng chọn tệp hình ảnh", imagePreviewHeight: 140,
+      labelFileLoading: "Đang tải ảnh",
+      labelFileLoadError: "Không tải được ảnh",
+      labelTapToRetry: "Nhấn để thử lại",
+      labelFileTypeNotAllowed: "Vui lòng chọn tệp hình ảnh",
+      imagePreviewHeight: 140,
       acceptedFileTypes: ['image/*'],
       files: files
     });
@@ -174,7 +202,10 @@ if(listFilepondImageMulti.length > 0) {
 // FilePond giữ URL ảnh cũ trong metadata, chỉ gửi những tệp vừa thêm.
 const appendImageRemoval = formData => {
   for(const [name, pond] of Object.entries(filePond)) {
-    if(originalImages[name] && !pond.getFiles().length) formData.set(`clear${name.charAt(0).toUpperCase()}${name.slice(1)}`, "true");
+    if(originalImages[name] && !pond.getFiles()
+      .length) {
+      formData.set(`clear${name.charAt(0).toUpperCase()}${name.slice(1)}`, "true");
+    }
   }
 };
 const getUploadFile = name => {
@@ -186,45 +217,138 @@ const getUploadFile = name => {
 let revenueChartInstance;
 let revenueRequest = 0;
 const drawRevenueChart = async currentDate => {
-  if(Number.isNaN(currentDate.getTime())) return;
+  if(Number.isNaN(currentDate.getTime())) {
+    return;
+  }
   const requestId = ++revenueRequest;
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
   const prevDate = new Date(currentYear, currentMonth - 2, 1);
   const prevMonth = prevDate.getMonth() + 1;
   const prevYear = prevDate.getFullYear();
-  const arrayDay = Array.from({ length: new Date(currentYear, currentMonth, 0).getDate() }, (_, i) => i + 1);
+  const arrayDay = Array.from({
+    length: new Date(currentYear, currentMonth, 0)
+      .getDate()
+  }, (_, i) => i + 1);
   const message = document.querySelector(".chart-message");
   try {
     const response = await fetch(`/${pathAdmin}/dashboard/revenue-chart`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentMonth, currentYear, prevMonth, prevYear, arrayDay })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        currentMonth,
+        currentYear,
+        prevMonth,
+        prevYear,
+        arrayDay
+      })
     });
     const data = await response.json();
-    if(requestId !== revenueRequest) return;
-    if(!response.ok || data.code !== "success") throw new Error(data.message || "Chưa tải được doanh thu.");
-    message.hidden = data.dataCurrentMonth.some(value => value > 0) || data.dataPrevMonth.some(value => value > 0);
+    if(requestId !== revenueRequest) {
+      return;
+    }
+    if(!response.ok || data.code !== "success") {
+      throw new Error(data.message || "Chưa tải được doanh thu.");
+    }
+    message.hidden = data.dataCurrentMonth.some(value => value > 0) || data.dataPrevMonth.some(
+      value => value > 0);
     message.textContent = "Chưa có doanh thu trong khoảng thời gian này.";
-    if(revenueChartInstance) revenueChartInstance.destroy();
+    if(revenueChartInstance) {
+      revenueChartInstance.destroy();
+    }
     revenueChartInstance = new Chart(document.querySelector("#revenue-chart"), {
       type: "line",
-      data: { labels: arrayDay, datasets: [
-        { label: `Tháng ${currentMonth}/${currentYear}`, data: data.dataCurrentMonth, borderColor: "#6366f1", backgroundColor: "#6366f10d", fill: true, borderWidth: 2.5, tension: .35 },
-        { label: `Tháng ${prevMonth}/${prevYear}`, data: data.dataPrevMonth, borderColor: "#c1c7d3", borderDash: [5, 5], borderWidth: 1.5, tension: .35 }
-      ] },
+      data: {
+        labels: arrayDay,
+        datasets: [{
+            label: `Tháng ${currentMonth}/${currentYear}`,
+            data: data.dataCurrentMonth,
+            borderColor: "#6366f1",
+            backgroundColor: "#6366f10d",
+            fill: true,
+            borderWidth: 2.5,
+            tension: .35
+          },
+          {
+            label: `Tháng ${prevMonth}/${prevYear}`,
+            data: data.dataPrevMonth,
+            borderColor: "#c1c7d3",
+            borderDash: [5, 5],
+            borderWidth: 1.5,
+            tension: .35
+          }
+        ]
+      },
       options: {
         maintainAspectRatio: false,
-        elements: { point: { radius: 0, hoverRadius: 4, hitRadius: 10 } },
-        interaction: { mode: "index", intersect: false },
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: "#182230", padding: 12, callbacks: { label: item => `${item.dataset.label}: ${Number(item.raw).toLocaleString("vi-VN")}₫` } } },
+        elements: {
+          point: {
+            radius: 0,
+            hoverRadius: 4,
+            hitRadius: 10
+          }
+        },
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: "#182230",
+            padding: 12,
+            callbacks: {
+              label: item =>
+                `${item.dataset.label}: ${Number(item.raw).toLocaleString("vi-VN")}₫`
+            }
+          }
+        },
         scales: {
-          x: { grid: { display: false }, border: { display: false }, ticks: { maxTicksLimit: 10, color: "#98a2b3", font: { size: 11 } } },
-          y: { beginAtZero: true, border: { display: false }, grid: { color: "#f0f2f6" }, ticks: { maxTicksLimit: 5, color: "#98a2b3", font: { size: 11 }, callback: value => value >= 1000000 ? (value / 1000000).toLocaleString("vi-VN") + " tr" : Number(value).toLocaleString("vi-VN") } }
+          x: {
+            grid: {
+              display: false
+            },
+            border: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 10,
+              color: "#98a2b3",
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            beginAtZero: true,
+            border: {
+              display: false
+            },
+            grid: {
+              color: "#f0f2f6"
+            },
+            ticks: {
+              maxTicksLimit: 5,
+              color: "#98a2b3",
+              font: {
+                size: 11
+              },
+              callback: value => value >= 1000000 ? (value / 1000000)
+                .toLocaleString("vi-VN") + " tr" : Number(value)
+                .toLocaleString("vi-VN")
+            }
+          }
         }
       }
     });
-  } catch(error) {
-    if(requestId !== revenueRequest) return;
+  } catch (error) {
+    if(requestId !== revenueRequest) {
+      return;
+    }
     message.hidden = false;
     message.textContent = error.message;
   }
@@ -232,11 +356,15 @@ const drawRevenueChart = async currentDate => {
 if(document.querySelector("#revenue-chart")) {
   const inputChangeMonth = document.querySelector("[input-change-month]");
   const today = new Date();
-  inputChangeMonth.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+  inputChangeMonth.value =
+    `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
   drawRevenueChart(today);
   inputChangeMonth.addEventListener("change", () => {
-    const [year, month] = inputChangeMonth.value.split("-").map(Number);
-    if(year >= 2000 && year <= 2100 && month >= 1 && month <= 12) drawRevenueChart(new Date(year, month - 1, 1));
+    const [year, month] = inputChangeMonth.value.split("-")
+      .map(Number);
+    if(year >= 2000 && year <= 2100 && month >= 1 && month <= 12) {
+      drawRevenueChart(new Date(year, month - 1, 1));
+    }
   });
 }
 // End Revenue Chart
@@ -247,17 +375,19 @@ if(categoryCreateForm) {
   const validator = new JustValidate('#category-create-form');
 
   validator
-    .addField('#name', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên danh mục!"
-      },
-    ])
+    .addField('#name', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên danh mục!"
+    }, ])
     .onSuccess((event) => {
-      const name = event.target.elements.namedItem("name").value;
-      const parent = event.target.elements.namedItem("parent").value;
-      const position = event.target.elements.namedItem("position").value;
-      const status = event.target.elements.namedItem("status").value;
+      const name = event.target.elements.namedItem("name")
+        .value;
+      const parent = event.target.elements.namedItem("parent")
+        .value;
+      const position = event.target.elements.namedItem("position")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
       const avatar = getUploadFile("avatar");
       const description = getEditorContent("description");
 
@@ -268,13 +398,15 @@ if(categoryCreateForm) {
       formData.append("parent", parent);
       formData.append("position", position);
       formData.append("status", status);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
       formData.append("description", description);
 
       fetch(`/${pathAdmin}/category/create`, {
-        method: "POST",
-        body: formData
-      })
+          method: "POST",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -282,7 +414,9 @@ if(categoryCreateForm) {
           }
 
           if(data.code == "success") {
-            if(data.code !== "success") return notify.error(data.message);
+            if(data.code !== "success") {
+              return notify.error(data.message);
+            }
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -297,18 +431,21 @@ if(categoryEditForm) {
   const validator = new JustValidate('#category-edit-form');
 
   validator
-    .addField('#name', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên danh mục!"
-      },
-    ])
+    .addField('#name', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên danh mục!"
+    }, ])
     .onSuccess((event) => {
-      const id = event.target.elements.namedItem("id").value;
-      const name = event.target.elements.namedItem("name").value;
-      const parent = event.target.elements.namedItem("parent").value;
-      const position = event.target.elements.namedItem("position").value;
-      const status = event.target.elements.namedItem("status").value;
+      const id = event.target.elements.namedItem("id")
+        .value;
+      const name = event.target.elements.namedItem("name")
+        .value;
+      const parent = event.target.elements.namedItem("parent")
+        .value;
+      const position = event.target.elements.namedItem("position")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
       let avatar = getUploadFile("avatar");
       const description = getEditorContent("description");
 
@@ -319,13 +456,15 @@ if(categoryEditForm) {
       formData.append("parent", parent);
       formData.append("position", position);
       formData.append("status", status);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
       formData.append("description", description);
 
       fetch(`/${pathAdmin}/category/edit/${id}`, {
-        method: "PATCH",
-        body: formData
-      })
+          method: "PATCH",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -346,31 +485,45 @@ if(tourCreateForm) {
   const validator = new JustValidate('#tour-create-form');
 
   validator
-    .addField('#name', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên tour!"
-      },
-    ])
+    .addField('#name', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên tour!"
+    }, ])
     .onSuccess((event) => {
-      const name = event.target.elements.namedItem("name").value;
-      const category = event.target.elements.namedItem("category").value;
-      const position = event.target.elements.namedItem("position").value;
-      const status = event.target.elements.namedItem("status").value;
+      const name = event.target.elements.namedItem("name")
+        .value;
+      const category = event.target.elements.namedItem("category")
+        .value;
+      const position = event.target.elements.namedItem("position")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
       const avatar = getUploadFile("avatar");
-      const priceAdult = event.target.elements.namedItem("priceAdult").value;
-      const priceChildren = event.target.elements.namedItem("priceChildren").value;
-      const priceBaby = event.target.elements.namedItem("priceBaby").value;
-      const priceNewAdult = event.target.elements.namedItem("priceNewAdult").value;
-      const priceNewChildren = event.target.elements.namedItem("priceNewChildren").value;
-      const priceNewBaby = event.target.elements.namedItem("priceNewBaby").value;
-      const stockAdult = event.target.elements.namedItem("stockAdult").value;
-      const stockChildren = event.target.elements.namedItem("stockChildren").value;
-      const stockBaby = event.target.elements.namedItem("stockBaby").value;
+      const priceAdult = event.target.elements.namedItem("priceAdult")
+        .value;
+      const priceChildren = event.target.elements.namedItem("priceChildren")
+        .value;
+      const priceBaby = event.target.elements.namedItem("priceBaby")
+        .value;
+      const priceNewAdult = event.target.elements.namedItem("priceNewAdult")
+        .value;
+      const priceNewChildren = event.target.elements.namedItem("priceNewChildren")
+        .value;
+      const priceNewBaby = event.target.elements.namedItem("priceNewBaby")
+        .value;
+      const stockAdult = event.target.elements.namedItem("stockAdult")
+        .value;
+      const stockChildren = event.target.elements.namedItem("stockChildren")
+        .value;
+      const stockBaby = event.target.elements.namedItem("stockBaby")
+        .value;
       const locations = [];
-      const time = event.target.elements.namedItem("time").value;
-      const vehicle = event.target.elements.namedItem("vehicle").value;
-      const departureDate = event.target.elements.namedItem("departureDate").value;
+      const time = event.target.elements.namedItem("time")
+        .value;
+      const vehicle = event.target.elements.namedItem("vehicle")
+        .value;
+      const departureDate = event.target.elements.namedItem("departureDate")
+        .value;
       const information = getEditorContent("information");
       const schedules = [];
 
@@ -406,7 +559,9 @@ if(tourCreateForm) {
       formData.append("category", category);
       formData.append("position", position);
       formData.append("status", status);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
       formData.append("priceAdult", priceAdult);
       formData.append("priceChildren", priceChildren);
       formData.append("priceBaby", priceBaby);
@@ -422,20 +577,23 @@ if(tourCreateForm) {
       formData.append("departureDate", departureDate);
       formData.append("information", information);
       formData.append("schedules", JSON.stringify(schedules));
-      formData.append("clearImages", String(filePondMulti.images.getFiles().length === 0));
+      formData.append("clearImages", String(filePondMulti.images.getFiles()
+        .length === 0));
 
       // images
-      if(filePondMulti.images.getFiles().length > 0) {
-        filePondMulti.images.getFiles().forEach(item => {
-          formData.append("images", item.file);
-        })
+      if(filePondMulti.images.getFiles()
+        .length > 0) {
+        filePondMulti.images.getFiles()
+          .forEach(item => {
+            formData.append("images", item.file);
+          })
       }
       // End images
 
       fetch(`/${pathAdmin}/tour/create`, {
-        method: "POST",
-        body: formData
-      })
+          method: "POST",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -443,7 +601,9 @@ if(tourCreateForm) {
           }
 
           if(data.code == "success") {
-            if(data.code !== "success") return notify.error(data.message);
+            if(data.code !== "success") {
+              return notify.error(data.message);
+            }
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -458,32 +618,47 @@ if(tourEditForm) {
   const validator = new JustValidate('#tour-edit-form');
 
   validator
-    .addField('#name', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên tour!"
-      },
-    ])
+    .addField('#name', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên tour!"
+    }, ])
     .onSuccess((event) => {
-      const id = event.target.elements.namedItem("id").value;
-      const name = event.target.elements.namedItem("name").value;
-      const category = event.target.elements.namedItem("category").value;
-      const position = event.target.elements.namedItem("position").value;
-      const status = event.target.elements.namedItem("status").value;
+      const id = event.target.elements.namedItem("id")
+        .value;
+      const name = event.target.elements.namedItem("name")
+        .value;
+      const category = event.target.elements.namedItem("category")
+        .value;
+      const position = event.target.elements.namedItem("position")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
       const avatar = getUploadFile("avatar");
-      const priceAdult = event.target.elements.namedItem("priceAdult").value;
-      const priceChildren = event.target.elements.namedItem("priceChildren").value;
-      const priceBaby = event.target.elements.namedItem("priceBaby").value;
-      const priceNewAdult = event.target.elements.namedItem("priceNewAdult").value;
-      const priceNewChildren = event.target.elements.namedItem("priceNewChildren").value;
-      const priceNewBaby = event.target.elements.namedItem("priceNewBaby").value;
-      const stockAdult = event.target.elements.namedItem("stockAdult").value;
-      const stockChildren = event.target.elements.namedItem("stockChildren").value;
-      const stockBaby = event.target.elements.namedItem("stockBaby").value;
+      const priceAdult = event.target.elements.namedItem("priceAdult")
+        .value;
+      const priceChildren = event.target.elements.namedItem("priceChildren")
+        .value;
+      const priceBaby = event.target.elements.namedItem("priceBaby")
+        .value;
+      const priceNewAdult = event.target.elements.namedItem("priceNewAdult")
+        .value;
+      const priceNewChildren = event.target.elements.namedItem("priceNewChildren")
+        .value;
+      const priceNewBaby = event.target.elements.namedItem("priceNewBaby")
+        .value;
+      const stockAdult = event.target.elements.namedItem("stockAdult")
+        .value;
+      const stockChildren = event.target.elements.namedItem("stockChildren")
+        .value;
+      const stockBaby = event.target.elements.namedItem("stockBaby")
+        .value;
       const locations = [];
-      const time = event.target.elements.namedItem("time").value;
-      const vehicle = event.target.elements.namedItem("vehicle").value;
-      const departureDate = event.target.elements.namedItem("departureDate").value;
+      const time = event.target.elements.namedItem("time")
+        .value;
+      const vehicle = event.target.elements.namedItem("vehicle")
+        .value;
+      const departureDate = event.target.elements.namedItem("departureDate")
+        .value;
       const information = getEditorContent("information");
       const schedules = [];
 
@@ -516,12 +691,16 @@ if(tourEditForm) {
       const formData = new FormData();
       appendImageRemoval(formData);
       formData.append("name", name);
-      formData.append("updatedAt", event.target.elements.namedItem("updatedAt").value);
-      formData.set("clearAvatar", String(filePond.avatar.getFiles().length === 0));
+      formData.append("updatedAt", event.target.elements.namedItem("updatedAt")
+        .value);
+      formData.set("clearAvatar", String(filePond.avatar.getFiles()
+        .length === 0));
       formData.append("category", category);
       formData.append("position", position);
       formData.append("status", status);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
       formData.append("priceAdult", priceAdult);
       formData.append("priceChildren", priceChildren);
       formData.append("priceBaby", priceBaby);
@@ -537,24 +716,27 @@ if(tourEditForm) {
       formData.append("departureDate", departureDate);
       formData.append("information", information);
       formData.append("schedules", JSON.stringify(schedules));
-      formData.append("clearImages", String(filePondMulti.images.getFiles().length === 0));
+      formData.append("clearImages", String(filePondMulti.images.getFiles()
+        .length === 0));
 
       const imageOrder = [];
       let uploadIndex = 0;
-      filePondMulti.images.getFiles().forEach(item => {
-        const originalUrl = item.getMetadata("originalUrl");
-        if(originalUrl) imageOrder.push(originalUrl);
-        else {
-          imageOrder.push(uploadIndex++);
-          formData.append("images", item.file);
-        }
-      });
+      filePondMulti.images.getFiles()
+        .forEach(item => {
+          const originalUrl = item.getMetadata("originalUrl");
+          if(originalUrl) {
+            imageOrder.push(originalUrl);
+          } else {
+            imageOrder.push(uploadIndex++);
+            formData.append("images", item.file);
+          }
+        });
       formData.append("imageOrder", JSON.stringify(imageOrder));
 
       fetch(`/${pathAdmin}/tour/edit/${id}`, {
-        method: "PATCH",
-        body: formData
-      })
+          method: "PATCH",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -562,9 +744,14 @@ if(tourEditForm) {
           }
 
           if(data.code == "success") {
-            event.target.elements.namedItem("updatedAt").value = data.updatedAt;
-            if(data.avatar && filePond.avatar.getFile()) filePond.avatar.getFile().setMetadata("originalUrl", data.avatar);
-            filePondMulti.images.getFiles().forEach((item, index) => item.setMetadata("originalUrl", data.images[index]));
+            event.target.elements.namedItem("updatedAt")
+              .value = data.updatedAt;
+            if(data.avatar && filePond.avatar.getFile()) {
+              filePond.avatar.getFile()
+                .setMetadata("originalUrl", data.avatar);
+            }
+            filePondMulti.images.getFiles()
+              .forEach((item, index) => item.setMetadata("originalUrl", data.images[index]));
             notify.success(data.message);
           }
         })
@@ -578,8 +765,7 @@ if(orderEditForm) {
   const validator = new JustValidate('#order-edit-form');
 
   validator
-    .addField('#fullName', [
-      {
+    .addField('#fullName', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập họ tên!"
       },
@@ -594,8 +780,7 @@ if(orderEditForm) {
         errorMessage: "Họ tên không được vượt quá 50 ký tự!"
       },
     ])
-    .addField('#phone', [
-      {
+    .addField('#phone', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập số điện thoại!"
       },
@@ -606,13 +791,20 @@ if(orderEditForm) {
       },
     ])
     .onSuccess((event) => {
-      const id = event.target.elements.namedItem("id").value;
-      const fullName = event.target.elements.namedItem("fullName").value;
-      const phone = event.target.elements.namedItem("phone").value;
-      const note = event.target.elements.namedItem("note").value;
-      const paymentMethod = event.target.elements.namedItem("paymentMethod").value;
-      const paymentStatus = event.target.elements.namedItem("paymentStatus").value;
-      const status = event.target.elements.namedItem("status").value;
+      const id = event.target.elements.namedItem("id")
+        .value;
+      const fullName = event.target.elements.namedItem("fullName")
+        .value;
+      const phone = event.target.elements.namedItem("phone")
+        .value;
+      const note = event.target.elements.namedItem("note")
+        .value;
+      const paymentMethod = event.target.elements.namedItem("paymentMethod")
+        .value;
+      const paymentStatus = event.target.elements.namedItem("paymentStatus")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
 
       const dataFinal = {
         fullName: fullName,
@@ -624,12 +816,12 @@ if(orderEditForm) {
       };
 
       fetch(`/${pathAdmin}/order/edit/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataFinal),
-      })
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataFinal),
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -650,43 +842,51 @@ if(settingWebsiteInfoForm) {
   const validator = new JustValidate('#setting-website-info-form');
 
   validator
-    .addField('#websiteName', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên website!"
-      },
-    ])
-    .addField('#email', [
-      {
-        rule: 'email',
-        errorMessage: "Email không đúng định dạng!"
-      },
-    ])
+    .addField('#websiteName', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên website!"
+    }, ])
+    .addField('#email', [{
+      rule: 'email',
+      errorMessage: "Email không đúng định dạng!"
+    }, ])
     .onSuccess((event) => {
-      const websiteName = event.target.elements.namedItem("websiteName").value;
-      const phone = event.target.elements.namedItem("phone").value;
-      const email = event.target.elements.namedItem("email").value;
-      const address = event.target.elements.namedItem("address").value;
+      const websiteName = event.target.elements.namedItem("websiteName")
+        .value;
+      const phone = event.target.elements.namedItem("phone")
+        .value;
+      const email = event.target.elements.namedItem("email")
+        .value;
+      const address = event.target.elements.namedItem("address")
+        .value;
       const logo = getUploadFile("logo");
       const favicon = getUploadFile("favicon");
-      const categoryIdSection4 = event.target.elements.namedItem("categoryIdSection4").value;
+      const categoryIdSection4 = event.target.elements.namedItem("categoryIdSection4")
+        .value;
 
       // Tạo FormData
       const formData = new FormData();
       appendImageRemoval(formData);
       formData.append("websiteName", websiteName);
-      for(const field of ["bankName", "bankAccountName", "bankAccountNumber"]) formData.append(field, event.target[field].value);
+      for(const field of ["bankName", "bankAccountName", "bankAccountNumber"]) {
+        formData.append(
+          field, event.target[field].value);
+      }
       formData.append("phone", phone);
       formData.append("email", email);
       formData.append("address", address);
-      if(logo) formData.append("logo", logo);
-      if(favicon) formData.append("favicon", favicon);
+      if(logo) {
+        formData.append("logo", logo);
+      }
+      if(favicon) {
+        formData.append("favicon", favicon);
+      }
       formData.append("categoryIdSection4", categoryIdSection4);
 
       fetch(`/${pathAdmin}/setting/website-info`, {
-        method: "PATCH",
-        body: formData,
-      })
+          method: "PATCH",
+          body: formData,
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -707,8 +907,7 @@ if(settingAccountAdminCreateForm) {
   const validator = new JustValidate('#setting-account-admin-create-form');
 
   validator
-    .addField('#fullName', [
-      {
+    .addField('#fullName', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập họ tên!"
       },
@@ -723,8 +922,7 @@ if(settingAccountAdminCreateForm) {
         errorMessage: "Họ tên không được vượt quá 50 ký tự!"
       },
     ])
-    .addField('#email', [
-      {
+    .addField('#email', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -733,8 +931,7 @@ if(settingAccountAdminCreateForm) {
         errorMessage: "Email không đúng định dạng!"
       },
     ])
-    .addField('#phone', [
-      {
+    .addField('#phone', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập số điện thoại!"
       },
@@ -744,8 +941,7 @@ if(settingAccountAdminCreateForm) {
         errorMessage: "Số điện thoại không đúng định dạng!"
       },
     ])
-    .addField('#password', [
-      {
+    .addField('#password', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập mật khẩu!"
       },
@@ -776,13 +972,20 @@ if(settingAccountAdminCreateForm) {
       },
     ])
     .onSuccess((event) => {
-      const fullName = event.target.elements.namedItem("fullName").value;
-      const email = event.target.elements.namedItem("email").value;
-      const phone = event.target.elements.namedItem("phone").value;
-      const role = event.target.elements.namedItem("role").value;
-      const positionCompany = event.target.elements.namedItem("positionCompany").value;
-      const status = event.target.elements.namedItem("status").value;
-      const password = event.target.elements.namedItem("password").value;
+      const fullName = event.target.elements.namedItem("fullName")
+        .value;
+      const email = event.target.elements.namedItem("email")
+        .value;
+      const phone = event.target.elements.namedItem("phone")
+        .value;
+      const role = event.target.elements.namedItem("role")
+        .value;
+      const positionCompany = event.target.elements.namedItem("positionCompany")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
+      const password = event.target.elements.namedItem("password")
+        .value;
       const avatar = getUploadFile("avatar");
 
       // Tạo FormData
@@ -795,12 +998,14 @@ if(settingAccountAdminCreateForm) {
       formData.append("positionCompany", positionCompany);
       formData.append("status", status);
       formData.append("password", password);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
 
       fetch(`/${pathAdmin}/setting/account-admin/create`, {
-        method: "POST",
-        body: formData
-      })
+          method: "POST",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -808,7 +1013,9 @@ if(settingAccountAdminCreateForm) {
           }
 
           if(data.code == "success") {
-            if(data.code !== "success") return notify.error(data.message);
+            if(data.code !== "success") {
+              return notify.error(data.message);
+            }
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -823,8 +1030,7 @@ if(settingAccountAdminEditForm) {
   const validator = new JustValidate('#setting-account-admin-edit-form');
 
   validator
-    .addField('#fullName', [
-      {
+    .addField('#fullName', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập họ tên!"
       },
@@ -839,8 +1045,7 @@ if(settingAccountAdminEditForm) {
         errorMessage: "Họ tên không được vượt quá 50 ký tự!"
       },
     ])
-    .addField('#email', [
-      {
+    .addField('#email', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -849,8 +1054,7 @@ if(settingAccountAdminEditForm) {
         errorMessage: "Email không đúng định dạng!"
       },
     ])
-    .addField('#phone', [
-      {
+    .addField('#phone', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập số điện thoại!"
       },
@@ -860,8 +1064,7 @@ if(settingAccountAdminEditForm) {
         errorMessage: "Số điện thoại không đúng định dạng!"
       },
     ])
-    .addField('#password', [
-      {
+    .addField('#password', [{
         rule: 'minLength',
         value: 8,
         errorMessage: "Mật khẩu phải có ít nhất 8 ký tự!"
@@ -888,14 +1091,22 @@ if(settingAccountAdminEditForm) {
       },
     ])
     .onSuccess((event) => {
-      const id = event.target.elements.namedItem("id").value;
-      const fullName = event.target.elements.namedItem("fullName").value;
-      const email = event.target.elements.namedItem("email").value;
-      const phone = event.target.elements.namedItem("phone").value;
-      const role = event.target.elements.namedItem("role").value;
-      const positionCompany = event.target.elements.namedItem("positionCompany").value;
-      const status = event.target.elements.namedItem("status").value;
-      const password = event.target.elements.namedItem("password").value;
+      const id = event.target.elements.namedItem("id")
+        .value;
+      const fullName = event.target.elements.namedItem("fullName")
+        .value;
+      const email = event.target.elements.namedItem("email")
+        .value;
+      const phone = event.target.elements.namedItem("phone")
+        .value;
+      const role = event.target.elements.namedItem("role")
+        .value;
+      const positionCompany = event.target.elements.namedItem("positionCompany")
+        .value;
+      const status = event.target.elements.namedItem("status")
+        .value;
+      const password = event.target.elements.namedItem("password")
+        .value;
       const avatar = getUploadFile("avatar");
 
       // Tạo FormData
@@ -908,12 +1119,14 @@ if(settingAccountAdminEditForm) {
       formData.append("positionCompany", positionCompany);
       formData.append("status", status);
       formData.append("password", password);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
 
       fetch(`/${pathAdmin}/setting/account-admin/edit/${id}`, {
-        method: "PATCH",
-        body: formData
-      })
+          method: "PATCH",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -934,19 +1147,20 @@ if(settingRoleCreateForm) {
   const validator = new JustValidate('#setting-role-create-form');
 
   validator
-    .addField('#name', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên nhóm quyền!"
-      },
-    ])
+    .addField('#name', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên nhóm quyền!"
+    }, ])
     .onSuccess((event) => {
-      const name = event.target.elements.namedItem("name").value;
-      const description = event.target.elements.namedItem("description").value;
+      const name = event.target.elements.namedItem("name")
+        .value;
+      const description = event.target.elements.namedItem("description")
+        .value;
       const permissions = [];
 
       // permissions
-      const listInputPermission = settingRoleCreateForm.querySelectorAll(`input[name="permissions"]`);
+      const listInputPermission = settingRoleCreateForm.querySelectorAll(
+        `input[name="permissions"]`);
       listInputPermission.forEach(input => {
         if(input.checked) {
           permissions.push(input.value);
@@ -961,12 +1175,12 @@ if(settingRoleCreateForm) {
       };
 
       fetch(`/${pathAdmin}/setting/role/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -974,7 +1188,9 @@ if(settingRoleCreateForm) {
           }
 
           if(data.code == "success") {
-            if(data.code !== "success") return notify.error(data.message);
+            if(data.code !== "success") {
+              return notify.error(data.message);
+            }
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -989,20 +1205,22 @@ if(settingRoleEditForm) {
   const validator = new JustValidate('#setting-role-edit-form');
 
   validator
-    .addField('#name', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập tên nhóm quyền!"
-      },
-    ])
+    .addField('#name', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập tên nhóm quyền!"
+    }, ])
     .onSuccess((event) => {
-      const id = event.target.elements.namedItem("id").value;
-      const name = event.target.elements.namedItem("name").value;
-      const description = event.target.elements.namedItem("description").value;
+      const id = event.target.elements.namedItem("id")
+        .value;
+      const name = event.target.elements.namedItem("name")
+        .value;
+      const description = event.target.elements.namedItem("description")
+        .value;
       const permissions = [];
 
       // permissions
-      const listInputPermission = settingRoleEditForm.querySelectorAll(`input[name="permissions"]`);
+      const listInputPermission = settingRoleEditForm.querySelectorAll(
+        `input[name="permissions"]`);
       listInputPermission.forEach(input => {
         if(input.checked) {
           permissions.push(input.value);
@@ -1017,12 +1235,12 @@ if(settingRoleEditForm) {
       };
 
       fetch(`/${pathAdmin}/setting/role/edit/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -1043,8 +1261,7 @@ if(profileEditForm) {
   const validator = new JustValidate('#profile-edit-form');
 
   validator
-    .addField('#fullName', [
-      {
+    .addField('#fullName', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập họ tên!"
       },
@@ -1059,8 +1276,7 @@ if(profileEditForm) {
         errorMessage: "Họ tên không được vượt quá 50 ký tự!"
       },
     ])
-    .addField('#email', [
-      {
+    .addField('#email', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -1069,8 +1285,7 @@ if(profileEditForm) {
         errorMessage: "Email không đúng định dạng!"
       },
     ])
-    .addField('#phone', [
-      {
+    .addField('#phone', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập số điện thoại!"
       },
@@ -1081,9 +1296,12 @@ if(profileEditForm) {
       },
     ])
     .onSuccess((event) => {
-      const fullName = event.target.elements.namedItem("fullName").value;
-      const email = event.target.elements.namedItem("email").value;
-      const phone = event.target.elements.namedItem("phone").value;
+      const fullName = event.target.elements.namedItem("fullName")
+        .value;
+      const email = event.target.elements.namedItem("email")
+        .value;
+      const phone = event.target.elements.namedItem("phone")
+        .value;
       const avatar = getUploadFile("avatar");
 
       // Tạo FormData
@@ -1092,12 +1310,14 @@ if(profileEditForm) {
       formData.append("fullName", fullName);
       formData.append("email", email);
       formData.append("phone", phone);
-      if(avatar) formData.append("avatar", avatar);
+      if(avatar) {
+        formData.append("avatar", avatar);
+      }
 
       fetch(`/${pathAdmin}/profile/edit`, {
-        method: "PATCH",
-        body: formData
-      })
+          method: "PATCH",
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -1105,7 +1325,9 @@ if(profileEditForm) {
           }
 
           if(data.code == "success") {
-            if(data.code !== "success") return notify.error(data.message);
+            if(data.code !== "success") {
+              return notify.error(data.message);
+            }
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -1120,8 +1342,7 @@ if(profileChangePasswordForm) {
   const validator = new JustValidate('#profile-change-password-form');
 
   validator
-    .addField('#password', [
-      {
+    .addField('#password', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập mật khẩu mới!"
       },
@@ -1151,29 +1372,28 @@ if(profileChangePasswordForm) {
         errorMessage: "Mật khẩu phải có ít nhất một ký tự đặc biệt! (~!@#$%^&*)"
       },
     ])
-    .addField('#confirmPassword', [
-      {
-        validator: (value, fields) => {
-          const password = fields["#password"].elem.value;
-          return password == value;
-        },
-        errorMessage: "Mật khẩu xác nhận không khớp!"
-      }
-    ])
+    .addField('#confirmPassword', [{
+      validator: (value, fields) => {
+        const password = fields["#password"].elem.value;
+        return password == value;
+      },
+      errorMessage: "Mật khẩu xác nhận không khớp!"
+    }])
     .onSuccess((event) => {
-      const password = event.target.elements.namedItem("password").value;
+      const password = event.target.elements.namedItem("password")
+        .value;
 
       const dataFinal = {
         password: password
       };
 
       fetch(`/${pathAdmin}/profile/change-password`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -1195,8 +1415,8 @@ const buttonLogout = document.querySelector(".sider .inner-logout");
 if(buttonLogout) {
   buttonLogout.addEventListener("click", () => {
     fetch(`/${pathAdmin}/account/logout`, {
-      method: "POST"
-    })
+        method: "POST"
+      })
       .then(res => res.json())
       .then(data => {
         drawNotify(data.code, data.message);
@@ -1214,11 +1434,13 @@ if(listButtonDelete.length > 0) {
       const dataApi = button.getAttribute("data-api");
 
       fetch(dataApi, {
-        method: "PATCH"
-      })
+          method: "PATCH"
+        })
         .then(res => res.json())
         .then(data => {
-          if(data.code !== "success") return notify.error(data.message);
+          if(data.code !== "success") {
+            return notify.error(data.message);
+          }
           drawNotify(data.code, data.message);
           window.location.reload();
         })
@@ -1235,11 +1457,13 @@ if(listButtonUndo.length > 0) {
       const dataApi = button.getAttribute("data-api");
 
       fetch(dataApi, {
-        method: "PATCH"
-      })
+          method: "PATCH"
+        })
         .then(res => res.json())
         .then(data => {
-          if(data.code !== "success") return notify.error(data.message);
+          if(data.code !== "success") {
+            return notify.error(data.message);
+          }
           drawNotify(data.code, data.message);
           window.location.reload();
         })
@@ -1253,17 +1477,20 @@ const listButtonDestroy = document.querySelectorAll("[button-destroy]");
 if(listButtonDestroy.length > 0) {
   listButtonDestroy.forEach(button => {
     button.addEventListener("click", () => {
-      const isConfirm = confirm("Bạn có chắc chắn muốn xóa? Hành động này sẽ không thể khôi phục lại bản ghi.");
+      const isConfirm = confirm(
+        "Bạn có chắc chắn muốn xóa? Hành động này sẽ không thể khôi phục lại bản ghi.");
 
       if(isConfirm) {
         const dataApi = button.getAttribute("data-api");
 
         fetch(dataApi, {
-          method: "DELETE"
-        })
+            method: "DELETE"
+          })
           .then(res => res.json())
           .then(data => {
-            if(data.code !== "success") return notify.error(data.message);
+            if(data.code !== "success") {
+              return notify.error(data.message);
+            }
             drawNotify(data.code, data.message);
             window.location.reload();
           })
@@ -1425,15 +1652,17 @@ if(changeMulti) {
       };
 
       fetch(dataApi, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
-          if(data.code !== "success") return notify.error(data.message);
+          if(data.code !== "success") {
+            return notify.error(data.message);
+          }
           drawNotify(data.code, data.message);
           window.location.reload();
         })
@@ -1452,7 +1681,7 @@ if(search) {
       const value = search.value;
       if(value) {
         url.searchParams.delete("page");
-      url.searchParams.set("keyword", value);
+        url.searchParams.set("keyword", value);
       } else {
         url.searchParams.delete("keyword");
       }
@@ -1498,54 +1727,93 @@ if(filterCategory) {
   filterCategory.value = url.searchParams.get("category") || "";
   filterCategory.addEventListener("change", () => {
     url.searchParams.delete("page");
-    if(filterCategory.value) url.searchParams.set("category", filterCategory.value);
-    else url.searchParams.delete("category");
+    if(filterCategory.value) {
+      url.searchParams.set("category", filterCategory.value);
+    } else {
+      url.searchParams.delete("category");
+    }
     window.location.href = url.href;
   });
 }
 
 const couponAdminForm = document.querySelector("#coupon-admin-form");
-if(couponAdminForm) couponAdminForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const body = Object.fromEntries(new FormData(couponAdminForm));
-  body.expiresAt = new Date(body.expiresAt).toISOString();
-  for(const key of ["percent", "minTotal", "maxDiscount"]) body[key] = Number(body[key]);
-  try {
-    const response = await fetch(`/${pathAdmin}/coupon/save`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const data = await response.json();
-    if(data.code !== "success") return notify.error(data.message);
-    drawNotify(data.code, data.message); window.location.reload();
-  } catch { notify.error("Không thể kết nối máy chủ."); }
-});
-document.querySelectorAll(".coupon-toggle").forEach(button => button.addEventListener("click", async () => {
-  try {
-    const response = await fetch(`/${pathAdmin}/coupon/${button.dataset.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: button.dataset.status === "active" ? "inactive" : "active" }) });
-    const data = await response.json();
-    if(data.code !== "success") return notify.error(data.message);
-    window.location.reload();
-  } catch { notify.error("Không thể kết nối máy chủ."); }
-}));
+if(couponAdminForm) {
+  couponAdminForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    const body = Object.fromEntries(new FormData(couponAdminForm));
+    body.expiresAt = new Date(body.expiresAt)
+      .toISOString();
+    for(const key of ["percent", "minTotal", "maxDiscount"]) {
+      body[key] = Number(body[key]);
+    }
+    try {
+      const response = await fetch(`/${pathAdmin}/coupon/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      if(data.code !== "success") {
+        return notify.error(data.message);
+      }
+      drawNotify(data.code, data.message);
+      window.location.reload();
+    } catch {
+      notify.error("Không thể kết nối máy chủ.");
+    }
+  });
+}
+document.querySelectorAll(".coupon-toggle")
+  .forEach(button => button.addEventListener("click", async () => {
+    try {
+      const response = await fetch(`/${pathAdmin}/coupon/${button.dataset.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          status: button.dataset.status === "active" ? "inactive" : "active"
+        })
+      });
+      const data = await response.json();
+      if(data.code !== "success") {
+        return notify.error(data.message);
+      }
+      window.location.reload();
+    } catch {
+      notify.error("Không thể kết nối máy chủ.");
+    }
+  }));
 
 // Empty lists and accessible icon actions
 for(const table of document.querySelectorAll(".table-1 table, .table-2 table")) {
   const body = table.querySelector("tbody");
   if(body && !body.children.length) {
-    const row = body.insertRow(), cell = row.insertCell();
-    cell.colSpan = table.querySelectorAll("thead th").length;
-    cell.className = "empty-cell"; cell.textContent = "Chưa có dữ liệu phù hợp.";
+    const row = body.insertRow(),
+      cell = row.insertCell();
+    cell.colSpan = table.querySelectorAll("thead th")
+      .length;
+    cell.className = "empty-cell";
+    cell.textContent = "Chưa có dữ liệu phù hợp.";
   }
 }
-document.querySelectorAll(".inner-buttons .inner-edit, .inner-buttons .inner-delete").forEach(button => {
-  const label = button.classList.contains("inner-delete") ? "Xóa bản ghi" : "Chỉnh sửa bản ghi";
-  button.setAttribute("aria-label", label); button.title = label;
-});
+document.querySelectorAll(".inner-buttons .inner-edit, .inner-buttons .inner-delete")
+  .forEach(button => {
+    const label = button.classList.contains("inner-delete") ? "Xóa bản ghi" : "Chỉnh sửa bản ghi";
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  });
 
 // Số tour đã chọn trên trang hiện tại.
 const updateSelectionCount = () => {
   const label = document.querySelector(".selection-count");
   if(label) {
-    const count = document.querySelectorAll("[check-item]:checked").length;
+    const count = document.querySelectorAll("[check-item]:checked")
+      .length;
     label.textContent = count ? `Đã chọn ${count} tour` : "Chọn tour để thao tác hàng loạt";
   }
 };
-document.querySelectorAll("[check-all], [check-item]").forEach(input => input.addEventListener("change", updateSelectionCount));
+document.querySelectorAll("[check-all], [check-item]")
+  .forEach(input => input.addEventListener("change", updateSelectionCount));

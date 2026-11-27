@@ -1,8 +1,11 @@
-const { checkPermission } = require("../../middlewares/admin/auth.middleware");
-const router = require("express").Router();
+const {
+  checkPermission
+} = require("../../middlewares/admin/auth.middleware");
+const router = require("express")
+  .Router();
 router.use(checkPermission("setting-manage"));
 const settingController = require("../../controllers/admin/setting.controller");
-const multer  = require('multer');
+const multer = require('multer');
 const cloudinaryHelper = require("../../helpers/cloudinary.helper");
 const upload = multer(cloudinaryHelper.options);
 
@@ -12,9 +15,14 @@ router.get('/website-info', settingController.websiteInfo)
 
 router.patch(
   '/website-info',
-  upload.fields([
-    { name: 'logo', maxCount: 1 },
-    { name: 'favicon', maxCount: 1 }
+  upload.fields([{
+      name: 'logo',
+      maxCount: 1
+    },
+    {
+      name: 'favicon',
+      maxCount: 1
+    }
   ]),
   settingController.websiteInfoPatch
 )

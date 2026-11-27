@@ -1,8 +1,11 @@
-const { checkPermission } = require("../../middlewares/admin/auth.middleware");
-const router = require("express").Router();
+const {
+  checkPermission
+} = require("../../middlewares/admin/auth.middleware");
+const router = require("express")
+  .Router();
 const categoryController = require("../../controllers/admin/category.controller");
 const categoryValidate = require("../../validates/admin/category.validate");
-const multer  = require('multer');
+const multer = require('multer');
 const cloudinaryHelper = require("../../helpers/cloudinary.helper");
 const upload = multer(cloudinaryHelper.options);
 

@@ -1,5 +1,6 @@
 const rateLimit = require("../../middlewares/admin/rate-limit.middleware");
-const router = require("express").Router();
+const router = require("express")
+  .Router();
 const accountController = require("../../controllers/admin/account.controller");
 const accountValidate = require("../../validates/admin/account.validate")
 const authMiddleware = require("../../middlewares/admin/auth.middleware")

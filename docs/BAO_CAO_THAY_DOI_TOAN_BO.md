@@ -366,3 +366,7 @@ Bổ sung kiểm thử cho liên kết trực tiếp, dữ liệu liên hệ/nh�
 Bản bổ sung điều hướng: [`4d47f4a`](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/commit/4d47f4af4ed0d8a3ab8d24a7848dbbe3e37d1547). [CI bản bổ sung — đạt](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45954343033). Các kết quả 45 test ở mục 6 thuộc mốc kiểm tra trước bổ sung này; bộ test hiện có 47 trường hợp.
 
 Sau khi được chủ tài khoản xác nhận rõ phạm vi cấp quyền, đã tạo nhóm quản trị đầy đủ 18 quyền riêng và gán cho đúng một tài khoản quản trị được chỉ định trong database project-5. Đã đọc lại xác nhận quyền mới và nhóm cũ không đổi. Đây là cập nhật tài khoản riêng được phê duyệt, không phải cơ chế tự động nâng quyền trong ứng dụng.
+
+## 10. Sửa hiển thị dữ liệu cũ và phong cách code
+
+[Báo cáo bổ sung](SUA_HIEN_THI_VA_PHONG_CACH_CODE.md) ghi nguyên nhân từ dữ liệu thật, việc tách điều kiện xem/đặt tour và trình bày lại 69 file JavaScript theo code gốc. Quy tắc hiển thị trong mục bổ sung thay cho điều kiện ẩn tour thiếu lịch/hết chỗ ở các mục lịch sử phía trên. Có 49 test tích hợp sau đợt này. Số file trong các mục trước là snapshot của lần bàn giao trước; CSV được cập nhật theo trạng thái mới.

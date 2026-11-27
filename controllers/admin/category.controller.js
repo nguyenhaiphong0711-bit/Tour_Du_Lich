@@ -23,13 +23,18 @@ module.exports.list = async (req, res) => {
 
   // Lọc theo Ngày tạo
   const filterDate = {};
-  if(moment(req.query.startDate, "YYYY-MM-DD", true).isValid()) {
-    const startDate = moment(req.query.startDate).toDate();
+  if(moment(req.query.startDate, "YYYY-MM-DD", true)
+    .isValid()) {
+    const startDate = moment(req.query.startDate)
+      .toDate();
     filterDate.$gte = startDate;
     find.createdAt = filterDate;
   }
-  if(moment(req.query.endDate, "YYYY-MM-DD", true).isValid()) {
-    const endDate = moment(req.query.endDate).endOf("day").toDate();
+  if(moment(req.query.endDate, "YYYY-MM-DD", true)
+    .isValid()) {
+    const endDate = moment(req.query.endDate)
+      .endOf("day")
+      .toDate();
     filterDate.$lte = endDate;
     find.createdAt = filterDate;
   }
@@ -38,14 +43,20 @@ module.exports.list = async (req, res) => {
   // Tìm kiếm
   if(req.query.keyword) {
     const keyword = slugify(req.query.keyword);
-    const keywordRegex = new RegExp(require("../../helpers/data.helper").escapeRegex(keyword), "i");
+    const keywordRegex = new RegExp(require("../../helpers/data.helper")
+      .escapeRegex(keyword), "i");
     find.slug = keywordRegex;
   }
   // Hết Tìm kiếm
 
   // Phân trang
-  const pagination = await require("../../helpers/data.helper").pagination(Category, find, req.query);
-  const { limit: limitItems, page, skip } = pagination;
+  const pagination = await require("../../helpers/data.helper")
+    .pagination(Category, find, req.query);
+  const {
+    limit: limitItems,
+    page,
+    skip
+  } = pagination;
   // Hết Phân trang
 
   const categoryList = await Category
@@ -56,9 +67,18 @@ module.exports.list = async (req, res) => {
     .limit(limitItems)
     .skip(skip)
 
-  const authorIds = [...new Set(categoryList.flatMap(item => [item.createdBy, item.updatedBy, item.deletedBy]).filter(id => /^[a-f0-9]{24}$/i.test(id || "")))];
-  const authors = new Map((await AccountAdmin.find({ _id: { $in: authorIds } }).select("fullName")).map(item => [item.id, item]));
-  for (const item of categoryList) {
+  const authorIds = [...new Set(categoryList.flatMap(item => [item.createdBy, item.updatedBy,
+      item.deletedBy
+    ])
+    .filter(id => /^[a-f0-9]{24}$/i.test(id || "")))];
+  const authors = new Map((await AccountAdmin.find({
+        _id: {
+          $in: authorIds
+        }
+      })
+      .select("fullName"))
+    .map(item => [item.id, item]));
+  for(const item of categoryList) {
     if(item.createdBy) {
       const infoAccount = authors.get(item.createdBy)
       if(infoAccount) {
@@ -73,8 +93,10 @@ module.exports.list = async (req, res) => {
       }
     }
 
-    item.createdAtFormat = moment(item.createdAt).format("HH:mm - DD/MM/YYYY");
-    item.updatedAtFormat = moment(item.updatedAt).format("HH:mm - DD/MM/YYYY");
+    item.createdAtFormat = moment(item.createdAt)
+      .format("HH:mm - DD/MM/YYYY");
+    item.updatedAtFormat = moment(item.updatedAt)
+      .format("HH:mm - DD/MM/YYYY");
   }
 
   // Danh sách tài khoản admin
@@ -91,7 +113,13 @@ module.exports.list = async (req, res) => {
 }
 
 module.exports.create = async (req, res) => {
-  const categoryList = await Category.find({ deleted: false }).sort({ position: -1, _id: 1 });
+  const categoryList = await Category.find({
+      deleted: false
+    })
+    .sort({
+      position: -1,
+      _id: 1
+    });
 
   const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
@@ -136,7 +164,13 @@ module.exports.edit = async (req, res) => {
       return;
     }
 
-    const categoryList = await Category.find({ deleted: false }).sort({ position: -1, _id: 1 });
+    const categoryList = await Category.find({
+        deleted: false
+      })
+      .sort({
+        position: -1,
+        _id: 1
+      });
 
     const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
@@ -170,8 +204,17 @@ module.exports.editPatch = async (req, res) => {
     }
     delete req.body.clearAvatar;
 
-    const result = await Category.updateOne({ _id: id, deleted: false }, req.body);
-    if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Danh mục không tồn tại hoặc đã xóa." });
+    const result = await Category.updateOne({
+      _id: id,
+      deleted: false
+    }, req.body);
+    if(!result.matchedCount) {
+      return res.status(404)
+        .json({
+          code: "error",
+          message: "Danh mục không tồn tại hoặc đã xóa."
+        });
+    }
 
     res.json({
       code: "success",
@@ -190,14 +233,21 @@ module.exports.deletePatch = async (req, res) => {
     const id = req.params.id;
 
     const result = await Category.updateOne({
-      _id: id, deleted: false
+      _id: id,
+      deleted: false
     }, {
       deleted: true,
       deletedAt: Date.now(),
       deletedBy: req.account.id
     });
 
-    if(!result.matchedCount) return res.status(404).json({ code: "error", message: "Danh mục không tồn tại hoặc đã xóa." });
+    if(!result.matchedCount) {
+      return res.status(404)
+        .json({
+          code: "error",
+          message: "Danh mục không tồn tại hoặc đã xóa."
+        });
+    }
     res.json({
       code: "success",
       message: "Xóa danh mục thành công!"
@@ -212,18 +262,35 @@ module.exports.deletePatch = async (req, res) => {
 
 module.exports.changeMultiPatch = async (req, res) => {
   try {
-    const { value, ids } = req.body;
-    const action = ["active", "inactive"].includes(value) ? "edit" : ["undo"].includes(value) ? "trash" : "delete";
-    if(!req.permissions.includes("category-" + action)) return res.status(403).json({ code: "error", message: "Không có quyền!" });
-    if(!Array.isArray(ids) || !ids.length || ids.length > 100 || ids.some(id => !/^[a-f0-9]{24}$/i.test(id))) {
-      return res.status(400).json({ code: "error", message: "Chọn từ 1 đến 100 bản ghi hợp lệ." });
+    const {
+      value,
+      ids
+    } = req.body;
+    const action = ["active", "inactive"].includes(value) ? "edit" : ["undo"].includes(value) ?
+      "trash" : "delete";
+    if(!req.permissions.includes("category-" + action)) {
+      return res.status(403)
+        .json({
+          code: "error",
+          message: "Không có quyền!"
+        });
+    }
+    if(!Array.isArray(ids) || !ids.length || ids.length > 100 || ids.some(id => !
+        /^[a-f0-9]{24}$/i.test(id))) {
+      return res.status(400)
+        .json({
+          code: "error",
+          message: "Chọn từ 1 đến 100 bản ghi hợp lệ."
+        });
     }
 
-    switch (value) {
+    switch(value) {
       case "active":
       case "inactive":
         await Category.updateMany({
-          _id: { $in: ids }
+          _id: {
+            $in: ids
+          }
         }, {
           status: value
         })
@@ -234,7 +301,9 @@ module.exports.changeMultiPatch = async (req, res) => {
         break;
       case "delete":
         await Category.updateMany({
-          _id: { $in: ids }
+          _id: {
+            $in: ids
+          }
         }, {
           deleted: true,
           deletedAt: Date.now(),

@@ -3,21 +3,42 @@ let cartCache = [];
 const readCart = () => {
   try {
     const data = JSON.parse(localStorage.getItem("cart") || "[]");
-    cartCache = Array.isArray(data) ? data.filter(item => item && /^[a-f0-9]{24}$/i.test(item.tourId) && /^[a-f0-9]{24}$/i.test(item.locationFrom)).slice(0, 100).map(item => ({
-      tourId: item.tourId, locationFrom: item.locationFrom, checked: item.checked === true,
-      quantityAdult: Number.isSafeInteger(item.quantityAdult) && item.quantityAdult >= 0 ? item.quantityAdult : 0,
-      quantityChildren: Number.isSafeInteger(item.quantityChildren) && item.quantityChildren >= 0 ? item.quantityChildren : 0,
-      quantityBaby: Number.isSafeInteger(item.quantityBaby) && item.quantityBaby >= 0 ? item.quantityBaby : 0
-    })) : [];
-  } catch(error) { /* Giữ giỏ tạm nếu trình duyệt không cho truy cập bộ nhớ. */ }
+    cartCache = Array.isArray(data) ? data.filter(item => item && /^[a-f0-9]{24}$/i.test(item
+        .tourId) && /^[a-f0-9]{24}$/i.test(item.locationFrom))
+      .slice(0, 100)
+      .map(item => ({
+        tourId: item.tourId,
+        locationFrom: item.locationFrom,
+        checked: item.checked === true,
+        quantityAdult: Number.isSafeInteger(item.quantityAdult) && item.quantityAdult >= 0 ?
+          item.quantityAdult : 0,
+        quantityChildren: Number.isSafeInteger(item.quantityChildren) && item
+          .quantityChildren >= 0 ? item.quantityChildren : 0,
+        quantityBaby: Number.isSafeInteger(item.quantityBaby) && item.quantityBaby >= 0 ? item
+          .quantityBaby : 0
+      })) : [];
+  } catch (error) {
+    /* Giữ giỏ tạm nếu trình duyệt không cho truy cập bộ nhớ. */
+  }
   return cartCache;
 };
 const saveCart = items => {
   cartCache = items;
-  try { localStorage.setItem("cart", JSON.stringify(items)); } catch(error) { /* Giỏ vẫn dùng được trong trang hiện tại. */ }
+  try {
+    localStorage.setItem("cart", JSON.stringify(items));
+  } catch (error) {
+    /* Giỏ vẫn dùng được trong trang hiện tại. */
+  }
 };
 
-const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
+const escapeHtml = (value) => String(value ?? "")
+  .replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  } [character]));
 let appliedCoupon = "";
 let couponDiscount = 0;
 
@@ -66,7 +87,8 @@ if(boxAddressSection1) {
   const listItem = boxAddressSection1.querySelectorAll(".inner-suggest-list .inner-item");
   listItem.forEach(item => {
     item.addEventListener("mousedown", () => {
-      const title = item.querySelector(".inner-item-title").innerHTML.trim();
+      const title = item.querySelector(".inner-item-title")
+        .innerHTML.trim();
       if(title) {
         input.value = title;
       }
@@ -298,8 +320,7 @@ if(emailForm) {
   const validator = new JustValidate('#email-form');
 
   validator
-    .addField('#email-input', [
-      {
+    .addField('#email-input', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập email!"
       },
@@ -316,12 +337,12 @@ if(emailForm) {
       };
 
       fetch(`/contact/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataFinal)
-      })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataFinal)
+        })
         .then(res => res.json())
         .then(data => {
           if(data.code == "error") {
@@ -343,20 +364,38 @@ if(couponForm) {
   const validator = new JustValidate('#coupon-form');
 
   validator
-    .addField('#coupon-input', [
-      {
-        rule: 'required',
-        errorMessage: "Vui lòng nhập mã giảm giá!"
-      },
-    ])
+    .addField('#coupon-input', [{
+      rule: 'required',
+      errorMessage: "Vui lòng nhập mã giảm giá!"
+    }, ])
     .onSuccess((event) => {
       const coupon = event.target.coupon.value;
-      fetch("/cart/coupon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ couponCode: coupon, items: readCart().filter(item => item.checked) }) })
-        .then(res => res.json()).then(data => {
-          if(data.code !== "success") { appliedCoupon = ""; couponDiscount = 0; notify.error(data.message); }
-          else { appliedCoupon = coupon; couponDiscount = data.discount; notify.success("Đã áp dụng mã giảm giá. Giá trị sẽ được kiểm tra lại khi đặt tour."); }
+      fetch("/cart/coupon", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            couponCode: coupon,
+            items: readCart()
+              .filter(item => item.checked)
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if(data.code !== "success") {
+            appliedCoupon = "";
+            couponDiscount = 0;
+            notify.error(data.message);
+          } else {
+            appliedCoupon = coupon;
+            couponDiscount = data.discount;
+            notify.success(
+              "Đã áp dụng mã giảm giá. Giá trị sẽ được kiểm tra lại khi đặt tour.");
+          }
           drawCart();
-        }).catch(() => notify.error("Không thể kiểm tra mã giảm giá."));
+        })
+        .catch(() => notify.error("Không thể kiểm tra mã giảm giá."));
     })
 }
 // End Coupon Form
@@ -367,8 +406,7 @@ if(orderForm) {
   const validator = new JustValidate('#order-form');
 
   validator
-    .addField('#fullname-input', [
-      {
+    .addField('#fullname-input', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập họ tên!"
       },
@@ -383,8 +421,7 @@ if(orderForm) {
         errorMessage: "Họ tên không được vượt quá 50 ký tự!"
       },
     ])
-    .addField('#phone-input', [
-      {
+    .addField('#phone-input', [{
         rule: 'required',
         errorMessage: "Vui lòng nhập số điện thoại!"
       },
@@ -402,7 +439,8 @@ if(orderForm) {
 
       let cart = readCart();
       cart = cart.filter(item => {
-        return (item.checked == true) && (item.quantityAdult > 0 || item.quantityChildren > 0 || item.quantityBaby > 0);
+        return (item.checked == true) && (item.quantityAdult > 0 || item.quantityChildren >
+          0 || item.quantityBaby > 0);
       })
 
       if(cart.length > 0) {
@@ -416,12 +454,12 @@ if(orderForm) {
         };
 
         fetch(`/order/create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(dataFinal)
-        })
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dataFinal)
+          })
           .then(res => res.json())
           .then(data => {
             if(data.code == "error") {
@@ -431,23 +469,27 @@ if(orderForm) {
             if(data.code == "success") {
               // Cập nhật giỏ hàng
               let cart = readCart();
-              const placed = new Set(dataFinal.items.map(item => item.tourId + ":" + item.locationFrom));
+              const placed = new Set(dataFinal.items.map(item => item.tourId + ":" + item
+                .locationFrom));
               cart = cart.filter(item => !placed.has(item.tourId + ":" + item.locationFrom));
               saveCart(cart);
 
-              switch (paymentMethod) {
+              switch(paymentMethod) {
                 case "money":
                 case "bank":
                   // Chuyển sang trang đặt hàng thành công
-                  window.location.href = `/order/success?orderCode=${data.orderCode}&phone=${data.phone}`;
+                  window.location.href =
+                    `/order/success?orderCode=${data.orderCode}&phone=${data.phone}`;
                   break;
                 case "zalopay":
                   // Chuyển sang trang thanh toán bằng ZaloPay
-                  window.location.href = `/order/payment-zalopay?orderCode=${data.orderCode}&phone=${data.phone}`;
+                  window.location.href =
+                    `/order/payment-zalopay?orderCode=${data.orderCode}&phone=${data.phone}`;
                   break;
                 case "vnpay":
                   // Chuyển sang trang thanh toán bằng VNPay
-                  window.location.href = `/order/payment-vnpay?orderCode=${data.orderCode}&phone=${data.phone}`;
+                  window.location.href =
+                    `/order/payment-vnpay?orderCode=${data.orderCode}&phone=${data.phone}`;
                   break;
               }
 
@@ -493,8 +535,9 @@ if(boxFilter) {
   ];
 
   button.addEventListener("click", () => {
-    for (const item of filterList) {
-      const value = document.querySelector(`[name="${item}"]`).value;
+    for(const item of filterList) {
+      const value = document.querySelector(`[name="${item}"]`)
+        .value;
       if(value) {
         url.searchParams.set(item, value);
       } else {
@@ -506,10 +549,11 @@ if(boxFilter) {
 
   // Hiển thị giá trị mặc định
   const urlCurrent = new URL(window.location.href);
-  for (const item of filterList) {
+  for(const item of filterList) {
     const valueCurrent = urlCurrent.searchParams.get(item);
     if(valueCurrent) {
-      boxFilter.querySelector(`[name="${item}"]`).value = valueCurrent;
+      boxFilter.querySelector(`[name="${item}"]`)
+        .value = valueCurrent;
     }
   }
 }
@@ -531,8 +575,9 @@ if(formSearch) {
   formSearch.addEventListener("submit", (event) => {
     event.preventDefault(); // Ngăn chặn hành vi mặc định là load lại trang
 
-    for (const item of filterList) {
-      const value = formSearch.querySelector(`[name="${item}"]`).value;
+    for(const item of filterList) {
+      const value = formSearch.querySelector(`[name="${item}"]`)
+        .value;
       if(value) {
         url.searchParams.set(item, value);
       } else {
@@ -561,7 +606,7 @@ drawMiniCart();
 
 // Box Tour Detail
 const boxTourDetail = document.querySelector(".box-tour-detail");
-if(boxTourDetail) {
+if(boxTourDetail && boxTourDetail.querySelector(".inner-button-add-cart")) {
   const listInputQuantity = boxTourDetail.querySelectorAll("[input-quantity]");
   const elementTotalPrice = boxTourDetail.querySelector("[total-price]");
 
@@ -604,10 +649,14 @@ if(boxTourDetail) {
   const tourId = buttonAddToCart.getAttribute("tour-id");
 
   buttonAddToCart.addEventListener("click", () => {
-    const locationFrom = boxTourDetail.querySelector(`[name="locationFrom"]`).value;
-    const quantityAdult = parseInt(boxTourDetail.querySelector(`[name="quantityAdult"]`).value);
-    const quantityChildren = parseInt(boxTourDetail.querySelector(`[name="quantityChildren"]`).value);
-    const quantityBaby = parseInt(boxTourDetail.querySelector(`[name="quantityBaby"]`).value);
+    const locationFrom = boxTourDetail.querySelector(`[name="locationFrom"]`)
+      .value;
+    const quantityAdult = parseInt(boxTourDetail.querySelector(`[name="quantityAdult"]`)
+      .value);
+    const quantityChildren = parseInt(boxTourDetail.querySelector(`[name="quantityChildren"]`)
+      .value);
+    const quantityBaby = parseInt(boxTourDetail.querySelector(`[name="quantityBaby"]`)
+      .value);
 
     if(quantityAdult > 0 || quantityChildren > 0 || quantityBaby > 0) {
       const item = {
@@ -637,10 +686,14 @@ if(boxTourDetail) {
   const cart = readCart();
   const existItem = cart.find(item => item.tourId == tourId);
   if(existItem) {
-    boxTourDetail.querySelector(`[name="locationFrom"]`).value = existItem.locationFrom;
-    boxTourDetail.querySelector(`[name="quantityAdult"]`).value = existItem.quantityAdult;
-    boxTourDetail.querySelector(`[name="quantityChildren"]`).value = existItem.quantityChildren;
-    boxTourDetail.querySelector(`[name="quantityBaby"]`).value = existItem.quantityBaby;
+    boxTourDetail.querySelector(`[name="locationFrom"]`)
+      .value = existItem.locationFrom;
+    boxTourDetail.querySelector(`[name="quantityAdult"]`)
+      .value = existItem.quantityAdult;
+    boxTourDetail.querySelector(`[name="quantityChildren"]`)
+      .value = existItem.quantityChildren;
+    boxTourDetail.querySelector(`[name="quantityBaby"]`)
+      .value = existItem.quantityBaby;
   }
 }
 // End Box Tour Detail
@@ -650,12 +703,12 @@ const drawCart = () => {
   const cart = JSON.stringify(readCart());
 
   fetch(`/cart/detail`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: cart
-  })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: cart
+    })
     .then(res => res.json())
     .then(data => {
       if(data.code == "error") {
@@ -668,7 +721,8 @@ const drawCart = () => {
 
         const htmlArray = data.cart.map(item => {
           if(item.checked) {
-            subTotal += (item.quantityAdult * item.priceNewAdult + item.quantityChildren * item.priceNewChildren + item.quantityBaby * item.priceNewBaby);
+            subTotal += (item.quantityAdult * item.priceNewAdult + item.quantityChildren *
+              item.priceNewChildren + item.quantityBaby * item.priceNewBaby);
           }
           return `
             <div class="inner-tour-item">
@@ -754,10 +808,13 @@ const drawCart = () => {
         const elementTotal = pageCart.querySelector("[cart-total]");
         elementTotal.innerHTML = total.toLocaleString("vi-VN");
         const elementDiscount = pageCart.querySelector("[cart-discount]");
-        if(elementDiscount) elementDiscount.textContent = "-" + discount.toLocaleString("vi-VN");
+        if(elementDiscount) {
+          elementDiscount.textContent = "-" + discount.toLocaleString("vi-VN");
+        }
 
         // Sự kiện cập nhật số lượng
-        const listInputQuantity = elementCartList.querySelectorAll(`.inner-tour-item .inner-quantity input`);
+        const listInputQuantity = elementCartList.querySelectorAll(
+          `.inner-tour-item .inner-quantity input`);
         listInputQuantity.forEach(input => {
           input.addEventListener("input", () => {
             const tourId = input.getAttribute("tour-id");
@@ -781,7 +838,8 @@ const drawCart = () => {
             const cart = readCart();
             const indexItem = cart.findIndex(item => item.tourId == tourId);
             if(indexItem != -1) {
-              appliedCoupon = ""; couponDiscount = 0;
+              appliedCoupon = "";
+              couponDiscount = 0;
               cart[indexItem][fieldName] = quantity;
               saveCart(cart);
               drawCart();
@@ -795,7 +853,8 @@ const drawCart = () => {
           button.addEventListener("click", () => {
             const tourId = button.getAttribute("tour-id");
             let cart = readCart();
-            appliedCoupon = ""; couponDiscount = 0;
+            appliedCoupon = "";
+            couponDiscount = 0;
             cart = cart.filter(item => item.tourId != tourId);
             saveCart(cart);
             notify.success("Đã xóa tour khỏi giỏ hàng!");
@@ -813,7 +872,8 @@ const drawCart = () => {
             const cart = readCart();
             const indexItem = cart.findIndex(item => item.tourId == tourId);
             if(indexItem != -1) {
-              appliedCoupon = ""; couponDiscount = 0;
+              appliedCoupon = "";
+              couponDiscount = 0;
               cart[indexItem]["checked"] = checked;
               saveCart(cart);
               drawCart();

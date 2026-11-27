@@ -144,4 +144,7 @@ block main
               .inner-price
                 span(total-price) #{tourDetail.priceNewAdult.toLocaleString("vi-VN")}
                 span đ
-            button.inner-button-add-cart(tour-id=tourDetail.id) Thêm Vào Giỏ Hàng
+            if tourDetail.canBook && tourDetail.cityList.length
+              button.inner-button-add-cart(tour-id=tourDetail.id) Thêm Vào Giỏ Hàng
+            else
+              p Tour hiện chưa nhận đặt chỗ. Vui lòng liên hệ để được tư vấn lịch khởi hành.
