@@ -1,3 +1,4 @@
+const { pagination, escapeRegex } = require("../../helpers/data.helper");
 const Category = require("../../models/category.model");
 const categoryHelper = require("../../helpers/category.helper");
 const City = require("../../models/city.model");
@@ -6,30 +7,32 @@ const AccountAdmin = require("../../models/account-admin.model");
 const moment = require('moment');
 
 module.exports.list = async (req, res) => {
-  const find = {
-    deleted: false
-  };
+  const find = { deleted: false };
+  if(["active", "inactive"].includes(req.query.status)) find.status = req.query.status;
+  if(/^[a-f0-9]{24}$/i.test(req.query.category || "")) find.category = req.query.category;
+  if(/^[a-f0-9]{24}$/i.test(req.query.createdBy || "")) find.createdBy = req.query.createdBy;
+  if(req.query.keyword) find.name = new RegExp(escapeRegex(String(req.query.keyword).slice(0, 100)), "i");
+  if(req.query.startDate || req.query.endDate) {
+    find.createdAt = {};
+    if(moment(req.query.startDate, "YYYY-MM-DD", true).isValid()) find.createdAt.$gte = moment(req.query.startDate).startOf("day").toDate();
+    if(moment(req.query.endDate, "YYYY-MM-DD", true).isValid()) find.createdAt.$lte = moment(req.query.endDate).endOf("day").toDate();
+  }
 
-  const tourList = await Tour
-    .find(find)
-    .sort({
-      position: "desc"
-    })
+  const pageInfo = await pagination(Tour, find, req.query);
+  const tourList = await Tour.find(find).sort({ position: -1, _id: 1 }).skip(pageInfo.skip).limit(pageInfo.limit);
 
+  const authorIds = [...new Set(tourList.flatMap(item => [item.createdBy, item.updatedBy, item.deletedBy]).filter(id => /^[a-f0-9]{24}$/i.test(id || "")))];
+  const authors = new Map((await AccountAdmin.find({ _id: { $in: authorIds } }).select("fullName")).map(item => [item.id, item]));
   for (const item of tourList) {
     if(item.createdBy) {
-      const infoAccount = await AccountAdmin.findOne({
-        _id: item.createdBy
-      })
+      const infoAccount = authors.get(item.createdBy)
       if(infoAccount) {
         item.createdByFullName = infoAccount.fullName;
       }
     }
 
     if(item.updatedBy) {
-      const infoAccount = await AccountAdmin.findOne({
-        _id: item.updatedBy
-      })
+      const infoAccount = authors.get(item.updatedBy)
       if(infoAccount) {
         item.updatedByFullName = infoAccount.fullName;
       }
@@ -41,13 +44,17 @@ module.exports.list = async (req, res) => {
 
   res.render("admin/pages/tour-list", {
     pageTitle: "Quản lý tour",
+    categoryList: await Category.find({ deleted: false, status: "active" }).sort({ position: -1 }),
+    accountAdminList: await AccountAdmin.find({ deleted: false }).select("fullName"),
+    pagination: pageInfo,
+    listCount: tourList.length,
     tourList: tourList
   });
 }
 
 module.exports.create = async (req, res) => {
-  const categoryList = await Category.find({});
-  
+  const categoryList = await Category.find({ deleted: false, status: "active" }).sort({ position: -1, _id: 1 });
+
   const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
   const cityList = await City.find({});
@@ -64,26 +71,22 @@ module.exports.trash = async (req, res) => {
     deleted: true
   };
 
-  const tourList = await Tour
-    .find(find)
-    .sort({
-      deletedAt: "desc"
-    })
+  if(req.query.keyword) find.name = new RegExp(escapeRegex(String(req.query.keyword).slice(0, 100)), "i");
+  const pageInfo = await pagination(Tour, find, req.query);
+  const tourList = await Tour.find(find).sort({ deletedAt: -1 }).skip(pageInfo.skip).limit(pageInfo.limit);
 
+  const authorIds = [...new Set(tourList.flatMap(item => [item.createdBy, item.updatedBy, item.deletedBy]).filter(id => /^[a-f0-9]{24}$/i.test(id || "")))];
+  const authors = new Map((await AccountAdmin.find({ _id: { $in: authorIds } }).select("fullName")).map(item => [item.id, item]));
   for (const item of tourList) {
     if(item.createdBy) {
-      const infoAccount = await AccountAdmin.findOne({
-        _id: item.createdBy
-      })
+      const infoAccount = authors.get(item.createdBy)
       if(infoAccount) {
         item.createdByFullName = infoAccount.fullName;
       }
     }
 
     if(item.deletedBy) {
-      const infoAccount = await AccountAdmin.findOne({
-        _id: item.deletedBy
-      })
+      const infoAccount = authors.get(item.deletedBy)
       if(infoAccount) {
         item.deletedByFullName = infoAccount.fullName;
       }
@@ -92,9 +95,10 @@ module.exports.trash = async (req, res) => {
     item.createdAtFormat = moment(item.createdAt).format("HH:mm - DD/MM/YYYY");
     item.deletedAtFormat = moment(item.deletedAt).format("HH:mm - DD/MM/YYYY");
   }
-  
+
   res.render("admin/pages/tour-trash", {
     pageTitle: "Thùng rác tour",
+    pagination: pageInfo, listCount: tourList.length,
     tourList: tourList
   });
 }
@@ -108,7 +112,7 @@ module.exports.createPost = async (req, res) => {
       })
       return;
     }
-    
+
     if(req.body.position) {
       req.body.position = parseInt(req.body.position);
     } else {
@@ -119,9 +123,9 @@ module.exports.createPost = async (req, res) => {
     req.body.priceAdult = req.body.priceAdult ? parseInt(req.body.priceAdult) : 0;
     req.body.priceChildren = req.body.priceChildren ? parseInt(req.body.priceChildren) : 0;
     req.body.priceBaby = req.body.priceBaby ? parseInt(req.body.priceBaby) : 0;
-    req.body.priceNewAdult = req.body.priceNewAdult ? parseInt(req.body.priceNewAdult) : req.body.priceAdult;
-    req.body.priceNewChildren = req.body.priceNewChildren ? parseInt(req.body.priceNewChildren) : req.body.priceChildren;
-    req.body.priceNewBaby = req.body.priceNewBaby ? parseInt(req.body.priceNewBaby) : req.body.priceBaby;
+    req.body.priceNewAdult = req.body.priceNewAdult !== "" && req.body.priceNewAdult !== undefined ? parseInt(req.body.priceNewAdult) : req.body.priceAdult;
+    req.body.priceNewChildren = req.body.priceNewChildren !== "" && req.body.priceNewChildren !== undefined ? parseInt(req.body.priceNewChildren) : req.body.priceChildren;
+    req.body.priceNewBaby = req.body.priceNewBaby !== "" && req.body.priceNewBaby !== undefined ? parseInt(req.body.priceNewBaby) : req.body.priceBaby;
     req.body.stockAdult = req.body.stockAdult ? parseInt(req.body.stockAdult) : 0;
     req.body.stockChildren = req.body.stockChildren ? parseInt(req.body.stockChildren) : 0;
     req.body.stockBaby = req.body.stockBaby ? parseInt(req.body.stockBaby) : 0;
@@ -176,8 +180,8 @@ module.exports.edit = async (req, res) => {
       tourDetail.departureDateFormat = moment(tourDetail.departureDate).format("YYYY-MM-DD");
     }
 
-    const categoryList = await Category.find({});
-  
+    const categoryList = await Category.find({ deleted: false, status: "active" }).sort({ position: -1, _id: 1 });
+
     const categoryTree = categoryHelper.buildCategoryTree(categoryList, "");
 
     const cityList = await City.find({});
@@ -204,20 +208,22 @@ module.exports.editPatch = async (req, res) => {
     }
 
     const id = req.params.id;
+    const updatedAt = new Date(req.body.updatedAt);
+    if(!req.body.updatedAt || Number.isNaN(updatedAt.getTime())) return res.status(400).json({ code: "error", message: "Vui lòng tải lại biểu mẫu trước khi lưu." });
+    delete req.body.updatedAt;
 
     if(req.body.position) {
       req.body.position = parseInt(req.body.position);
     } else {
-      const totalRecord = await Tour.countDocuments({});
-      req.body.position = totalRecord + 1;
+      delete req.body.position;
     }
 
     req.body.priceAdult = req.body.priceAdult ? parseInt(req.body.priceAdult) : 0;
     req.body.priceChildren = req.body.priceChildren ? parseInt(req.body.priceChildren) : 0;
     req.body.priceBaby = req.body.priceBaby ? parseInt(req.body.priceBaby) : 0;
-    req.body.priceNewAdult = req.body.priceNewAdult ? parseInt(req.body.priceNewAdult) : req.body.priceAdult;
-    req.body.priceNewChildren = req.body.priceNewChildren ? parseInt(req.body.priceNewChildren) : req.body.priceChildren;
-    req.body.priceNewBaby = req.body.priceNewBaby ? parseInt(req.body.priceNewBaby) : req.body.priceBaby;
+    req.body.priceNewAdult = req.body.priceNewAdult !== "" && req.body.priceNewAdult !== undefined ? parseInt(req.body.priceNewAdult) : req.body.priceAdult;
+    req.body.priceNewChildren = req.body.priceNewChildren !== "" && req.body.priceNewChildren !== undefined ? parseInt(req.body.priceNewChildren) : req.body.priceChildren;
+    req.body.priceNewBaby = req.body.priceNewBaby !== "" && req.body.priceNewBaby !== undefined ? parseInt(req.body.priceNewBaby) : req.body.priceBaby;
     req.body.stockAdult = req.body.stockAdult ? parseInt(req.body.stockAdult) : 0;
     req.body.stockChildren = req.body.stockChildren ? parseInt(req.body.stockChildren) : 0;
     req.body.stockBaby = req.body.stockBaby ? parseInt(req.body.stockBaby) : 0;
@@ -228,21 +234,28 @@ module.exports.editPatch = async (req, res) => {
     req.body.avatar = req.file ? req.file.path : "";
     if(req.files && req.files.avatar && req.files.avatar.length > 0) {
       req.body.avatar = req.files.avatar[0].path;
+    } else if(req.body.clearAvatar === "true") {
+      req.body.avatar = "";
     } else {
       delete req.body.avatar;
     }
+    delete req.body.clearAvatar;
 
     if(req.files && req.files.images && req.files.images.length > 0) {
       req.body.images = req.files.images.map(item => item.path);
+    } else if(req.body.clearImages === "true") {
+      req.body.images = [];
     } else {
       delete req.body.images;
     }
+    delete req.body.clearImages;
 
-    await Tour.updateOne({
+    const result = await Tour.updateOne({
       _id: id,
-      deleted: false
+      deleted: false, updatedAt: updatedAt
     }, req.body);
-    
+
+    if(!result.matchedCount) return res.status(409).json({ code: "error", message: "Tour vừa thay đổi hoặc có khách đặt chỗ. Vui lòng tải lại trang trước khi sửa." });
     res.json({
       code: "success",
       message: "Cập nhật thành công!"
@@ -264,7 +277,7 @@ module.exports.deletePatch = async (req, res) => {
       })
       return;
     }
-    
+
     const id = req.params.id;
 
     await Tour.updateOne({
@@ -274,7 +287,7 @@ module.exports.deletePatch = async (req, res) => {
       deletedAt: Date.now(),
       deletedBy: req.account.id
     });
-    
+
     res.json({
       code: "success",
       message: "Xóa tour thành công!"
@@ -296,7 +309,7 @@ module.exports.undoPatch = async (req, res) => {
     }, {
       deleted: false
     });
-    
+
     res.json({
       code: "success",
       message: "Đã khôi phục!"
@@ -313,10 +326,8 @@ module.exports.destroyDelete = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Tour.deleteOne({
-      _id: id
-    });
-    
+    await Tour.deleteOne({ _id: id, deleted: true });
+
     res.json({
       code: "success",
       message: "Đã xóa vĩnh viễn!"
@@ -332,6 +343,11 @@ module.exports.destroyDelete = async (req, res) => {
 module.exports.changeMultiPatch = async (req, res) => {
   try {
     const { value, ids } = req.body;
+    const action = ["active", "inactive"].includes(value) ? "edit" : ["undo"].includes(value) ? "trash" : "delete";
+    if(!req.permissions.includes("tour-" + action)) return res.status(403).json({ code: "error", message: "Không có quyền!" });
+    if(!Array.isArray(ids) || !ids.length || ids.length > 100 || ids.some(id => !/^[a-f0-9]{24}$/i.test(id))) {
+      return res.status(400).json({ code: "error", message: "Chọn từ 1 đến 100 bản ghi hợp lệ." });
+    }
 
     switch (value) {
       case "active":
@@ -371,9 +387,7 @@ module.exports.changeMultiPatch = async (req, res) => {
         })
         break;
       case "destroy":
-        await Tour.deleteMany({
-          _id: { $in: ids }
-        })
+        await Tour.deleteMany({ _id: { $in: ids }, deleted: true })
         res.json({
           code: "success",
           message: "Đã xóa vĩnh viễn!"

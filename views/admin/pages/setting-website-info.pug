@@ -2,7 +2,7 @@ extends ../layouts/default.pug
 include ../mixins/options.pug
 
 block main
-  
+
   h1.box-title Thông tin website
 
   //- Section 8
@@ -24,7 +24,7 @@ block main
         label(for="logo" class="inner-label") Logo
         .inner-upload-image(image-default=record.logo)
           input(
-            type="file" 
+            type="file"
             id="logo"
             name="logo"
             filepond-image
@@ -33,16 +33,25 @@ block main
         label(for="favicon" class="inner-label") Favicon
         .inner-upload-image(image-default=record.favicon)
           input(
-            type="file" 
+            type="file"
             id="favicon"
             name="favicon"
             filepond-image
             )
       .inner-group
-        label(for="categoryIdSection4" class="inner-label") Danh mục cho Section 4
+        label(for="categoryIdSection4" class="inner-label") Danh mục ưu tiên trên trang chủ
         select(id="categoryIdSection4" name="categoryIdSection4")
-          option(value="") -- Chọn danh mục -- 
+          option(value="") -- Theo thứ tự danh mục --
           +options(categoryList, 0, record.categoryIdSection4)
+      .inner-group
+        label.inner-label(for="bankName") Ngân hàng nhận chuyển khoản
+        input#bankName(name="bankName" value=record.bankName placeholder="Để trống nếu chưa nhận chuyển khoản")
+      .inner-group
+        label.inner-label(for="bankAccountName") Tên chủ tài khoản
+        input#bankAccountName(name="bankAccountName" value=record.bankAccountName)
+      .inner-group
+        label.inner-label(for="bankAccountNumber") Số tài khoản
+        input#bankAccountNumber(name="bankAccountNumber" value=record.bankAccountNumber)
       .inner-button.inner-two-col
         button Cập nhật
     .inner-back

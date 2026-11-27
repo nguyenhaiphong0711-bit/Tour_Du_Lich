@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema(
   {
-    fullName: String,
-    email: String,
+    tokenVersion: { type: Number, default: 0 },
+    fullName: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true, lowercase: true, unique: true },
     phone: String,
     role: String,
     positionCompany: String,
-    status: String, // initial: Khởi tạo, active: Hoạt động, inactive: Tạm dừng
+    status: { type: String, enum: ["initial", "active", "inactive"], default: "initial" }, // initial: Khởi tạo, active: Hoạt động, inactive: Tạm dừng
     password: String,
     avatar: String,
     createdBy: String,

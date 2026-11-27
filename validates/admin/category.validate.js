@@ -1,30 +1,17 @@
-const Joi = require('joi');
+const Joi = require("joi");
+const categoryHelper = require("../../helpers/category.helper");
+const { cleanHtml } = require("../../helpers/data.helper");
 
 module.exports.createPost = async (req, res, next) => {
-  const schema = Joi.object({
-    name: Joi.string()
-      .required()
-      .messages({
-        "string.empty": "Vui lòng nhập tên danh mục!",
-      }),
-    parent: Joi.string().allow(""),
-    position: Joi.string().allow(""),
-    status: Joi.string().allow(""),
-    avatar: Joi.string().allow(""),
-    description: Joi.string().allow(""),
-  })
-
-  const { error } = schema.validate(req.body);
-
-  if(error) {
-    const errorMessage = error.details[0].message;
-    
-    res.json({
-      code: "error",
-      message: errorMessage
-    })
-    return;
+  try {
+    const { error } = Joi.object({ name: Joi.string().trim().min(2).max(150).required(), parent: Joi.string().hex().length(24).allow(""),
+      position: Joi.number().integer().min(0).empty(""), status: Joi.string().valid("active", "inactive").required(),
+      avatar: Joi.string().allow(""), description: Joi.string().max(50000).allow("") }).validate(req.body);
+    if(error) throw new Error("Tên, trạng thái hoặc vị trí danh mục không hợp lệ.");
+    await categoryHelper.validateParent(req.params.id, req.body.parent);
+    req.body.description = cleanHtml(req.body.description);
+    next();
+  } catch (error) {
+    res.status(400).json({ code: "error", message: error.message });
   }
-
-  next();
-}
+};

@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const schema = new mongoose.Schema(
   {
     websiteName: String,
+    bankName: String,
+    bankAccountName: String,
+    bankAccountNumber: String,
     phone: String,
     email: String,
     address: String,

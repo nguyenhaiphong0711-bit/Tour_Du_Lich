@@ -17,22 +17,29 @@ module.exports.dashboard = async (req, res) => {
     deleted: false
   })
   overview.totalOrder = orderList.length;
-  overview.totalRevenue = orderList.reduce((total, item) => total + item.total, 0);
+  overview.totalRevenue = orderList.reduce((total, item) => total + (item.paymentStatus === "paid" && item.status !== "cancel" ? item.total : 0), 0);
   // Hết Thông số tổng quan
 
   res.render("admin/pages/dashboard", {
     pageTitle: "Tổng quan",
-    overview: overview
+    overview: overview,
+    recentOrders: await Order.find({ deleted: false }).sort({ createdAt: -1 }).limit(5),
+    statusList: require("../../config/variable.config").statusList,
+    moment: require("moment")
   });
 }
 
 module.exports.revenueChartPost = async (req, res) => {
   const { currentMonth, currentYear, prevMonth, prevYear, arrayDay } = req.body;
+  if(![currentMonth, prevMonth].every(month => Number.isInteger(month) && month >= 1 && month <= 12) || ![currentYear, prevYear].every(year => Number.isInteger(year) && year >= 2000 && year <= 2100) || !Array.isArray(arrayDay) || arrayDay.length > 31 || arrayDay.some(day => !Number.isInteger(day) || day < 1 || day > 31)) {
+    return res.status(400).json({ code: "error", message: "Khoảng thời gian không hợp lệ." });
+  }
 
   // Truy vấn tất cả đơn hàng trong tháng hiện tại
   const orderListCurrentMonth = await Order
     .find({
       deleted: false,
+      paymentStatus: "paid", status: { $ne: "cancel" },
       createdAt: {
         $gte: new Date(currentYear, currentMonth - 1, 1),
         $lt: new Date(currentYear, currentMonth, 1),
@@ -43,6 +50,7 @@ module.exports.revenueChartPost = async (req, res) => {
   const orderListPrevMonth = await Order
     .find({
       deleted: false,
+      paymentStatus: "paid", status: { $ne: "cancel" },
       createdAt: {
         $gte: new Date(prevYear, prevMonth - 1, 1),
         $lt: new Date(prevYear, prevMonth, 1),

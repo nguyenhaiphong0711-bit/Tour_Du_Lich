@@ -1,17 +1,19 @@
+const { checkPermission } = require("../../middlewares/admin/auth.middleware");
 const router = require("express").Router();
+router.use(checkPermission("setting-manage"));
 const settingController = require("../../controllers/admin/setting.controller");
 const multer  = require('multer');
 const cloudinaryHelper = require("../../helpers/cloudinary.helper");
-const upload = multer({ storage: cloudinaryHelper.storage });
+const upload = multer(cloudinaryHelper.options);
 
 router.get('/list', settingController.list)
 
 router.get('/website-info', settingController.websiteInfo)
 
 router.patch(
-  '/website-info', 
+  '/website-info',
   upload.fields([
-    { name: 'logo', maxCount: 1 }, 
+    { name: 'logo', maxCount: 1 },
     { name: 'favicon', maxCount: 1 }
   ]),
   settingController.websiteInfoPatch
@@ -22,7 +24,7 @@ router.get('/account-admin/list', settingController.accountAdminList)
 router.get('/account-admin/create', settingController.accountAdminCreate)
 
 router.post(
-  '/account-admin/create', 
+  '/account-admin/create',
   upload.single('avatar'),
   settingController.accountAdminCreatePost
 )
@@ -30,7 +32,7 @@ router.post(
 router.get('/account-admin/edit/:id', settingController.accountAdminEdit)
 
 router.patch(
-  '/account-admin/edit/:id', 
+  '/account-admin/edit/:id',
   upload.single('avatar'),
   settingController.accountAdminEditPatch
 )
@@ -45,4 +47,6 @@ router.get('/role/edit/:id', settingController.roleEdit)
 
 router.patch('/role/edit/:id', settingController.roleEditPatch)
 
+router.patch('/account-admin/delete/:id', settingController.accountAdminDeletePatch)
+router.patch('/role/delete/:id', settingController.roleDeletePatch)
 module.exports = router;

@@ -1,17 +1,23 @@
 header.header
   .inner-logo
-    a(href=`/${pathAdmin}/dashboard`)
-      span 28
-      span Admin
+    a(href=`/${pathAdmin}`)
+      span.brand-icon
+        i.fa-regular.fa-compass
+      span.brand-name Tour
+        small WORKSPACE
   .inner-wrap
-    .inner-notify
-      img(src="/admin/assets/images/icon-bell.svg", alt="")
-      span 6
+    .header-context
+      span Quản trị
+      i.fa-solid.fa-chevron-right
+      strong #{pageTitle}
     .inner-account
       .inner-avatar
-        img(src=account.avatar, alt="")
+        if account.avatar
+          img(src=account.avatar alt=account.fullName)
+        else
+          span.avatar-initial #{(account.fullName || "A").charAt(0).toUpperCase()}
       .inner-text
         .inner-name #{account.fullName}
-        .inner-role #{account.roleName}
-    button.inner-button-menu
-      <i class="fa-solid fa-bars"></i>
+        .inner-role #{account.roleName || "Chưa gán nhóm quyền"}
+    button.inner-button-menu(aria-label="Mở menu quản trị")
+      i.fa-solid.fa-bars

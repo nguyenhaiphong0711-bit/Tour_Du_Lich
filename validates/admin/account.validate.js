@@ -46,11 +46,11 @@ module.exports.registerPost = async (req, res, next) => {
       }),
   })
 
-  const { error } = schema.validate(req.body);
+  const { error, value } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
-    
+
     res.json({
       code: "error",
       message: errorMessage
@@ -58,6 +58,8 @@ module.exports.registerPost = async (req, res, next) => {
     return;
   }
 
+  req.body = value;
+  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
   next();
 }
 
@@ -78,11 +80,11 @@ module.exports.loginPost = async (req, res, next) => {
     rememberPassword: Joi.boolean(),
   })
 
-  const { error } = schema.validate(req.body);
+  const { error, value } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
-    
+
     res.json({
       code: "error",
       message: errorMessage
@@ -90,6 +92,8 @@ module.exports.loginPost = async (req, res, next) => {
     return;
   }
 
+  req.body = value;
+  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
   next();
 }
 
@@ -104,11 +108,11 @@ module.exports.forgotPasswordPost = async (req, res, next) => {
       }),
   })
 
-  const { error } = schema.validate(req.body);
+  const { error, value } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
-    
+
     res.json({
       code: "error",
       message: errorMessage
@@ -116,6 +120,8 @@ module.exports.forgotPasswordPost = async (req, res, next) => {
     return;
   }
 
+  req.body = value;
+  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
   next();
 }
 
@@ -135,11 +141,11 @@ module.exports.otpPasswordPost = async (req, res, next) => {
       }),
   })
 
-  const { error } = schema.validate(req.body);
+  const { error, value } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
-    
+
     res.json({
       code: "error",
       message: errorMessage
@@ -147,6 +153,8 @@ module.exports.otpPasswordPost = async (req, res, next) => {
     return;
   }
 
+  req.body = value;
+  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
   next();
 }
 
@@ -180,11 +188,11 @@ module.exports.resetPasswordPost = async (req, res, next) => {
       }),
   })
 
-  const { error } = schema.validate(req.body);
+  const { error, value } = schema.validate(req.body);
 
   if(error) {
     const errorMessage = error.details[0].message;
-    
+
     res.json({
       code: "error",
       message: errorMessage
@@ -192,5 +200,7 @@ module.exports.resetPasswordPost = async (req, res, next) => {
     return;
   }
 
+  req.body = value;
+  if(req.body.email) req.body.email = req.body.email.trim().toLowerCase();
   next();
 }

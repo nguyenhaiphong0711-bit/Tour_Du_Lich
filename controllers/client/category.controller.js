@@ -1,3 +1,4 @@
+const tourHelper = require("../../helpers/tour.helper");
 const Category = require("../../models/category.model");
 const categoryHelper = require("../../helpers/category.helper");
 const moment = require("moment");
@@ -9,12 +10,11 @@ module.exports.list = async (req, res) => {
   // Thông tin chi tiết danh mục
   const categoryDetail = await Category
     .findOne({
-      slug: slug,
-      deleted: false,
-      status: "active"
+      deleted: false, status: "active",
+      slug: slug
     })
 
-  if(!categoryDetail) {
+  if(!categoryDetail || !(await categoryHelper.visibleIds()).includes(categoryDetail.id)) {
     res.redirect("/");
     return;
   }
@@ -45,6 +45,7 @@ module.exports.list = async (req, res) => {
 
   const tourList = await Tour
     .find({
+      ...await tourHelper.visibleFilter(),
       category: {
         $in: [
           categoryId,
@@ -59,7 +60,7 @@ module.exports.list = async (req, res) => {
     })
 
   for (const item of tourList) {
-    item.discount = Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100);
+    item.discount = item.priceAdult > 0 ? Math.max(0, Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100)) : 0;
 
     if(item.departureDate) {
       item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");

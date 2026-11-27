@@ -1,26 +1,62 @@
 .sider-overlay
-nav.sider  
+nav.sider(aria-label="Điều hướng quản trị")
+  .nav-label QUẢN LÝ
   ul.inner-menu
-    if (permissions.includes("dashboard-view"))
+    if permissions.includes("dashboard-view")
       li
-        a(href=`/${pathAdmin}/dashboard`) <i class="fa-solid fa-gauge-high"></i> Tổng quan
-    if (permissions.includes("category-view"))
+        a(href=`/${pathAdmin}/dashboard`)
+          i.fa-solid.fa-chart-pie
+          | Tổng quan
+    if permissions.includes("category-view")
       li
-        a(href=`/${pathAdmin}/category/list`) <i class="fa-solid fa-table-cells-large"></i> Quản lý danh mục
-    if (permissions.includes("tour-view"))
+        a(href=`/${pathAdmin}/category/list`)
+          i.fa-solid.fa-layer-group
+          | Danh mục
+    if permissions.includes("tour-view")
       li
-        a(href=`/${pathAdmin}/tour/list`) <i class="fa-solid fa-table-list"></i> Quản lý tour
+        a(href=`/${pathAdmin}/tour/list`)
+          i.fa-regular.fa-compass
+          | Chuyến đi & tour
+    if permissions.includes("order-view")
+      li
+        a(href=`/${pathAdmin}/order/list`)
+          i.fa-solid.fa-receipt
+          | Đơn đặt tour
+    if permissions.includes("user-view")
+      li
+        a(href=`/${pathAdmin}/user/list`)
+          i.fa-regular.fa-user
+          | Khách hàng
+    if permissions.includes("contact-view")
+      li
+        a(href=`/${pathAdmin}/contact/list`)
+          i.fa-regular.fa-envelope
+          | Đăng ký nhận tin
+    if permissions.includes("coupon-manage")
+      li
+        a(href=`/${pathAdmin}/coupon/list`)
+          i.fa-solid.fa-ticket
+          | Mã giảm giá
+  .nav-label KHÔNG GIAN LÀM VIỆC
+  ul.inner-menu
+    if permissions.includes("setting-manage")
+      li
+        a(href=`/${pathAdmin}/setting/list`)
+          i.fa-solid.fa-sliders
+          | Cài đặt chung
     li
-      a(href=`/${pathAdmin}/order/list`) <i class="fa-solid fa-list-check"></i> Quản lý đơn hàng
+      a(href=`/${pathAdmin}/profile/edit`)
+        i.fa-regular.fa-circle-user
+        | Tài khoản của tôi
     li
-      a(href=`/${pathAdmin}/user/list`) <i class="fa-solid fa-user"></i> Quản lý người dùng
-    li
-      a(href=`/${pathAdmin}/contact/list`) <i class="fa-solid fa-user-group"></i> Thông tin liên hệ
-  hr
+      a(href="/" target="_blank" rel="noopener")
+        i.fa-solid.fa-arrow-up-right-from-square
+        | Xem website
+  .sidebar-note
+    span.status-dot
+    span Sẵn sàng cho hành trình mới
   ul.inner-menu
     li
-      a(href=`/${pathAdmin}/setting/list`) <i class="fa-solid fa-gear"></i> Cài đặt chung
-    li
-      a(href=`/${pathAdmin}/profile/edit`) <i class="fa-solid fa-user-gear"></i> Thông tin cá nhân
-    li
-      a(href="javascript:;" class="inner-logout") <i class="fa-solid fa-power-off"></i> Đăng xuất
+      a.inner-logout(href="#")
+        i.fa-solid.fa-arrow-right-from-bracket
+        | Đăng xuất

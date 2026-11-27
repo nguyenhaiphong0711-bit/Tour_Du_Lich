@@ -3,32 +3,34 @@ html
   head
     title #{pageTitle}
     meta(charset="UTF-8")
+    if settingWebsiteInfo.favicon
+      link(rel="icon" href=settingWebsiteInfo.favicon)
     meta(
-      content="width=device-width, initial-scale=1.0" 
+      content="width=device-width, initial-scale=1.0"
       name="viewport"
       )
     link(
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
       rel="stylesheet"
       )
     link(
-      rel="stylesheet" 
+      rel="stylesheet"
       href="https://unpkg.com/aos@2.3.1/dist/aos.css"
       )
     link(
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" 
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       rel="stylesheet"
       )
     link(
-      href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.css" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.css"
       rel="stylesheet"
       )
     link(
-      rel="stylesheet", 
+      rel="stylesheet",
       href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
       )
     link(
-      href="/assets/css/style.css" 
+      href="/assets/css/style.css"
       rel="stylesheet"
       )
 
@@ -36,9 +38,9 @@ html
     include ../partials/top-header.pug
 
     include ../partials/header.pug
-  
+
     block main
-    
+
     include ../partials/footer.pug
 
     include ../partials/box-contact.pug
@@ -47,6 +49,6 @@ html
     script(src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.js")
     script(src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js")
-    script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js") 
+    script(src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")
     script(src="/admin/assets/js/notify.js")
     script(src="/assets/js/script.js")

@@ -1,47 +1,48 @@
-const jwt = require('jsonwebtoken');
-const AccountAdmin = require('../../models/account-admin.model');
-const Role = require('../../models/role.model');
+const jwt = require("jsonwebtoken");
+const AccountAdmin = require("../../models/account-admin.model");
+const Role = require("../../models/role.model");
 
 module.exports.verifyToken = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-
-    if(!token) {
-      res.redirect(`/${pathAdmin}/account/login`);
-      return;
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { id, email } = decoded;
-
-    const existAccount = await AccountAdmin.findOne({
-      _id: id,
-      email: email
-    })
-
-    if(!existAccount) {
-      res.clearCookie("token");
-      res.redirect(`/${pathAdmin}/account/login`);
-      return;
-    }
-
-    if(existAccount.role) {
-      const roleInfo = await Role.findOne({
-        _id: existAccount.role
-      })
-      if(roleInfo) {
-        existAccount.roleName = roleInfo.name;
-        res.locals.permissions = roleInfo.permissions;
-        req.permissions = roleInfo.permissions;
+    const decoded = jwt.verify(req.cookies.token || "", process.env.JWT_SECRET);
+    if(decoded.purpose && decoded.purpose !== "login") throw new Error("Token không hợp lệ");
+    const account = await AccountAdmin.findOne({ _id: decoded.id, email: decoded.email, status: "active", deleted: false });
+    if(!account || (decoded.tokenVersion || 0) !== (account.tokenVersion || 0)) throw new Error("Phiên đăng nhập hết hạn");
+    req.permissions = [];
+    if(account.role) {
+      const role = await Role.findOne({ _id: account.role, deleted: false });
+      if(role) {
+        account.roleName = role.name;
+        req.permissions = role.permissions || [];
       }
     }
-
-    req.account = existAccount;
-    res.locals.account = existAccount;
-
+    res.locals.permissions = req.permissions;
+    req.account = account;
+    res.locals.account = account;
     next();
   } catch (error) {
     res.clearCookie("token");
+    if(req.method !== "GET") return res.status(401).json({ code: "error", message: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." });
     res.redirect(`/${pathAdmin}/account/login`);
   }
-}
+};
+
+module.exports.checkPermission = (permission) => (req, res, next) => {
+  if(req.permissions.includes(permission)) return next();
+  if(req.method !== "GET") return res.status(403).json({ code: "error", message: "Bạn không có quyền thực hiện thao tác này." });
+  res.status(403).render("admin/pages/access-denied", { pageTitle: "Không có quyền truy cập" });
+};
+
+module.exports.verifyResetToken = async (req, res, next) => {
+  try {
+    const decoded = jwt.verify(req.cookies.resetToken || "", process.env.JWT_SECRET);
+    if(decoded.purpose !== "reset") throw new Error();
+    const account = await AccountAdmin.findOne({ _id: decoded.id, deleted: false, status: "active" });
+    if(!account || decoded.tokenVersion !== (account.tokenVersion || 0)) throw new Error();
+    req.account = account;
+    next();
+  } catch (error) {
+    res.clearCookie("resetToken");
+    res.status(401).json({ code: "error", message: "Yêu cầu đổi mật khẩu hết hạn. Vui lòng xác thực OTP lại." });
+  }
+};

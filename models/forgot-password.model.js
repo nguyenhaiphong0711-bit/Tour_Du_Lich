@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   email: String,
   otp: String,
+  attempts: { type: Number, default: 0 },
   expireAt: {
     type: Date,
     expires: 0

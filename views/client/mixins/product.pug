@@ -17,17 +17,17 @@ mixin product-item(item)
           | #{item.priceAdult.toLocaleString("vi-VN")}
           span.inner-unit đ
         .inner-price-new
-          | #{item.priceNewAdult.toLocaleString("vi-VN")}
+          | #{Number(item.priceNewAdult || 0).toLocaleString("vi-VN")}
           span.inner-unit đ
       .inner-desc
         //- .inner-desc-item
         //-   | Mã Tour:
         //-   b 123456789
         .inner-desc-item
-          | Ngày Khởi Hành: 
+          | Ngày Khởi Hành:
           b #{item.departureDateFormat}
         .inner-desc-item
-          | Thời Gian: 
+          | Thời Gian:
           b #{item.time}
       .inner-meta
         //- .inner-rating

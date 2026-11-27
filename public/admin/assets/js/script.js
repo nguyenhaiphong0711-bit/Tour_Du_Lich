@@ -26,7 +26,7 @@ if(scheduleSection8) {
     const firstItem = listItem.querySelector(".inner-schedule-item");
     const cloneItem = firstItem.cloneNode(true);
     cloneItem.querySelector(".inner-schedule-head input").value = "";
-    
+
     const innerBody = cloneItem.querySelector(".inner-schedule-body");
     const id = `mce_${Date.now()}`;
     innerBody.innerHTML = `<textarea id="${id}"></textarea>`;
@@ -62,7 +62,7 @@ if(scheduleSection8) {
     onStart: (event) => {
       const textarea = event.item.querySelector(".inner-schedule-body textarea");
       const id = textarea.id;
-      tinymce.get(id).remove();
+      if(typeof tinymce !== "undefined") tinymce.get(id)?.remove();
     },
     onEnd: (event) => {
       const textarea = event.item.querySelector(".inner-schedule-body textarea");
@@ -231,7 +231,7 @@ if(categoryCreateForm) {
       const position = event.target.position.value;
       const status = event.target.status.value;
       const avatar = filePond.avatar.getFile()?.file;
-      const description = tinymce.get("description").getContent();
+      const description = getEditorContent("description");
 
       // Tạo FormData
       const formData = new FormData();
@@ -253,6 +253,7 @@ if(categoryCreateForm) {
           }
 
           if(data.code == "success") {
+            if(data.code !== "success") return notify.error(data.message);
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -287,7 +288,7 @@ if(categoryEditForm) {
           avatar = null;
         }
       }
-      const description = tinymce.get("description").getContent();
+      const description = getEditorContent("description");
 
       // Tạo FormData
       const formData = new FormData();
@@ -347,7 +348,7 @@ if(tourCreateForm) {
       const time = event.target.time.value;
       const vehicle = event.target.vehicle.value;
       const departureDate = event.target.departureDate.value;
-      const information = tinymce.get("information").getContent();
+      const information = getEditorContent("information");
       const schedules = [];
 
       // locations
@@ -367,7 +368,7 @@ if(tourCreateForm) {
 
         const textarea = item.querySelector(".inner-schedule-body textarea");
         const id = textarea.id;
-        const description = tinymce.get(id).getContent();
+        const description = getEditorContent(id);
         schedules.push({
           title: title,
           description: description
@@ -397,6 +398,7 @@ if(tourCreateForm) {
       formData.append("departureDate", departureDate);
       formData.append("information", information);
       formData.append("schedules", JSON.stringify(schedules));
+      formData.append("clearImages", String(filePondMulti.images.getFiles().length === 0));
 
       // images
       if(filePondMulti.images.getFiles().length > 0) {
@@ -417,6 +419,7 @@ if(tourCreateForm) {
           }
 
           if(data.code == "success") {
+            if(data.code !== "success") return notify.error(data.message);
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -457,7 +460,7 @@ if(tourEditForm) {
       const time = event.target.time.value;
       const vehicle = event.target.vehicle.value;
       const departureDate = event.target.departureDate.value;
-      const information = tinymce.get("information").getContent();
+      const information = getEditorContent("information");
       const schedules = [];
 
       // locations
@@ -477,7 +480,7 @@ if(tourEditForm) {
 
         const textarea = item.querySelector(".inner-schedule-body textarea");
         const id = textarea.id;
-        const description = tinymce.get(id).getContent();
+        const description = getEditorContent(id);
         schedules.push({
           title: title,
           description: description
@@ -488,6 +491,8 @@ if(tourEditForm) {
       // Tạo FormData
       const formData = new FormData();
       formData.append("name", name);
+      formData.append("updatedAt", event.target.updatedAt.value);
+      formData.append("clearAvatar", String(filePond.avatar.getFiles().length === 0));
       formData.append("category", category);
       formData.append("position", position);
       formData.append("status", status);
@@ -507,6 +512,7 @@ if(tourEditForm) {
       formData.append("departureDate", departureDate);
       formData.append("information", information);
       formData.append("schedules", JSON.stringify(schedules));
+      formData.append("clearImages", String(filePondMulti.images.getFiles().length === 0));
 
       // images
       if(filePondMulti.images.getFiles().length > 0) {
@@ -636,6 +642,7 @@ if(settingWebsiteInfoForm) {
       // Tạo FormData
       const formData = new FormData();
       formData.append("websiteName", websiteName);
+      for(const field of ["bankName", "bankAccountName", "bankAccountNumber"]) formData.append(field, event.target[field].value);
       formData.append("phone", phone);
       formData.append("email", email);
       formData.append("address", address);
@@ -767,6 +774,7 @@ if(settingAccountAdminCreateForm) {
           }
 
           if(data.code == "success") {
+            if(data.code !== "success") return notify.error(data.message);
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -931,6 +939,7 @@ if(settingRoleCreateForm) {
           }
 
           if(data.code == "success") {
+            if(data.code !== "success") return notify.error(data.message);
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -1060,6 +1069,7 @@ if(profileEditForm) {
           }
 
           if(data.code == "success") {
+            if(data.code !== "success") return notify.error(data.message);
             drawNotify(data.code, data.message);
             window.location.reload();
           }
@@ -1116,7 +1126,7 @@ if(profileChangePasswordForm) {
     ])
     .onSuccess((event) => {
       const password = event.target.password.value;
-      
+
       const dataFinal = {
         password: password
       };
@@ -1136,7 +1146,7 @@ if(profileChangePasswordForm) {
 
           if(data.code == "success") {
             drawNotify(data.code, data.message);
-            window.location.href = `/${pathAdmin}/profile/edit`;
+            window.location.href = `/${pathAdmin}/account/login`;
           }
         })
     })
@@ -1181,12 +1191,13 @@ if(listButtonDelete.length > 0) {
   listButtonDelete.forEach(button => {
     button.addEventListener("click", () => {
       const dataApi = button.getAttribute("data-api");
-      
+
       fetch(dataApi, {
         method: "PATCH"
       })
         .then(res => res.json())
         .then(data => {
+          if(data.code !== "success") return notify.error(data.message);
           drawNotify(data.code, data.message);
           window.location.reload();
         })
@@ -1201,12 +1212,13 @@ if(listButtonUndo.length > 0) {
   listButtonUndo.forEach(button => {
     button.addEventListener("click", () => {
       const dataApi = button.getAttribute("data-api");
-      
+
       fetch(dataApi, {
         method: "PATCH"
       })
         .then(res => res.json())
         .then(data => {
+          if(data.code !== "success") return notify.error(data.message);
           drawNotify(data.code, data.message);
           window.location.reload();
         })
@@ -1224,12 +1236,13 @@ if(listButtonDestroy.length > 0) {
 
       if(isConfirm) {
         const dataApi = button.getAttribute("data-api");
-      
+
         fetch(dataApi, {
           method: "DELETE"
         })
           .then(res => res.json())
           .then(data => {
+            if(data.code !== "success") return notify.error(data.message);
             drawNotify(data.code, data.message);
             window.location.reload();
           })
@@ -1247,6 +1260,7 @@ if(filterStatus) {
   filterStatus.addEventListener("change", () => {
     const value = filterStatus.value;
     if(value) {
+      url.searchParams.delete("page");
       url.searchParams.set("status", value);
     } else {
       url.searchParams.delete("status");
@@ -1270,6 +1284,7 @@ if(filterCreatedBy) {
   filterCreatedBy.addEventListener("change", () => {
     const value = filterCreatedBy.value;
     if(value) {
+      url.searchParams.delete("page");
       url.searchParams.set("createdBy", value);
     } else {
       url.searchParams.delete("createdBy");
@@ -1293,6 +1308,7 @@ if(filterStartDate) {
   filterStartDate.addEventListener("change", () => {
     const value = filterStartDate.value;
     if(value) {
+      url.searchParams.delete("page");
       url.searchParams.set("startDate", value);
     } else {
       url.searchParams.delete("startDate");
@@ -1316,6 +1332,7 @@ if(filterEndDate) {
   filterEndDate.addEventListener("change", () => {
     const value = filterEndDate.value;
     if(value) {
+      url.searchParams.delete("page");
       url.searchParams.set("endDate", value);
     } else {
       url.searchParams.delete("endDate");
@@ -1339,7 +1356,7 @@ if(filterReset) {
     "status",
     "createdBy",
     "startDate",
-    "endDate"
+    "endDate", "category", "keyword", "page"
   ];
 
   filterReset.addEventListener("click", () => {
@@ -1395,6 +1412,7 @@ if(changeMulti) {
       })
         .then(res => res.json())
         .then(data => {
+          if(data.code !== "success") return notify.error(data.message);
           drawNotify(data.code, data.message);
           window.location.reload();
         })
@@ -1412,7 +1430,8 @@ if(search) {
     if(event.code == "Enter") {
       const value = search.value;
       if(value) {
-        url.searchParams.set("keyword", value);
+        url.searchParams.delete("page");
+      url.searchParams.set("keyword", value);
       } else {
         url.searchParams.delete("keyword");
       }
@@ -1436,6 +1455,7 @@ if(boxPagination) {
   boxPagination.addEventListener("change", () => {
     const value = boxPagination.value;
     if(value) {
+      url.searchParams.delete("page");
       url.searchParams.set("page", value);
     } else {
       url.searchParams.delete("page");
@@ -1450,3 +1470,60 @@ if(boxPagination) {
   }
 }
 // End Box Pagination
+// Active navigation
+const currentPath = window.location.pathname;
+document.querySelectorAll(".sider a[href]").forEach(link => {
+  const href = link.getAttribute("href");
+  if(href && href !== "/" && (currentPath === href || currentPath.startsWith(href.replace(/\/(list|create)$/, "") + "/"))) {
+    link.classList.add("active"); link.setAttribute("aria-current", "page");
+  }
+});
+
+// Category filter
+const filterCategory = document.querySelector("[filter-category]");
+if(filterCategory) {
+  const url = new URL(window.location.href);
+  filterCategory.value = url.searchParams.get("category") || "";
+  filterCategory.addEventListener("change", () => {
+    url.searchParams.delete("page");
+    if(filterCategory.value) url.searchParams.set("category", filterCategory.value);
+    else url.searchParams.delete("category");
+    window.location.href = url.href;
+  });
+}
+
+const couponAdminForm = document.querySelector("#coupon-admin-form");
+if(couponAdminForm) couponAdminForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const body = Object.fromEntries(new FormData(couponAdminForm));
+  body.expiresAt = new Date(body.expiresAt).toISOString();
+  for(const key of ["percent", "minTotal", "maxDiscount"]) body[key] = Number(body[key]);
+  try {
+    const response = await fetch(`/${pathAdmin}/coupon/save`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await response.json();
+    if(data.code !== "success") return notify.error(data.message);
+    drawNotify(data.code, data.message); window.location.reload();
+  } catch { notify.error("Không thể kết nối máy chủ."); }
+});
+document.querySelectorAll(".coupon-toggle").forEach(button => button.addEventListener("click", async () => {
+  try {
+    const response = await fetch(`/${pathAdmin}/coupon/${button.dataset.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: button.dataset.status === "active" ? "inactive" : "active" }) });
+    const data = await response.json();
+    if(data.code !== "success") return notify.error(data.message);
+    window.location.reload();
+  } catch { notify.error("Không thể kết nối máy chủ."); }
+}));
+
+// Empty lists and accessible icon actions
+for(const table of document.querySelectorAll(".table-1 table, .table-2 table")) {
+  const body = table.querySelector("tbody");
+  if(body && !body.children.length) {
+    const row = body.insertRow(), cell = row.insertCell();
+    cell.colSpan = table.querySelectorAll("thead th").length;
+    cell.className = "empty-cell"; cell.textContent = "Chưa có dữ liệu phù hợp.";
+  }
+}
+document.querySelectorAll(".inner-buttons .inner-edit, .inner-buttons .inner-delete").forEach(button => {
+  const label = button.classList.contains("inner-delete") ? "Xóa bản ghi" : "Chỉnh sửa bản ghi";
+  button.setAttribute("aria-label", label); button.title = label;
+});

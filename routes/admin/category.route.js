@@ -1,31 +1,32 @@
+const { checkPermission } = require("../../middlewares/admin/auth.middleware");
 const router = require("express").Router();
 const categoryController = require("../../controllers/admin/category.controller");
 const categoryValidate = require("../../validates/admin/category.validate");
 const multer  = require('multer');
 const cloudinaryHelper = require("../../helpers/cloudinary.helper");
-const upload = multer({ storage: cloudinaryHelper.storage });
+const upload = multer(cloudinaryHelper.options);
 
-router.get('/list', categoryController.list)
+router.get('/list', checkPermission("category-view"), categoryController.list)
 
-router.get('/create', categoryController.create)
+router.get('/create', checkPermission("category-create"), categoryController.create)
 
 router.post(
-  '/create', 
-  upload.single('avatar'), 
-  categoryValidate.createPost, 
+  '/create', checkPermission("category-create"),
+  upload.single('avatar'),
+  categoryValidate.createPost,
   categoryController.createPost
 )
 
-router.get('/edit/:id', categoryController.edit)
+router.get('/edit/:id', checkPermission("category-edit"), categoryController.edit)
 
 router.patch(
-  '/edit/:id', 
-  upload.single('avatar'), 
-  categoryValidate.createPost, 
+  '/edit/:id', checkPermission("category-edit"),
+  upload.single('avatar'),
+  categoryValidate.createPost,
   categoryController.editPatch
 )
 
-router.patch('/delete/:id', categoryController.deletePatch)
+router.patch('/delete/:id', checkPermission("category-delete"), categoryController.deletePatch)
 
 router.patch('/change-multi', categoryController.changeMultiPatch)
 

@@ -2,7 +2,7 @@ extends ../layouts/default.pug
 include ../mixins/change-status.pug
 
 block main
-  
+
   h1.box-title Quản lý danh mục
 
   //- Section 4
@@ -31,28 +31,30 @@ block main
   //- Section 5
   .section-5
     .inner-wrap
-      +change-status(
-        `/${pathAdmin}/category/change-multi`,
-        [
-          {
-            label: "Hoạt động",
-            value: "active"
-          },
-          {
-            label: "Tạm dừng",
-            value: "inactive"
-          },
-          {
-            label: "Xóa",
-            value: "delete"
-          }
-        ]
-      )
+      if permissions.includes("category-edit") || permissions.includes("category-delete")
+        +change-status(
+          `/${pathAdmin}/category/change-multi`,
+          [
+            {
+              label: "Hoạt động",
+              value: "active"
+            },
+            {
+              label: "Tạm dừng",
+              value: "inactive"
+            },
+            {
+              label: "Xóa",
+              value: "delete"
+            }
+          ]
+        )
       .inner-search
         <i class="fa-solid fa-magnifying-glass"></i>
         input(type="text" placeholder="Tìm kiếm" search)
-      .inner-button-create
-        a(href=`/${pathAdmin}/category/create`) + Tạo mới 
+      if permissions.includes("category-create")
+        .inner-button-create
+          a(href=`/${pathAdmin}/category/create`) + Tạo mới
   //- End Section 5
 
   //- Section 6
@@ -77,7 +79,7 @@ block main
                 input(type="checkbox" class="inner-check" check-item=item.id)
               td #{item.name}
               td(class="inner-center")
-                img(src=item.avatar class="inner-avatar")
+                img(src=(item.avatar || "/assets/images/tour-placeholder.svg") class="inner-avatar")
               td(class="inner-center") #{item.position}
               td(class="inner-center")
                 if (item.status == "active")

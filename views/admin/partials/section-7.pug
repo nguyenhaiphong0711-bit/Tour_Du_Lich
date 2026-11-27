@@ -1,8 +1,7 @@
 .section-7
   span.inner-label
-    | Hiển thị #{pagination.skip + 1}
-    | - #{pagination.skip + categoryList.length}
-    | của #{pagination.totalRecord}
-  select(class="inner-pagination" box-pagination)
-    - for (let i = 1; i <= pagination.totalPage; i++)
-      option(value=i) Trang #{i}
+    | Hiển thị #{pagination.totalRecord ? pagination.skip + 1 : 0}–#{pagination.skip + listCount} / #{pagination.totalRecord} bản ghi
+  if pagination.totalPage > 1
+    select.inner-pagination(box-pagination aria-label="Chọn trang")
+      - for (let i = 1; i <= pagination.totalPage; i++)
+        option(value=i selected=(i === pagination.page)) Trang #{i} / #{pagination.totalPage}

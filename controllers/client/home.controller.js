@@ -1,72 +1,27 @@
-const Tour = require("../../models/tour.model")
-const Category = require("../../models/category.model")
-const moment = require("moment");
+const Tour = require("../../models/tour.model");
+const Category = require("../../models/category.model");
 const categoryHelper = require("../../helpers/category.helper");
+const tourHelper = require("../../helpers/tour.helper");
+const moment = require("moment");
 
 module.exports.home = async (req, res) => {
-  // Section 2
-  const tourListSection2 = await Tour
-    .find({
-      // featured: "yes",
-      deleted: false,
-      status: "active"
-    })
-    .sort({
-      position: "desc"
-    })
-    .limit(6)
-
-  for (const item of tourListSection2) {
-    item.discount = Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100);
-
-    if(item.departureDate) {
-      item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");
-    }
+  const find = await tourHelper.visibleFilter();
+  const tourListSection2 = tourHelper.decorate(await Tour.find({ ...find,
+    departureDate: { $gte: moment().startOf("day").toDate(), $lte: moment().add(30, "days").endOf("day").toDate() },
+    $expr: { $lt: ["$priceNewAdult", "$priceAdult"] }
+  }).sort({ departureDate: 1, position: -1 }).limit(6));
+  const categories = await Category.find({ deleted: false, status: "active", parent: { $in: ["", null] } }).sort({ position: -1, _id: 1 });
+  const featuredId = req.settingWebsiteInfo.categoryIdSection4;
+  if(featuredId && !categories.some(item => item.id === featuredId)) {
+    const featured = await Category.findOne({ _id: featuredId, deleted: false, status: "active" });
+    if(featured && (await categoryHelper.visibleIds()).includes(featured.id)) categories.unshift(featured);
   }
-  // End Section 2
-
-  // Section 4
-  const categoryIdSection4 = req.settingWebsiteInfo.categoryIdSection4;
-
-  const categorySection4 = await Category
-    .findOne({
-      _id: categoryIdSection4,
-      deleted: false,
-      status: "active"
-    })
-
-  const categoryChildSection4 = await categoryHelper.getCategoryChild(categoryIdSection4);
-  const categoryChildIdSection4 = categoryChildSection4.map(item => item.id);
-
-  const tourListSection4 = await Tour
-    .find({
-      category: {
-        $in: [
-          categoryIdSection4,
-          ...categoryChildIdSection4
-        ]
-      },
-      deleted: false,
-      status: "active"
-    })
-    .sort({
-      position: "desc"
-    })
-    .limit(8)
-
-  for (const item of tourListSection4) {
-    item.discount = Math.floor(((item.priceAdult - item.priceNewAdult) / item.priceAdult) * 100);
-
-    if(item.departureDate) {
-      item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");
-    }
+  categories.sort((a, b) => Number(b.id === featuredId) - Number(a.id === featuredId));
+  const categorySections = [];
+  for (const category of categories) {
+    const ids = [category.id, ...(await categoryHelper.getCategoryChild(category.id)).map(item => item.id)];
+    const tours = await Tour.find({ ...find, category: { $in: ids } }).sort({ position: -1, _id: 1 }).limit(8);
+    categorySections.push({ category, tours: tourHelper.decorate(tours) });
   }
-  // End Section 4
-
-  res.render("client/pages/home", {
-    pageTitle: "Trang chủ",
-    tourListSection2: tourListSection2,
-    tourListSection4: tourListSection4,
-    categorySection4: categorySection4
-  });
-}
+  res.render("client/pages/home", { pageTitle: "Trang chủ", tourListSection2, categorySections });
+};

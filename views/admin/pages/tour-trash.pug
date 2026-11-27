@@ -2,7 +2,7 @@ extends ../layouts/default.pug
 include ../mixins/change-status.pug
 
 block main
-  
+
   h1.box-title Thùng rác tour
 
   //- Section 5
@@ -23,7 +23,7 @@ block main
       )
       .inner-search
         <i class="fa-solid fa-magnifying-glass"></i>
-        input(type="text" placeholder="Tìm kiếm")
+        input(type="text" placeholder="Tìm kiếm tour đã xóa" search aria-label="Tìm tour đã xóa")
   //- End Section 5
 
   //- Section 6
@@ -50,11 +50,11 @@ block main
                 input(type="checkbox" class="inner-check" check-item=item.id)
               td #{item.name}
               td(class="inner-center")
-                img(src=item.avatar class="inner-avatar")
+                img(src=(item.avatar || "/assets/images/tour-placeholder.svg") class="inner-avatar")
               td
-                div NL: #{item.priceNewAdult.toLocaleString("vi-VN")}đ
-                div TE: #{item.priceNewChildren.toLocaleString("vi-VN")}đ
-                div EB: #{item.priceNewBaby.toLocaleString("vi-VN")}đ
+                div NL: #{Number(item.priceNewAdult || 0).toLocaleString("vi-VN")}đ
+                div TE: #{Number(item.priceNewChildren || 0).toLocaleString("vi-VN")}đ
+                div EB: #{Number(item.priceNewBaby || 0).toLocaleString("vi-VN")}đ
               td
                 div NL: #{item.stockAdult}
                 div TE: #{item.stockChildren}
@@ -87,11 +87,4 @@ block main
                     <i class="fa-regular fa-trash-can"></i>
   //- End Section 6
 
-  //- Section 7
-  .section-7
-    span.inner-label Hiển thị 1 - 9 của 78
-    select(class="inner-pagination")
-      option(value="") Trang 1
-      option(value="") Trang 2
-      option(value="") Trang 3
-  //- End Section 7
+  include ../partials/section-7.pug

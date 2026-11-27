@@ -1,82 +1,58 @@
 const Category = require("../models/category.model");
 
-// buildCategoryTree
-const buildCategoryTree = (categories, parentId = "") => {
-  // Tạo một mảng để lưu các danh mục con
+const buildCategoryTree = (categories, parentId = "", visited = new Set()) => {
   const tree = [];
-
-  // Lặp qua từng danh mục trong mảng
-  categories.forEach(item => {
-    // Nếu parent của danh mục hiện tại khớp với parentId
-    if (item.parent === parentId) {
-      // Đệ quy tìm các danh mục con của danh mục hiện tại
-      const children = buildCategoryTree(categories, item.id);
-
-      // Thêm danh mục hiện tại vào cây cùng với danh mục con
-      tree.push({
-        id: item.id,
-        name: item.name,
-        slug: item.slug,
-        children: children, // Gắn mảng children (có thể rỗng)
-      });
+  for (const item of categories) {
+    if((item.parent || "") === parentId && !visited.has(item.id)) {
+      const nextVisited = new Set(visited).add(item.id);
+      tree.push({ id: item.id, name: item.name, slug: item.slug,
+        children: buildCategoryTree(categories, item.id, nextVisited) });
     }
-  });
-
-  // Trả về cây danh mục
+  }
   return tree;
-}
+};
 module.exports.buildCategoryTree = buildCategoryTree;
-// End buildCategoryTree
 
-// getCategoryChild
-const getCategoryChild = async (parentId) => {
+const getCategoryChild = async (parentId, visited = new Set()) => {
+  if(!parentId || visited.has(String(parentId))) return [];
+  visited.add(String(parentId));
+  const childList = await Category.find({ parent: parentId, deleted: false, status: "active" }).sort({ position: -1, _id: 1 });
   const result = [];
-
-  const childList = await Category
-    .find({
-      parent: parentId,
-      deleted: false,
-      status: "active"
-    })
-
   for (const item of childList) {
-    result.push({
-      id: item.id,
-      name: item.name,
-    });
-    await getCategoryChild(item.id);
+    if(visited.has(item.id)) continue;
+    result.push({ id: item.id, name: item.name });
+    result.push(...await getCategoryChild(item.id, visited));
   }
-
   return result;
-}
+};
 module.exports.getCategoryChild = getCategoryChild;
-// End getCategoryChild
 
-// getCategoryParent
-const getCategoryParent = async (parentId) => {
-  const result = [];
-
-  const categoryParent = await Category.findOne({
-    _id: parentId,
-    deleted: false
-  })
-
-  if(categoryParent) {
-    result.unshift({
-      id: categoryParent.id,
-      name: categoryParent.name,
-      avatar: categoryParent.avatar,
-      slug: categoryParent.slug,
-    });
-    if(categoryParent.parent) {
-      const resultParent = await getCategoryParent(categoryParent.parent);
-      if(resultParent.length > 0) {
-        result.unshift(resultParent[0]);
-      }
-    }
-  }
-
-  return result;
-}
+const getCategoryParent = async (parentId, visited = new Set()) => {
+  if(!parentId || visited.has(String(parentId))) return [];
+  visited.add(String(parentId));
+  const item = await Category.findOne({ _id: parentId, deleted: false, status: "active" });
+  if(!item) return [];
+  const parents = await getCategoryParent(item.parent, visited);
+  return [...parents, { id: item.id, name: item.name, avatar: item.avatar, slug: item.slug }];
+};
 module.exports.getCategoryParent = getCategoryParent;
-// End getCategoryParent
+
+module.exports.validateParent = async (id, parent) => {
+  const visited = new Set(id ? [String(id)] : []);
+  while(parent) {
+    if(visited.has(String(parent))) throw new Error("Danh mục cha không được là chính nó hoặc danh mục con.");
+    visited.add(String(parent));
+    const item = await Category.findOne({ _id: parent, deleted: false });
+    if(!item) throw new Error("Danh mục cha không tồn tại.");
+    parent = item.parent;
+  }
+};
+
+module.exports.visibleIds = async () => {
+  const categories = await Category.find({ deleted: false, status: "active" }).sort({ position: -1, _id: 1 });
+  const tree = buildCategoryTree(categories);
+  const ids = [];
+  const visit = list => list.forEach(item => { ids.push(item.id); visit(item.children); });
+  visit(tree);
+  return ids;
+};

@@ -1,0 +1,8 @@
+extends ../layouts/default.pug
+
+block main
+  .empty-state
+    i.fa-solid.fa-lock
+    h1 Bạn chưa có quyền truy cập
+    p Nhờ quản trị viên gán nhóm quyền phù hợp cho tài khoản của bạn.
+    a(href=`/${pathAdmin}/profile/edit`) Xem thông tin tài khoản
