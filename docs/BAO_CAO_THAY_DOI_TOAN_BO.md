@@ -14,7 +14,7 @@ Ngày bàn giao: **27/11/2026**. Repository: [nguyenhaiphong0711-bit/Tour_Du_Lic
 
 **Lũy kế so với bản gốc: 134 file, gồm 39 file thêm và 95 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
 
-Riêng đợt thiết kế lại và báo cáo này có **116 đường dẫn** thay đổi so với `1d87a4b`: 12 thêm, 103 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 134 file.
+Riêng đợt thiết kế lại và báo cáo này có **121 đường dẫn** thay đổi so với `1d87a4b`: 13 thêm, 107 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 134 file.
 
 [Bảng CSV đầy đủ 134 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
 
@@ -390,3 +390,5 @@ Khôi phục section-8 và mixin blog theo bố cục gốc: một bài lớn �
 ## 13. Mục Logo trang chủ
 
 Thêm trang `/admin/setting/branding` và nút trên menu/Cài đặt chung. Dùng lại trường logo trong cấu hình website và luồng upload Cloudinary, không tạo collection mới. Cho tải/thay/gỡ ảnh, xem trước khung, cập nhật đầu/chân trang, tự co giữ tỷ lệ theo desktop/mobile và dự phòng bằng tên website khi ảnh thiếu/hỏng. API chỉ thay logo, không ghi đè thông tin liên hệ/ngân hàng. Cần quyền setting-manage và ảnh PNG/JPG/WebP/GIF tối đa 5 MB. Test upload dùng Cloudinary giả lập, không gọi tài khoản dịch vụ thật.
+
+Kiểm chứng mục logo: [CI 45960503621 đạt](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45960503621), 50/50 test tích hợp và browser; ảnh hiển thị 180×60 / 120×40, object-fit contain. File mới so với bảng lịch sử: views/admin/pages/setting-branding.pug.
