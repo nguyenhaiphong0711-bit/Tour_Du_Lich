@@ -18,8 +18,11 @@ module.exports.createPost = async (req, res, next) => {
       time: Joi.string().max(100).allow(""), vehicle: Joi.string().max(100).allow(""),
       information: Joi.string().max(100000).allow(""), schedules: Joi.string().required()
     });
-    const { error } = schema.validate(req.body);
+    const { error, value } = schema.validate(req.body);
     if(error) throw new Error("Kiểm tra tên tour, danh mục, ngày khởi hành, giá và số chỗ (số nguyên không âm).");
+    for (const field of ["position", "priceAdult", "priceChildren", "priceBaby", "stockAdult", "stockChildren", "stockBaby"]) {
+      if(req.body[field] !== "" && value[field] !== undefined) req.body[field] = String(value[field]);
+    }
     for (const type of ["Adult", "Children", "Baby"]) {
       const oldPrice = Number(req.body[`price${type}`] || 0);
       const input = req.body[`priceNew${type}`];

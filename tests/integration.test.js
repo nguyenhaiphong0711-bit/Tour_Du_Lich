@@ -774,7 +774,7 @@ test("Tạo tour từ form admin có thể mở chi tiết phía khách", async 
     .field("name", "Tour tạo mới")
     .field("category", leaf.id)
     .field("status", "active")
-    .field("priceAdult", "1000000")
+    .field("priceAdult", "1e6")
     .field("priceNewAdult", "900000")
     .field("stockAdult", "10")
     .field("locations", JSON.stringify([city.id]))
@@ -782,6 +782,7 @@ test("Tạo tour từ form admin có thể mở chi tiết phía khách", async 
     .field("schedules", "[]");
   assert.equal(response.body.code, "success", JSON.stringify(response.body));
   const created = await Tour.findOne({ name: "Tour tạo mới" });
+  assert.equal(created.priceAdult, 1000000);
   assert.equal(
     (await request(app).get(`/tour/detail/${created.slug}`)).status,
     200,
