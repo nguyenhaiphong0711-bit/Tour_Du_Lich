@@ -12,54 +12,54 @@ nav.sider#admin-sidebar(aria-label="Điều hướng quản trị")
     ul.inner-menu
       if permissions.includes("dashboard-view")
         li
-          a(href=`/${pathAdmin}/dashboard` title="Tổng quan")
+          a(class=(adminSection === "dashboard" ? "active" : null) aria-current=(adminSection === "dashboard" ? "page" : null) href=`/${pathAdmin}/dashboard` title="Tổng quan")
             +icon("grid")
             span Tổng quan
       if permissions.includes("tour-view")
         li
-          a(href=`/${pathAdmin}/tour/list` title="Quản lý tour")
+          a(class=(adminSection === "tour" ? "active" : null) aria-current=(adminSection === "tour" ? "page" : null) href=`/${pathAdmin}/tour/list` title="Quản lý tour")
             +icon("map")
             span Quản lý tour
       if permissions.includes("category-view")
         li
-          a(href=`/${pathAdmin}/category/list` title="Danh mục tour")
+          a(class=(adminSection === "category" ? "active" : null) aria-current=(adminSection === "category" ? "page" : null) href=`/${pathAdmin}/category/list` title="Danh mục tour")
             +icon("layers")
             span Danh mục tour
       if permissions.includes("order-view")
         li
-          a(href=`/${pathAdmin}/order/list` title="Đơn đặt tour")
+          a(class=(adminSection === "order" ? "active" : null) aria-current=(adminSection === "order" ? "page" : null) href=`/${pathAdmin}/order/list` title="Đơn đặt tour")
             +icon("orders")
             span Đơn đặt tour
       if permissions.includes("user-view")
         li
-          a(href=`/${pathAdmin}/user/list` title="Khách hàng")
+          a(class=(adminSection === "user" ? "active" : null) aria-current=(adminSection === "user" ? "page" : null) href=`/${pathAdmin}/user/list` title="Khách hàng")
             +icon("users")
             span Khách hàng
     .nav-label CÔNG CỤ
     ul.inner-menu
       if permissions.includes("coupon-manage")
         li
-          a(href=`/${pathAdmin}/coupon/list` title="Mã giảm giá")
+          a(class=(adminSection === "coupon" ? "active" : null) aria-current=(adminSection === "coupon" ? "page" : null) href=`/${pathAdmin}/coupon/list` title="Mã giảm giá")
             +icon("ticket")
             span Mã giảm giá
       if permissions.includes("contact-view")
         li
-          a(href=`/${pathAdmin}/contact/list` title="Thông tin liên hệ")
+          a(class=(adminSection === "contact" ? "active" : null) aria-current=(adminSection === "contact" ? "page" : null) href=`/${pathAdmin}/contact/list` title="Thông tin liên hệ")
             +icon("mail")
             span Thông tin liên hệ
     if permissions.includes("setting-manage")
       .nav-label QUẢN TRỊ HỆ THỐNG
       ul.inner-menu
         li
-          a(href=`/${pathAdmin}/setting/account-admin/list` title="Tài khoản quản trị")
+          a(class=(adminSection === "setting/account-admin" ? "active" : null) aria-current=(adminSection === "setting/account-admin" ? "page" : null) href=`/${pathAdmin}/setting/account-admin/list` title="Tài khoản quản trị")
             +icon("users")
             span Tài khoản quản trị
         li
-          a(href=`/${pathAdmin}/setting/role/list` title="Phân quyền")
+          a(class=(adminSection === "setting/role" ? "active" : null) aria-current=(adminSection === "setting/role" ? "page" : null) href=`/${pathAdmin}/setting/role/list` title="Phân quyền")
             +icon("layers")
             span Phân quyền
         li
-          a(href=`/${pathAdmin}/setting/list` title="Cài đặt chung")
+          a(class=(adminSection === "setting" ? "active" : null) aria-current=(adminSection === "setting" ? "page" : null) href=`/${pathAdmin}/setting/list` title="Cài đặt chung")
             +icon("settings")
             span Cài đặt chung
   .sidebar-bottom
@@ -69,7 +69,7 @@ nav.sider#admin-sidebar(aria-label="Điều hướng quản trị")
       +icon("arrow", 16)
     ul.inner-menu
       li
-        a(href=`/${pathAdmin}/profile/edit` title="Tài khoản của tôi")
+        a(class=(adminSection === "profile" ? "active" : null) aria-current=(adminSection === "profile" ? "page" : null) href=`/${pathAdmin}/profile/edit` title="Tài khoản của tôi")
           +icon("user")
           span Tài khoản của tôi
       li

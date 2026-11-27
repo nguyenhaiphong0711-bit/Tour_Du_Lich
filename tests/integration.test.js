@@ -989,12 +989,16 @@ test("Menu có lối vào trực tiếp liên hệ, tài khoản và phân quy�
     assert.ok(dashboard.text.includes(`<span>${label}</span>`));
     const page = await request(app).get(`/admin/${path}`).set("Cookie", cookie);
     assert.equal(page.status, 200, path);
+    assert.equal((page.text.match(/aria-current="page"/g) || []).length, 1, path);
+    assert.ok(page.text.includes(`aria-current="page" href="/admin/${path}"`), path);
   }
   const contact = await request(app).get("/admin/contact/list").set("Cookie", cookie);
   assert.match(contact.text, /lien-he-cu@example.com/);
   const role = await Role.findById(account.role);
   const permissionForm = await request(app).get(`/admin/setting/role/edit/${role.id}`).set("Cookie", cookie);
   assert.equal(permissionForm.status, 200);
+  assert.equal((permissionForm.text.match(/aria-current="page"/g) || []).length, 1);
+  assert.ok(permissionForm.text.includes('aria-current="page" href="/admin/setting/role/list"'));
   assert.match(permissionForm.text, /setting-manage/);
   assert.deepEqual((await Role.findById(role.id)).permissions, role.permissions);
 });

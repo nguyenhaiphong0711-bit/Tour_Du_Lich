@@ -182,8 +182,9 @@ let mongo, server, browser, dbPath;
   for(const [label, path] of [["Thông tin liên hệ", "contact/list"], ["Tài khoản quản trị", "setting/account-admin/list"], ["Phân quyền", "setting/role/list"]]) {
     await page.locator(".sider .inner-menu").getByRole("link", { name: label, exact: true }).click();
     await page.waitForURL("**/admin/" + path);
+    await page.waitForLoadState("networkidle");
     const activeLinks = page.locator(".sider .inner-menu a.active");
-    if(await activeLinks.count() !== 1 || await activeLinks.first().getAttribute("href") !== "/admin/" + path) throw Error("Wrong active menu for " + path);
+    if(await activeLinks.count() !== 1 || await activeLinks.first().getAttribute("href") !== "/admin/" + path) throw Error("Wrong active menu: " + JSON.stringify({ path, url: page.url(), links: await activeLinks.evaluateAll(items => items.map(item => item.getAttribute("href"))), errors }));
   }
   await page.locator(".table-2 .inner-edit").first().click();
   await page.waitForURL("**/admin/setting/role/edit/**");

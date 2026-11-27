@@ -359,6 +359,8 @@ Sau phản hồi về việc khó tìm trang, đã khôi phục nhãn **Thông t
 | Tài khoản quản trị | `/admin/setting/account-admin/list` | `setting-manage` |
 | Phân quyền | `/admin/setting/role/list` | `setting-manage` |
 
-Đã sửa active state để chỉ đánh dấu một mục sidebar đúng nhất, kể cả khi mở form sửa nhóm quyền hoặc tài khoản. Các route và API kiểm tra quyền được giữ nguyên; không tự nâng quyền cho tài khoản thiếu quyền mới. Nếu nhóm cũ chưa có contact-view/setting-manage thì chủ website cần cấp đúng quyền theo README.
+Server đánh dấu active state để chỉ đánh dấu một mục sidebar đúng nhất, không phụ thuộc JavaScript tải xong, kể cả khi mở form sửa nhóm quyền hoặc tài khoản. Các route và API kiểm tra quyền được giữ nguyên; không tự nâng quyền cho tài khoản thiếu quyền mới. Nếu nhóm cũ chưa có contact-view/setting-manage thì chủ website cần cấp đúng quyền theo README.
 
 Bổ sung kiểm thử cho liên kết trực tiếp, dữ liệu liên hệ/nhóm quyền còn nguyên và chặn truy cập khi thiếu quyền; browser kiểm tra bấm ba liên kết cùng active state. Bộ kiểm thử tích hợp sau bổ sung có 47 trường hợp. Các ảnh trong mục 2 là ảnh chụp đợt trước bổ sung điều hướng này.
+
+Bản bổ sung điều hướng: [`ebc8341`](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/commit/ebc8341b29db95fa431c75ce8faaa46d72618092). [CI kiểm tra bản bổ sung](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45952990054). Các kết quả 45 test ở mục 6 thuộc mốc kiểm tra trước bổ sung này; bộ test hiện có 47 trường hợp.

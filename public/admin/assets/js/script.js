@@ -1189,30 +1189,6 @@ if(profileChangePasswordForm) {
 }
 // End Profile Change Password Form
 
-// Sider
-const sider = document.querySelector(".sider");
-if(sider) {
-  const pathNameCurrent = location.pathname.replace(/\/$/, "");
-  const menuList = Array.from(sider.querySelectorAll(".inner-menu a"));
-  let activeItem;
-  let activeLength = 0;
-  menuList.forEach(item => {
-    const href = item.getAttribute("href");
-    if(!href.startsWith(`/${pathAdmin}/`)) return;
-    let section = href.replace(/\/list$/, "");
-    if(section === `/${pathAdmin}/profile/edit`) section = `/${pathAdmin}/profile`;
-    const matches = pathNameCurrent === section || pathNameCurrent.startsWith(section + "/");
-    if(matches && section.length > activeLength) {
-      activeItem = item;
-      activeLength = section.length;
-    }
-  });
-  if(activeItem) {
-    activeItem.classList.add("active");
-    activeItem.setAttribute("aria-current", "page");
-  }
-}
-// End Sider
 
 // Logout
 const buttonLogout = document.querySelector(".sider .inner-logout");
