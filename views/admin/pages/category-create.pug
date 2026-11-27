@@ -1,9 +1,10 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 include ../mixins/options.pug
 
 block main
   
-  h1.box-title Tạo danh mục
+  +page-header("Tạo danh mục", "Thêm một nhóm mới để tổ chức các tour.")
 
   //- Section 8
   .section-8

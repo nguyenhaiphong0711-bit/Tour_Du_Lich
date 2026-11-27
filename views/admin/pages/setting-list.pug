@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
   
-  h1.box-title Cài đặt chung
+  +page-header("Cài đặt hệ thống", "Quản lý website, tài khoản và nhóm quyền.")
 
   //- Section 9
   .section-9

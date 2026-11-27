@@ -1,9 +1,10 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 include ../mixins/options.pug
 
 block main
 
-  h1.box-title Thông tin website
+  +page-header("Thông tin website", "Thông tin liên hệ, nhận diện và tài khoản ngân hàng.")
 
   //- Section 8
   .section-8

@@ -1,62 +1,69 @@
-.sider-overlay
-nav.sider(aria-label="Điều hướng quản trị")
-  .nav-label QUẢN LÝ
-  ul.inner-menu
-    if permissions.includes("dashboard-view")
+include ../mixins/icon.pug
+.sider-overlay(aria-hidden="true")
+nav.sider#admin-sidebar(aria-label="Điều hướng quản trị")
+  a.sidebar-brand(href=`/${pathAdmin}` aria-label="Tour Admin · Trang quản trị")
+    .brand-symbol
+      +icon("plane", 22)
+    .brand-copy
+      strong Tour Admin
+      span Quản lý hành trình
+  .sidebar-navigation
+    .nav-label ĐIỀU HÀNH
+    ul.inner-menu
+      if permissions.includes("dashboard-view")
+        li
+          a(href=`/${pathAdmin}/dashboard` title="Tổng quan")
+            +icon("grid")
+            span Tổng quan
+      if permissions.includes("tour-view")
+        li
+          a(href=`/${pathAdmin}/tour/list` title="Quản lý tour")
+            +icon("map")
+            span Quản lý tour
+      if permissions.includes("category-view")
+        li
+          a(href=`/${pathAdmin}/category/list` title="Danh mục tour")
+            +icon("layers")
+            span Danh mục tour
+      if permissions.includes("order-view")
+        li
+          a(href=`/${pathAdmin}/order/list` title="Đơn đặt tour")
+            +icon("orders")
+            span Đơn đặt tour
+      if permissions.includes("user-view")
+        li
+          a(href=`/${pathAdmin}/user/list` title="Khách hàng")
+            +icon("users")
+            span Khách hàng
+    .nav-label CÔNG CỤ
+    ul.inner-menu
+      if permissions.includes("coupon-manage")
+        li
+          a(href=`/${pathAdmin}/coupon/list` title="Mã giảm giá")
+            +icon("ticket")
+            span Mã giảm giá
+      if permissions.includes("contact-view")
+        li
+          a(href=`/${pathAdmin}/contact/list` title="Đăng ký nhận tin")
+            +icon("mail")
+            span Đăng ký nhận tin
+      if permissions.includes("setting-manage")
+        li
+          a(href=`/${pathAdmin}/setting/list` title="Cài đặt hệ thống")
+            +icon("settings")
+            span Cài đặt hệ thống
+  .sidebar-bottom
+    a.visit-site(href="/" target="_blank" rel="noopener" title="Xem website")
+      +icon("external", 18)
+      span Xem website
+      +icon("arrow", 16)
+    ul.inner-menu
       li
-        a(href=`/${pathAdmin}/dashboard`)
-          i.fa-solid.fa-chart-pie
-          | Tổng quan
-    if permissions.includes("category-view")
+        a(href=`/${pathAdmin}/profile/edit` title="Tài khoản của tôi")
+          +icon("user")
+          span Tài khoản của tôi
       li
-        a(href=`/${pathAdmin}/category/list`)
-          i.fa-solid.fa-layer-group
-          | Danh mục
-    if permissions.includes("tour-view")
-      li
-        a(href=`/${pathAdmin}/tour/list`)
-          i.fa-regular.fa-compass
-          | Chuyến đi & tour
-    if permissions.includes("order-view")
-      li
-        a(href=`/${pathAdmin}/order/list`)
-          i.fa-solid.fa-receipt
-          | Đơn đặt tour
-    if permissions.includes("user-view")
-      li
-        a(href=`/${pathAdmin}/user/list`)
-          i.fa-regular.fa-user
-          | Khách hàng
-    if permissions.includes("contact-view")
-      li
-        a(href=`/${pathAdmin}/contact/list`)
-          i.fa-regular.fa-envelope
-          | Đăng ký nhận tin
-    if permissions.includes("coupon-manage")
-      li
-        a(href=`/${pathAdmin}/coupon/list`)
-          i.fa-solid.fa-ticket
-          | Mã giảm giá
-  .nav-label KHÔNG GIAN LÀM VIỆC
-  ul.inner-menu
-    if permissions.includes("setting-manage")
-      li
-        a(href=`/${pathAdmin}/setting/list`)
-          i.fa-solid.fa-sliders
-          | Cài đặt chung
-    li
-      a(href=`/${pathAdmin}/profile/edit`)
-        i.fa-regular.fa-circle-user
-        | Tài khoản của tôi
-    li
-      a(href="/" target="_blank" rel="noopener")
-        i.fa-solid.fa-arrow-up-right-from-square
-        | Xem website
-  .sidebar-note
-    span.status-dot
-    span Sẵn sàng cho hành trình mới
-  ul.inner-menu
-    li
-      a.inner-logout(href="#")
-        i.fa-solid.fa-arrow-right-from-bracket
-        | Đăng xuất
+        a.inner-logout(href="#" title="Đăng xuất")
+          +icon("logout")
+          span Đăng xuất
+    .sidebar-version Tour Management · v2.0

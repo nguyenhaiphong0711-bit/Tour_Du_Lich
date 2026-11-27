@@ -48,9 +48,7 @@ module.exports.edit = async (req, res) => {
 
     for (const item of orderDetail.items) {
       item.departureDateFormat = moment(item.departureDate).format("DD/MM/YYYY");
-      const city = await City.findOne({
-        _id: item.locationFrom
-      })
+      const city = !item.cityName && mongoose.isValidObjectId(item.locationFrom) ? await City.findById(item.locationFrom) : null;
       item.cityName = item.cityName || city?.name || "Chưa xác định";
     }
 
@@ -85,6 +83,7 @@ module.exports.editPatch = async (req, res) => {
         await bookingHelper.release(order, session);
         if(order.paymentStatus === "paid") order.paymentReview = true;
       }
+      if(order.paymentStatus !== "paid" && data.paymentStatus === "paid") order.paidAt = new Date();
       Object.assign(order, data, { updatedBy: req.account.id });
       await order.save({ session });
     });

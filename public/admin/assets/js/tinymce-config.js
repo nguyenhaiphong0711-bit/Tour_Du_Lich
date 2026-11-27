@@ -3,8 +3,9 @@ const initTinyMCE = (id) => {
   if(typeof tinymce === "undefined") return;
   tinymce.init({
     selector: id || '[textarea-mce]',
-    plugins: 'charmap code codesample emoticons image link lists media',
-    toolbar: `undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullscreen | forecolor backcolor emoticons | charmap code codesample emoticons | help`,
+    height: 300, menubar: false, statusbar: true,
+    plugins: 'charmap code codesample image link lists media',
+    toolbar: "undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code",
     images_upload_url: `/${pathAdmin}/upload/image`
   });
 }

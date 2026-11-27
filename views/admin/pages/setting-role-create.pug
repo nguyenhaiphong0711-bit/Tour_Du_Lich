@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
   
-  h1.box-title Tạo nhóm quyền
+  +page-header("Tạo nhóm quyền", "Chọn các quyền phù hợp với công việc của nhóm.")
 
   //- Section 8
   .section-8

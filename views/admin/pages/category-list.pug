@@ -1,109 +1,73 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 include ../mixins/change-status.pug
 
 block main
-
-  h1.box-title Quản lý danh mục
-
-  //- Section 4
-  .section-4
-    .inner-wrap
-      .inner-item
-        <i class="fa-solid fa-filter"></i> Bộ lọc
-      .inner-item
-        select(filter-status)
-          option(value="") Trạng thái
+  +page-header("Danh mục tour", "Sắp xếp hành trình theo hệ thống danh mục do bạn tạo.")
+    if permissions.includes("category-create")
+      a.btn.btn-primary(href=`/${pathAdmin}/category/create`)
+        +icon("plus", 18)
+        | Tạo danh mục
+  section.panel.list-panel
+    .table-toolbar
+      .inner-search
+        +icon("search", 18)
+        input(type="search" search placeholder="Tìm tên danh mục..." aria-label="Tìm danh mục")
+      .toolbar-filters
+        select(filter-status aria-label="Trạng thái danh mục")
+          option(value="") Tất cả trạng thái
           option(value="active") Hoạt động
           option(value="inactive") Tạm dừng
-      .inner-item
-        select(filter-created-by)
-          option(value="") Người tạo
-          each item in accountAdminList
-            option(value=item.id) #{item.fullName}
-      .inner-item
-        input(type="date" filter-start-date)
-        span -
-        input(type="date" filter-end-date)
-      .inner-item.inner-reset(filter-reset)
-        <i class="fa-solid fa-rotate-left"></i> Xóa bộ lọc
-  //- End Section 4
-
-  //- Section 5
-  .section-5
-    .inner-wrap
-      if permissions.includes("category-edit") || permissions.includes("category-delete")
-        +change-status(
-          `/${pathAdmin}/category/change-multi`,
-          [
-            {
-              label: "Hoạt động",
-              value: "active"
-            },
-            {
-              label: "Tạm dừng",
-              value: "inactive"
-            },
-            {
-              label: "Xóa",
-              value: "delete"
-            }
-          ]
-        )
-      .inner-search
-        <i class="fa-solid fa-magnifying-glass"></i>
-        input(type="text" placeholder="Tìm kiếm" search)
-      if permissions.includes("category-create")
-        .inner-button-create
-          a(href=`/${pathAdmin}/category/create`) + Tạo mới
-  //- End Section 5
-
-  //- Section 6
-  .section-6
+        button.filter-reset(type="button" filter-reset title="Xóa bộ lọc" aria-label="Xóa bộ lọc")
+          +icon("refresh", 17)
+    - const categoryActions = []
+    - if (permissions.includes("category-edit")) categoryActions.push({label: "Hoạt động", value: "active"}, {label: "Tạm dừng", value: "inactive"})
+    - if (permissions.includes("category-delete")) categoryActions.push({label: "Xóa danh mục", value: "delete"})
+    if categoryActions.length
+      .bulk-toolbar
+        span Chọn danh mục để thao tác hàng loạt
+        +change-status(`/${pathAdmin}/category/change-multi`, categoryActions)
     .table-2
       table
         thead
           tr
-            th
-              input(type="checkbox" class="inner-check" check-all)
-            th Tên danh mục
-            th(class="inner-center") Ảnh đại diện
-            th(class="inner-center") Vị trí
-            th(class="inner-center") Trạng thái
-            th Tạo bởi
-            th Cập nhật bởi
-            th Hành động
+            th.check-cell
+              input(type="checkbox" class="inner-check" check-all aria-label="Chọn tất cả danh mục trên trang")
+            th Danh mục
+            th Thứ tự
+            th Trạng thái
+            th Người tạo
+            th Cập nhật gần nhất
+            th.action-cell Thao tác
         tbody
           each item in categoryList
             tr
+              td.check-cell
+                input(type="checkbox" class="inner-check" check-item=item.id aria-label=`Chọn ${item.name}`)
               td
-                input(type="checkbox" class="inner-check" check-item=item.id)
-              td #{item.name}
-              td(class="inner-center")
-                img(src=(item.avatar || "/assets/images/tour-placeholder.svg") class="inner-avatar")
-              td(class="inner-center") #{item.position}
-              td(class="inner-center")
-                if (item.status == "active")
-                  .badge.badge-green Hoạt động
-                else if (item.status == "inactive")
-                  .badge.badge-red Tạm dừng
+                .tour-identity
+                  img(src=(item.avatar || "/assets/images/tour-placeholder.svg") alt="" loading="lazy")
+                  div
+                    .cell-primary #{item.name}
+                    .cell-secondary #{item.parent ? "Danh mục con" : "Danh mục gốc"}
+              td #{item.position}
               td
-                div #{item.createdByFullName}
-                div.inner-time #{item.createdAtFormat}
+                span(class=`badge ${item.status === "active" ? "badge-green" : "badge-muted"}`) #{item.status === "active" ? "Hoạt động" : "Tạm dừng"}
               td
-                div #{item.updatedByFullName}
-                div.inner-time #{item.updatedAtFormat}
+                .cell-primary #{item.createdByFullName || "—"}
+                .cell-secondary #{item.createdAtFormat}
               td
+                .cell-primary #{item.updatedByFullName || "—"}
+                .cell-secondary #{item.updatedAtFormat}
+              td.action-cell
                 .inner-buttons
-                  a(href=`/${pathAdmin}/category/edit/${item.id}` class="inner-edit")
-                    <i class="fa-regular fa-pen-to-square"></i>
-                  button(
-                    class="inner-delete"
-                    button-delete
-                    data-api=`/${pathAdmin}/category/delete/${item.id}`
-                    )
-                    <i class="fa-regular fa-trash-can"></i>
-  //- End Section 6
-
-  //- Section 7
-  include ../partials/section-7.pug
-  //- End Section 7
+                  if permissions.includes("category-edit")
+                    a.inner-edit(href=`/${pathAdmin}/category/edit/${item.id}` title="Chỉnh sửa" aria-label=`Chỉnh sửa ${item.name}`)
+                      +icon("edit", 17)
+                  if permissions.includes("category-delete")
+                    button.inner-delete(type="button" button-delete data-api=`/${pathAdmin}/category/delete/${item.id}` title="Xóa danh mục" aria-label=`Xóa ${item.name}`)
+                      +icon("trash", 17)
+          if !categoryList.length
+            tr
+              td.empty-cell(colspan="7") Không tìm thấy danh mục phù hợp.
+    include ../partials/section-7.pug

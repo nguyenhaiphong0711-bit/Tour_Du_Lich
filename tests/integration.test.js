@@ -815,3 +815,101 @@ test("Đăng nhập cùng origin không bị domain ngrok cũ chặn, origin bê
     else process.env.WEBSITE_DOMAIN = previous;
   }
 });
+
+const tourFormData = (overrides = {}) => ({
+  updatedAt: tour.updatedAt.toISOString(), name: tour.name, category: leaf.id, status: "active",
+  priceAdult: "1200000", priceNewAdult: "1000000", stockAdult: "2", stockChildren: "2", stockBaby: "2",
+  locations: JSON.stringify([city.id]), departureDate: tour.departureDate.toISOString(), schedules: "[]", ...overrides
+});
+const saveTour = data => {
+  let operation = request(app).patch(`/admin/tour/edit/${tour.id}`).set("Cookie", cookie);
+  for(const [field, value] of Object.entries(data)) operation = operation.field(field, value);
+  return operation;
+};
+
+test("Lưu tour liên tiếp giữ ảnh cũ, trả phiên bản mới và từ chối URL ảnh lạ", async () => {
+  const first = await saveTour(tourFormData({ imageOrder: JSON.stringify(tour.images) }));
+  assert.equal(first.body.code, "success");
+  assert.ok(first.body.updatedAt);
+  assert.deepEqual(first.body.images, [...tour.images]);
+  const second = await saveTour(tourFormData({ name: "Tên sửa lần hai", updatedAt: first.body.updatedAt, imageOrder: "[]" }));
+  assert.equal(second.body.code, "success");
+  assert.deepEqual((await Tour.findById(tour.id)).images, []);
+  const foreign = await saveTour(tourFormData({ updatedAt: second.body.updatedAt, imageOrder: '["https://untrusted.example.com/image.jpg"]' }));
+  assert.equal(foreign.body.code, "error");
+  const saved = await Tour.findById(tour.id);
+  assert.deepEqual(saved.images, []);
+  assert.equal(saved.name, "Tên sửa lần hai");
+  const oversized = await saveTour(tourFormData({ updatedAt: saved.updatedAt.toISOString(), imageOrder: JSON.stringify(Array(11).fill("/image.jpg")) }));
+  assert.equal(oversized.status, 400);
+});
+test("Dashboard giữ kín chi tiết khách hàng nếu chỉ có quyền xem thống kê", async () => {
+  await booking.create(payload({ fullName: "Khách hàng riêng tư", paymentMethod: "money" }));
+  await Role.updateOne({ _id: account.role }, { permissions: ["dashboard-view"] });
+  const dashboard = await request(app).get("/admin/dashboard").set("Cookie", cookie);
+  assert.equal(dashboard.status, 200);
+  assert.doesNotMatch(dashboard.text, /Khách hàng riêng tư|0901234567/);
+  assert.match(dashboard.text, /chưa có quyền xem chi tiết đơn hàng/);
+});
+test("Giao diện danh mục và tour ẩn thao tác không có quyền", async () => {
+  await Role.updateOne({ _id: account.role }, { permissions: ["category-view", "tour-view", "tour-trash"] });
+  for(const path of ["/admin/category/list", "/admin/tour/list"]) {
+    const response = await request(app).get(path).set("Cookie", cookie);
+    assert.equal(response.status, 200);
+    assert.doesNotMatch(response.text, /button-delete|change-multi/);
+  }
+  const trash = await request(app).get("/admin/tour/trash").set("Cookie", cookie);
+  assert.doesNotMatch(trash.text, /button-destroy|value="destroy"/);
+  assert.match(trash.text, /value="undo"/);
+});
+test("Admin lọc được tour thuộc danh mục tạm dừng", async () => {
+  await Category.updateOne({ _id: leaf.id }, { status: "inactive" });
+  const response = await request(app).get(`/admin/tour/list?category=${leaf.id}`).set("Cookie", cookie);
+  assert.equal(response.status, 200);
+  assert.match(response.text, new RegExp(`option value="${leaf.id}"`));
+  assert.match(response.text, /Khám phá Hà Giang/);
+});
+test("SMTP lỗi không để lại OTP chặn lần gửi tiếp theo", async () => {
+  const mailHelper = require("../helpers/mail.helper");
+  const previous = mailHelper.sendMail;
+  try {
+    mailHelper.sendMail = async () => { throw new Error("SMTP unavailable"); };
+    const failed = await request(app).post("/admin/account/forgot-password").send({ email: account.email });
+    assert.equal(failed.status, 502);
+    assert.equal(await ForgotPassword.countDocuments({ email: account.email }), 0);
+    mailHelper.sendMail = async () => ({ accepted: [account.email] });
+    const retried = await request(app).post("/admin/account/forgot-password").send({ email: account.email });
+    assert.equal(retried.body.code, "success");
+    assert.equal(await ForgotPassword.countDocuments({ email: account.email }), 1);
+  } finally { mailHelper.sendMail = previous; }
+});
+test("Hai yêu cầu đặt lại mật khẩu đồng thời chỉ có một yêu cầu thành công", async () => {
+  const resetToken = jwt.sign({ id: account.id, purpose: "reset", tokenVersion: 0 }, process.env.JWT_SECRET, { expiresIn: "10m" });
+  const responses = await Promise.all(["FirstPass123!", "SecondPass123!"].map(password => request(app)
+    .post("/admin/account/reset-password").set("Cookie", `resetToken=${resetToken}`).send({ password })));
+  assert.deepEqual(responses.map(item => item.status).sort(), [200, 401]);
+  assert.equal((await Account.findById(account.id)).tokenVersion, 1);
+});
+test("Doanh thu theo ngày thanh toán và xác nhận thủ công lưu paidAt", async () => {
+  const order = await booking.create(payload({ paymentMethod: "money" }));
+  await Order.updateOne({ _id: order.id }, { createdAt: new Date(2026, 8, 1) });
+  const confirmed = await request(app).patch(`/admin/order/edit/${order.id}`).set("Cookie", cookie).send({
+    fullName: order.fullName, phone: order.phone, note: "", paymentMethod: "money", paymentStatus: "paid", status: "done"
+  });
+  assert.equal(confirmed.body.code, "success");
+  assert.ok((await Order.findById(order.id)).paidAt);
+  await Order.updateOne({ _id: order.id }, { paidAt: new Date(2026, 10, 27, 10) });
+  const chart = await request(app).post("/admin/dashboard/revenue-chart").set("Cookie", cookie)
+    .send({ currentMonth: 11, currentYear: 2026, prevMonth: 10, prevYear: 2026, arrayDay: [1, 27] });
+  assert.deepEqual(chart.body.dataCurrentMonth, [0, 1000000]);
+  assert.deepEqual(chart.body.dataPrevMonth, [0, 0]);
+});
+test("Đơn cũ có địa điểm dạng chữ vẫn mở được, người chỉ xem không thấy nút lưu", async () => {
+  const order = await booking.create(payload({ paymentMethod: "money" }));
+  await Order.updateOne({ _id: order.id }, { $set: { "items.0.locationFrom": "Hà Nội" } });
+  await Role.updateOne({ _id: account.role }, { permissions: ["order-view"] });
+  const response = await request(app).get(`/admin/order/edit/${order.id}`).set("Cookie", cookie);
+  assert.equal(response.status, 200);
+  assert.match(response.text, /order-view-form/);
+  assert.doesNotMatch(response.text, /type="submit"/);
+});

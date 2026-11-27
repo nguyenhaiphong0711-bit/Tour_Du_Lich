@@ -1,0 +1,11 @@
+include ./icon.pug
+mixin page-header(title, description)
+  .page-heading
+    .page-heading-copy
+      .page-eyebrow QUẢN TRỊ / #{title.toUpperCase()}
+      h1.box-title #{title}
+      if description
+        p.page-description #{description}
+    .page-heading-actions
+      if block
+        block

@@ -18,6 +18,7 @@ module.exports.list = async (req, res) => {
     if(moment(req.query.endDate, "YYYY-MM-DD", true).isValid()) find.createdAt.$lte = moment(req.query.endDate).endOf("day").toDate();
   }
 
+  if(find.createdAt && !Object.keys(find.createdAt).length) delete find.createdAt;
   const pageInfo = await pagination(Tour, find, req.query);
   const tourList = await Tour.find(find).sort({ position: -1, _id: 1 }).skip(pageInfo.skip).limit(pageInfo.limit);
 
@@ -40,11 +41,25 @@ module.exports.list = async (req, res) => {
 
     item.createdAtFormat = moment(item.createdAt).format("HH:mm - DD/MM/YYYY");
     item.updatedAtFormat = moment(item.updatedAt).format("HH:mm - DD/MM/YYYY");
+    item.updatedAtDate = moment(item.updatedAt).format("DD/MM/YYYY");
+    item.departureDateFormat = item.departureDate ? moment(item.departureDate).format("DD/MM/YYYY") : "";
   }
 
+  const categoryList = await Category.find({ deleted: false }).sort({ position: -1 });
+  const [total, active, inactive] = await Promise.all([
+    Tour.countDocuments({ deleted: false }),
+    Tour.countDocuments({ deleted: false, status: "active" }),
+    Tour.countDocuments({ deleted: false, status: "inactive" })
+  ]);
+  const bulkActions = [];
+  if(req.permissions.includes("tour-edit")) bulkActions.push({ label: "Hoạt động", value: "active" }, { label: "Tạm dừng", value: "inactive" });
+  if(req.permissions.includes("tour-delete")) bulkActions.push({ label: "Chuyển vào thùng rác", value: "delete" });
   res.render("admin/pages/tour-list", {
     pageTitle: "Quản lý tour",
-    categoryList: await Category.find({ deleted: false, status: "active" }).sort({ position: -1 }),
+    categoryList: categoryList,
+    categoryNames: Object.fromEntries(categoryList.map(item => [item.id, item.name])),
+    summary: { total, active, inactive },
+    bulkActions: bulkActions,
     accountAdminList: await AccountAdmin.find({ deleted: false }).select("fullName"),
     pagination: pageInfo,
     listCount: tourList.length,
@@ -147,6 +162,7 @@ module.exports.createPost = async (req, res) => {
       req.body.images = [];
     }
 
+    delete req.body.imageOrder;
     const newRecord = new Tour(req.body);
     await newRecord.save();
 
@@ -241,24 +257,41 @@ module.exports.editPatch = async (req, res) => {
     }
     delete req.body.clearAvatar;
 
-    if(req.files && req.files.images && req.files.images.length > 0) {
-      req.body.images = req.files.images.map(item => item.path);
+    const currentTour = await Tour.findOne({ _id: id, deleted: false });
+    if(!currentTour || currentTour.updatedAt.getTime() !== updatedAt.getTime()) return res.status(409).json({ code: "error", message: "Tour vừa thay đổi hoặc có khách đặt chỗ. Vui lòng tải lại trang trước khi sửa." });
+    const uploadedImages = (req.files?.images || []).map(item => item.path);
+    if(req.body.imageOrder !== undefined) {
+      const imageOrder = JSON.parse(req.body.imageOrder);
+      const used = new Set();
+      req.body.images = imageOrder.map(item => {
+        if(used.has(item)) throw new Error("Ảnh bị trùng lặp.");
+        used.add(item);
+        if(typeof item === "string" && currentTour.images.includes(item)) return item;
+        if(Number.isInteger(item) && item >= 0 && item < uploadedImages.length) return uploadedImages[item];
+        throw new Error("Danh sách ảnh không hợp lệ.");
+      });
+      if(uploadedImages.some((image, index) => !used.has(index))) throw new Error("Danh sách ảnh thiếu tệp vừa tải lên.");
+    } else if(uploadedImages.length) {
+      req.body.images = uploadedImages;
     } else if(req.body.clearImages === "true") {
       req.body.images = [];
     } else {
       delete req.body.images;
     }
+    delete req.body.imageOrder;
     delete req.body.clearImages;
 
-    const result = await Tour.updateOne({
+    const result = await Tour.findOneAndUpdate({
       _id: id,
       deleted: false, updatedAt: updatedAt
-    }, req.body);
+    }, req.body, { new: true, runValidators: true });
 
-    if(!result.matchedCount) return res.status(409).json({ code: "error", message: "Tour vừa thay đổi hoặc có khách đặt chỗ. Vui lòng tải lại trang trước khi sửa." });
+    if(!result) return res.status(409).json({ code: "error", message: "Tour vừa thay đổi hoặc có khách đặt chỗ. Vui lòng tải lại trang trước khi sửa." });
     res.json({
       code: "success",
-      message: "Cập nhật thành công!"
+      message: "Cập nhật thành công!",
+      updatedAt: result.updatedAt.toISOString(),
+      avatar: result.avatar, images: result.images
     })
   } catch (error) {
     res.json({

@@ -1,9 +1,10 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 include ../mixins/options.pug
 
 block main
   
-  h1.box-title Chỉnh sửa danh mục
+  +page-header("Chỉnh sửa danh mục", "Cập nhật thông tin và vị trí trong cây danh mục.")
 
   //- Section 8
   .section-8

@@ -162,7 +162,12 @@ module.exports.forgotPasswordPost = async (req, res) => {
   // Gửi mã OTP qua email
   const title = `Mã OTP lấy lại mật khẩu`;
   const content = `Mã OTP của bạn là <b style="color: green; font-size: 20px;">${otp}</b>. Mã OTP có hiệu lực trong 5 phút, vui lòng không cung cấp cho bất kỳ ai.`;
-  await mailHelper.sendMail(email, title, content);
+  try {
+    await mailHelper.sendMail(email, title, content);
+  } catch (error) {
+    await ForgotPassword.deleteOne({ _id: newRecord.id });
+    return res.status(502).json({ code: "error", message: "Chưa gửi được email. Vui lòng thử lại sau." });
+  }
 
   res.json({
     code: "success",
@@ -225,12 +230,14 @@ module.exports.resetPasswordPost = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(password, salt);
 
-  await AccountAdmin.updateOne({
-    _id: req.account.id
+  const result = await AccountAdmin.updateOne({
+    _id: req.account.id, deleted: false, status: "active",
+    $or: req.account.tokenVersion ? [{ tokenVersion: req.account.tokenVersion }] : [{ tokenVersion: 0 }, { tokenVersion: { $exists: false } }]
   }, {
     $set: { password: hashPassword },
     $inc: { tokenVersion: 1 }
   });
+  if(!result.matchedCount) return res.status(401).json({ code: "error", message: "Yêu cầu đổi mật khẩu đã được sử dụng. Vui lòng xác thực OTP lại." });
 
   res.clearCookie("resetToken");
   res.clearCookie("token");

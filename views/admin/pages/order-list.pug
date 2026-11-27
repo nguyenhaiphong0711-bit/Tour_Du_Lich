@@ -1,80 +1,59 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
-
-  h1.box-title Quản lý đơn hàng
-
-  .section-4
-    .inner-wrap
-      .inner-item
-        i.fa-solid.fa-filter
-        span Trạng thái
+  +page-header("Đơn đặt tour", "Theo dõi yêu cầu đặt chỗ, thanh toán và trạng thái xử lý.")
+  section.panel.list-panel
+    .table-toolbar
+      .inner-search
+        +icon("search", 18)
+        input(type="search" search placeholder="Mã đơn, tên hoặc số điện thoại..." aria-label="Tìm đơn hàng")
+      .toolbar-filters
         select(filter-status aria-label="Trạng thái đơn hàng")
-          option(value="") Tất cả
-          option(value="initial") Khởi tạo
+          option(value="") Tất cả trạng thái
+          option(value="initial") Chờ xử lý
           option(value="done") Hoàn thành
           option(value="cancel") Đã hủy
-      .inner-item.inner-reset(filter-reset) Xóa bộ lọc
-  .section-5
-    .inner-search
-      i.fa-solid.fa-magnifying-glass
-      input(type="search" search placeholder="Mã đơn, tên hoặc số điện thoại" aria-label="Tìm đơn hàng")
-  //- Section 6
-  .section-6
+        button.filter-reset(type="button" filter-reset title="Xóa bộ lọc" aria-label="Xóa bộ lọc")
+          +icon("refresh", 17)
     .table-2
       table
         thead
           tr
-            th Mã
-            th Thông tin khách
-            th Danh sách tour
+            th Mã đơn / khách hàng
+            th Hành trình
             th Thanh toán
             th Trạng thái
-            th.inner-center Ngày đặt
-            th Hành động
+            th Ngày đặt
+            th.action-cell Chi tiết
         tbody
-          each orderDetail in orderList
+          each order in orderList
             tr
               td
-                .inner-code #{orderDetail.code}
-                if orderDetail.paymentReview
-                  .badge.badge-red Cần đối soát
+                a.cell-primary.inner-code(href=`/${pathAdmin}/order/edit/${order.id}`) #{order.code}
+                .cell-primary #{order.fullName}
+                .cell-secondary #{order.phone}
+                if order.paymentReview
+                  span.badge.badge-red Cần đối soát
               td
-                div Họ tên: #{orderDetail.fullName}
-                div SĐT: #{orderDetail.phone}
-                div Ghi chú: #{orderDetail.note}
+                .order-tours
+                  each item in order.items
+                    .cell-primary #{item.name}
+                    .cell-secondary #{item.quantityAdult} người lớn · #{item.quantityChildren} trẻ em · #{item.quantityBaby} em bé
               td
-                .inner-list
-                  each item in orderDetail.items
-                    .inner-item
-                      .inner-image
-                        img(src=item.avatar, alt="")
-                      .inner-info
-                        .inner-name #{item.name}
-                        .inner-quantity
-                          div Người lớn: #{item.quantityAdult} x #{Number(item.priceNewAdult || 0).toLocaleString("vi-VN")}đ
-                          div Trẻ em: #{item.quantityChildren} x #{Number(item.priceNewChildren || 0).toLocaleString("vi-VN")}đ
-                          div Em bé: #{item.quantityBaby} x #{Number(item.priceNewBaby || 0).toLocaleString("vi-VN")}đ
+                strong.money #{Number(order.total || 0).toLocaleString("vi-VN")}₫
+                .cell-secondary #{order.paymentMethodName}
+                span(class=`badge ${order.paymentStatus === "paid" ? "badge-green" : "badge-orange"}`) #{order.paymentStatusName}
               td
-                div Tạm tính: #{Number(orderDetail.subTotal || 0).toLocaleString("vi-VN")}đ
-                div Giảm: #{Number(orderDetail.discount || 0).toLocaleString("vi-VN")}đ
-                //- div Mã giảm: TOURMUAHE2024
-                div Thanh toán: #{Number(orderDetail.total || 0).toLocaleString("vi-VN")}đ
-                div PTTT: #{orderDetail.paymentMethodName}
-                div TTTT: #{orderDetail.paymentStatusName}
+                span(class=`badge badge-${order.statusInfo.color}`) #{order.statusInfo.label}
               td
-                div(class=`badge badge-${orderDetail.statusInfo.color}`) #{orderDetail.statusInfo.label}
-                //- .badge.badge-green Đã duyệt
-                //- .badge.badge-red Đã hủy
-              td.inner-center
-                div #{orderDetail.createdAtTime}
-                div #{orderDetail.createdAtDate}
-              td
+                .cell-primary #{order.createdAtDate}
+                .cell-secondary #{order.createdAtTime}
+              td.action-cell
                 .inner-buttons
-                  a(href=`/${pathAdmin}/order/edit/${orderDetail.id}` class="inner-edit")
-                    <i class="fa-regular fa-pen-to-square"></i>
-                  button(class="inner-delete")
-                    <i class="fa-regular fa-trash-can"></i>
-  //- End Section 6
-
-  include ../partials/section-7.pug
+                  a.inner-edit(href=`/${pathAdmin}/order/edit/${order.id}` title=(permissions.includes("order-edit") ? "Xử lý đơn hàng" : "Xem chi tiết") aria-label=`Xem đơn ${order.code}`)
+                    +icon("arrow", 17)
+          if !orderList.length
+            tr
+              td.empty-cell(colspan="6") Không tìm thấy đơn đặt tour phù hợp.
+    include ../partials/section-7.pug

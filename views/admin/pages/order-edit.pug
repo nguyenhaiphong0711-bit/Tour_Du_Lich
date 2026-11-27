@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
   if orderDetail.paymentReview
@@ -9,26 +10,27 @@ block main
       p.payment-warning Đơn đã hủy. Nếu đơn thanh toán trực tuyến hết hạn giữ chỗ, vui lòng đặt lại.
 
 
-  h1.box-title Đơn hàng: #{orderDetail.code}
+  +page-header(`Đơn hàng ${orderDetail.code}`, "Thông tin khách hàng, hành trình và lịch sử thanh toán.")
+    a.btn.btn-outline(href=`/${pathAdmin}/order/list`) Quay lại danh sách
 
   //- Section 8
   .section-8
-    form(id="order-edit-form")
+    form(id=(permissions.includes("order-edit") ? "order-edit-form" : "order-view-form"))
       .inner-group(style="display: none;")
         label(for="id" class="inner-label") Id
-        input(type="text" id="id" name="id" value=orderDetail.id)
+        input(disabled=!permissions.includes("order-edit") type="text" id="id" name="id" value=orderDetail.id)
       .inner-group
         label(for="fullName" class="inner-label") Tên khách hàng
-        input(type="text" id="fullName" name="fullName" value=orderDetail.fullName)
+        input(disabled=!permissions.includes("order-edit") type="text" id="fullName" name="fullName" value=orderDetail.fullName)
       .inner-group
         label(for="phone" class="inner-label") Số điện thoại
-        input(type="text" id="phone" name="phone" value=orderDetail.phone)
+        input(disabled=!permissions.includes("order-edit") type="text" id="phone" name="phone" value=orderDetail.phone)
       .inner-group.inner-two-col
         label(for="note" class="inner-label") Ghi chú
-        textarea(id="note" name="note") #{orderDetail.note}
+        textarea(disabled=!permissions.includes("order-edit") id="note" name="note") #{orderDetail.note}
       .inner-group
         label(for="paymentMethod" class="inner-label") Phương thức thanh toán
-        select(id="paymentMethod" name="paymentMethod")
+        select(disabled id="paymentMethod" name="paymentMethod")
           each item in paymentMethodList
             option(
               value=item.value
@@ -36,7 +38,7 @@ block main
               ) #{item.label}
       .inner-group
         label(for="paymentStatus" class="inner-label") Trạng thái thanh toán
-        select(id="paymentStatus" name="paymentStatus")
+        select(disabled=(!permissions.includes("order-edit") || ["vnpay", "zalopay"].includes(orderDetail.paymentMethod)) id="paymentStatus" name="paymentStatus")
           each item in paymentStatusList
             option(
               value=item.value
@@ -44,10 +46,10 @@ block main
               ) #{item.label}
       .inner-group
         label(class="inner-label") Ngày đặt
-        input(type="datetime-local" value=orderDetail.createdAtFormat readonly)
+        input(disabled=!permissions.includes("order-edit") type="datetime-local" value=orderDetail.createdAtFormat readonly)
       .inner-group
         label(for="status" class="inner-label") Trạng thái
-        select(id="status" name="status")
+        select(disabled=!permissions.includes("order-edit") id="status" name="status")
           each item in statusList
             option(
               value=item.value
@@ -75,8 +77,9 @@ block main
           div Giảm: #{Number(orderDetail.discount || 0).toLocaleString("vi-VN")}đ
           //- div Mã giảm: TOURMUAHE2024
           div Thanh toán: <span class="inner-hl">#{Number(orderDetail.total || 0).toLocaleString("vi-VN")}đ</span>
-      .inner-button.inner-two-col
-        button Cập nhật
+      if permissions.includes("order-edit")
+        .inner-button.inner-two-col
+          button(type="submit") Lưu thay đổi
     .inner-back
       a(href=`/${pathAdmin}/order/list`) Quay lại danh sách
   //- End Section 8

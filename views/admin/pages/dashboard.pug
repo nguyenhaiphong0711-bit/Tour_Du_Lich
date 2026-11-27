@@ -1,79 +1,124 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
-  if (permissions.includes("dashboard-view"))
-    .workspace-intro
-      .intro-copy
-        span.eyebrow KHÔNG GIAN ĐIỀU HÀNH
-        h1 Chào #{account.fullName},
-        p Mỗi hành trình tốt bắt đầu từ sự chuẩn bị chu đáo.
-        if permissions.includes("tour-create")
-          a.intro-button(href=`/${pathAdmin}/tour/create`)
-            i.fa-solid.fa-plus
-            |  Tạo chuyến đi mới
-      .intro-mark(aria-hidden="true")
-        i.fa-regular.fa-compass
-
-    //- Section 1
-    .section-1
-      .inner-item
-        .inner-icon
-          img(src="/admin/assets/images/section-1-icon-1.svg", alt="")
-        .inner-content
-          .inner-title Tài khoản quản trị
-          .inner-number #{overview.totalAdmin.toLocaleString("vi-VN")}
-      .inner-item
-        .inner-icon
-          img(src="/admin/assets/images/section-1-icon-2.svg", alt="")
-        .inner-content
-          .inner-title Đơn hàng
-          .inner-number #{overview.totalOrder.toLocaleString("vi-VN")}
-      .inner-item
-        .inner-icon
-          img(src="/admin/assets/images/section-1-icon-3.svg", alt="")
-        .inner-content
-          .inner-title Doanh thu đã thanh toán
-          .inner-number #{overview.totalRevenue.toLocaleString("vi-VN")}đ
-    //- End Section 1
-
-    //- Section 2
-    .section-2
-      .inner-head
-        .inner-title Biểu đồ doanh thu
-        .inner-filter
-          input(type="month" input-change-month)
+  +page-header("Tổng quan", "Theo dõi hoạt động kinh doanh và những chuyến đi sắp tới.")
+    if permissions.includes("tour-create")
+      a.btn.btn-primary(href=`/${pathAdmin}/tour/create`)
+        +icon("plus", 18)
+        | Tạo tour mới
+  .metric-grid
+    .metric-card
+      .metric-top
+        span Doanh thu đã thanh toán
+        .metric-icon.indigo
+          +icon("wallet")
+      strong.metric-value #{overview.totalRevenue.toLocaleString("vi-VN")}₫
+      .metric-note
+        span.indicator.indicator-success
+        | Không bao gồm đơn đã hủy
+    .metric-card
+      .metric-top
+        span Tổng đơn đặt tour
+        .metric-icon.blue
+          +icon("orders")
+      strong.metric-value #{overview.totalOrder.toLocaleString("vi-VN")}
+      .metric-note Tất cả đơn chưa xóa
+    .metric-card
+      .metric-top
+        span Tour đang mở bán
+        .metric-icon.green
+          +icon("map")
+      strong.metric-value #{overview.activeTours.toLocaleString("vi-VN")}
+      .metric-note Còn chỗ và chưa qua ngày khởi hành
+    .metric-card
+      .metric-top
+        span Đơn chờ xử lý
+        .metric-icon.amber
+          +icon("clock")
+      strong.metric-value #{overview.pendingOrders.toLocaleString("vi-VN")}
+      .metric-note
+        if permissions.includes("order-view")
+          a(href=`/${pathAdmin}/order/list?status=initial`) Xem danh sách
+        else
+          span Đơn ở trạng thái khởi tạo
+  .dashboard-grid
+    section.panel.section-2.revenue-panel
+      .panel-heading.inner-head
+        div
+          h2.inner-title Doanh thu theo ngày
+          p.panel-description So sánh tháng đã chọn với tháng liền trước.
+        label.month-control
+          span.sr-only Tháng thống kê
+          input(type="month" input-change-month aria-label="Tháng thống kê")
+      .chart-legend
+        span
+          i.legend-dot.current
+          | Tháng được chọn
+        span
+          i.legend-dot.previous
+          | Tháng trước
       .inner-chart
-        canvas(id="revenue-chart")
-    //- End Section 2
-
-    //- Section 3
-    .section-3
-      .inner-title Đơn hàng mới
+        canvas#revenue-chart(aria-label="Biểu đồ doanh thu" role="img")
+      p.chart-message(role="status" hidden)
+    section.panel.status-panel
+      .panel-heading
+        div
+          h2 Tình trạng đơn hàng
+          p.panel-description Tổng hợp trên toàn hệ thống.
+      .order-ring(style=`--done:${overview.totalOrder ? (overview.doneOrders / overview.totalOrder * 100) : 0}%`)
+        .ring-center
+          strong #{overview.totalOrder}
+          span đơn đặt tour
+      .status-summary
+        each row in [{ label: "Hoàn thành", count: overview.doneOrders, color: "green" }, { label: "Chờ xử lý", count: overview.pendingOrders, color: "amber" }, { label: "Đã hủy", count: overview.cancelledOrders, color: "muted" }]
+          .status-summary-row
+            span
+              i(class=`status-dot ${row.color}`)
+              | #{row.label}
+            strong #{row.count}
+      if permissions.includes("order-view")
+        a.panel-footer-link(href=`/${pathAdmin}/order/list`)
+          | Quản lý đơn đặt tour
+          +icon("arrow", 16)
+  section.panel.recent-panel
+    .panel-heading
+      div
+        h2 Đơn đặt tour gần đây
+        p.panel-description Những yêu cầu mới nhất từ khách hàng.
+      if permissions.includes("order-view")
+        a.btn.btn-outline.btn-sm(href=`/${pathAdmin}/order/list`)
+          | Xem tất cả
+          +icon("arrow", 15)
+    if permissions.includes("order-view")
       .table-1
         table
           thead
             tr
-              th Mã
-              th Thông tin khách
-              th Danh sách tour
+              th Mã đơn / khách hàng
+              th Chuyến đi
+              th Tổng tiền
               th Thanh toán
               th Trạng thái
-              th.text-right Ngày đặt
+              th Ngày đặt
           tbody
             each order in recentOrders
               tr
                 td
-                  a.inner-code(href=`/${pathAdmin}/order/edit/${order.id}`) #{order.code}
+                  a.cell-primary(href=`/${pathAdmin}/order/edit/${order.id}`) #{order.code}
+                  .cell-secondary #{order.fullName}
                 td
-                  div #{order.fullName}
-                  .inner-time #{order.phone}
+                  .cell-primary #{(order.items[0] && order.items[0].name) || "Tour chưa xác định"}
+                  .cell-secondary #{order.items.length} tour trong đơn
+                td.money #{Number(order.total || 0).toLocaleString("vi-VN")}₫
                 td
-                  each item in order.items
-                    div #{item.name}
-                td
-                  strong #{Number(order.total || 0).toLocaleString("vi-VN")}đ
-                  div #{order.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
+                  span(class=`badge ${order.paymentStatus === "paid" ? "badge-green" : "badge-orange"}`) #{order.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
                 td
                   - const info = statusList.find(item => item.value === order.status) || { label: "Chưa xác định", color: "orange" }
                   span(class=`badge badge-${info.color}`) #{info.label}
-                td.text-right #{moment(order.createdAt).format("DD/MM/YYYY HH:mm")}
+                td.cell-secondary #{moment(order.createdAt).format("DD/MM/YYYY")}
+            if !recentOrders.length
+              tr
+                td.empty-cell(colspan="6") Chưa có đơn đặt tour. Các đơn mới sẽ xuất hiện tại đây.
+    else
+      p.empty-cell Tài khoản chưa có quyền xem chi tiết đơn hàng.

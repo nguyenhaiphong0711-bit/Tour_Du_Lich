@@ -1,23 +1,25 @@
+include ../mixins/icon.pug
 header.header
-  .inner-logo
-    a(href=`/${pathAdmin}`)
-      span.brand-icon
-        i.fa-regular.fa-compass
-      span.brand-name Tour
-        small WORKSPACE
-  .inner-wrap
+  .header-start
+    button.inner-button-menu(type="button" aria-label="Thu gọn hoặc mở menu" aria-controls="admin-sidebar" aria-expanded="false")
+      +icon("menu")
     .header-context
-      span Quản trị
-      i.fa-solid.fa-chevron-right
-      strong #{pageTitle}
-    .inner-account
-      .inner-avatar
+      a(href=`/${pathAdmin}`) Không gian quản trị
+      +icon("chevron", 12)
+      span #{pageTitle}
+  .header-tools
+    if permissions.includes("tour-view")
+      form.global-search(action=`/${pathAdmin}/tour/list` method="get" role="search")
+        +icon("search", 18)
+        input#global-search(type="search" name="keyword" placeholder="Tìm nhanh tour..." aria-label="Tìm nhanh tour")
+        kbd ⌘ K
+    a.header-account(href=`/${pathAdmin}/profile/edit` aria-label="Thông tin tài khoản")
+      .avatar
         if account.avatar
-          img(src=account.avatar alt=account.fullName)
+          img(src=account.avatar alt="")
         else
-          span.avatar-initial #{(account.fullName || "A").charAt(0).toUpperCase()}
-      .inner-text
-        .inner-name #{account.fullName}
-        .inner-role #{account.roleName || "Chưa gán nhóm quyền"}
-    button.inner-button-menu(aria-label="Mở menu quản trị")
-      i.fa-solid.fa-bars
+          span #{(account.fullName || "A").charAt(0).toUpperCase()}
+      .account-text
+        strong #{account.fullName}
+        span #{account.roleName || "Chưa gán nhóm quyền"}
+      +icon("chevron", 14)

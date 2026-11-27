@@ -135,6 +135,9 @@ let mongo, server, browser, dbPath;
     path: "docs/screenshots/admin-dashboard.png",
     fullPage: true,
   });
+  await page.click(".inner-button-menu");
+  if(!(await page.locator("body").evaluate(element => element.classList.contains("nav-collapsed")))) throw Error("Desktop collapse failed");
+  await page.click(".inner-button-menu");
   await page.goto("http://127.0.0.1:5051/admin/tour/list", {
     waitUntil: "networkidle",
     timeout: 45000,
@@ -157,6 +160,25 @@ let mongo, server, browser, dbPath;
     path: "docs/screenshots/admin-edit.png",
     fullPage: true,
   });
+  await page.waitForFunction(() => filePond.avatar.getFile()?.file?.size > 0 && filePondMulti.images.getFiles().every(item => item.file?.size > 0));
+  const originalImages = [...tours[0].images];
+  for(const name of ["Hà Giang · Hành trình mới", "Hà Giang · Lưu lần hai"]) {
+    await page.fill("#name", name);
+    const savedResponse = page.waitForResponse(response => response.url().includes("/tour/edit/") && response.request().method() === "PATCH");
+    await page.click("#tour-edit-form button[type=submit]");
+    const result = await (await savedResponse).json();
+    if(result.code !== "success") throw Error("Tour save failed: " + JSON.stringify(result));
+    const saved = await Tour.findById(tours[0].id);
+    if(saved.name !== name || JSON.stringify(saved.images) !== JSON.stringify(originalImages)) throw Error("Tour save changed images or name");
+  }
+  await page.locator(".inner-upload-image-multi .filepond--action-remove-item").click();
+  const removedResponse = page.waitForResponse(response => response.url().includes("/tour/edit/") && response.request().method() === "PATCH");
+  await page.click("#tour-edit-form button[type=submit]");
+  if((await (await removedResponse).json()).code !== "success" || (await Tour.findById(tours[0].id)).images.length) throw Error("Remove gallery image failed");
+  for(const [route, screenshot] of [["category/list", "admin-categories"], ["order/list", "admin-orders"], ["setting/list", "admin-settings"]]) {
+    await page.goto("http://127.0.0.1:5051/admin/" + route, { waitUntil: "networkidle", timeout: 45000 });
+    await page.screenshot({ path: `docs/screenshots/${screenshot}.png`, fullPage: true });
+  }
   const mobile = await browser.newContext({
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 1,
@@ -179,9 +201,19 @@ let mongo, server, browser, dbPath;
     fullPage: true,
   });
   await mobilePage.click(".inner-button-menu");
-  if (!(await mobilePage.locator(".sider").isVisible()))
-    throw Error("Mobile nav failed");
+  if((await mobilePage.locator(".inner-button-menu").getAttribute("aria-expanded")) !== "true") throw Error("Mobile nav failed");
+  await mobilePage.keyboard.press("Escape");
+  if((await mobilePage.locator(".inner-button-menu").getAttribute("aria-expanded")) !== "false") throw Error("Escape did not close mobile nav");
+  await mobilePage.click(".inner-button-menu");
   await mobilePage.click(".sider-overlay", { position: { x: 350, y: 30 } });
+  await mobilePage.goto("http://127.0.0.1:5051/admin/tour/list", { waitUntil: "networkidle", timeout: 45000 });
+  await mobilePage.screenshot({ path: "docs/screenshots/admin-mobile-tours.png", fullPage: true });
+  const listWidth = await mobilePage.evaluate(() => document.documentElement.scrollWidth);
+  if(listWidth > 391) throw Error("Mobile tour list overflow " + listWidth);
+  await mobilePage.goto("http://127.0.0.1:5051/admin/tour/edit/" + tours[0].id, { waitUntil: "networkidle", timeout: 45000 });
+  await mobilePage.screenshot({ path: "docs/screenshots/admin-mobile-edit.png", fullPage: true });
+  const formWidth = await mobilePage.evaluate(() => document.documentElement.scrollWidth);
+  if(formWidth > 391) throw Error("Mobile form overflow " + formWidth);
   await page.goto("http://127.0.0.1:5051/", {
     waitUntil: "networkidle",
     timeout: 45000,
@@ -193,6 +225,7 @@ let mongo, server, browser, dbPath;
       browserErrors: errors,
       mobile: dimensions,
       searchRows: rows,
+      repeatedSaves: 2, retainedImages: true, removedGallery: true, mobileListWidth: listWidth, mobileFormWidth: formWidth,
       screenshots: "docs/screenshots",
     }),
   );

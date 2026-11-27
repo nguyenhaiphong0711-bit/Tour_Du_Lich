@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
   
-  h1.box-title Chỉnh sửa tài khoản quản trị
+  +page-header("Chỉnh sửa tài khoản", "Cập nhật thông tin, trạng thái và nhóm quyền.")
 
   //- Section 8
   .section-8

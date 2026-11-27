@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
 
-  h1.box-title Tài khoản quản trị
+  +page-header("Tài khoản quản trị", "Quản lý thành viên và quyền truy cập hệ thống.")
 
   .section-4
     .inner-wrap

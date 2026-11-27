@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
 
-  h1.box-title Thông tin liên hệ
+  +page-header("Đăng ký nhận tin", "Danh sách khách quan tâm đến lịch trình và ưu đãi mới.")
 
   .section-5
     .inner-search

@@ -1,0 +1,126 @@
+form.tour-form(id=(editing ? "tour-edit-form" : "tour-create-form"))
+  if editing
+    input(type="hidden" name="id" value=formTour.id)
+    input(type="hidden" name="updatedAt" value=formTour.updatedAt.toISOString())
+  .form-layout
+    .form-main
+      section.form-section
+        .form-section-heading
+          span.form-section-number 01
+          div
+            h2 Thông tin hành trình
+            p Những thông tin giúp khách hàng tìm đúng chuyến đi.
+        .form-fields
+          .inner-group.inner-two-col
+            label.inner-label(for="name") Tên tour
+            input(type="text" id="name" name="name" value=formTour.name placeholder="Ví dụ: Hà Giang – Hành trình trên miền đá" maxlength="200" required)
+          .inner-group
+            label.inner-label(for="category") Danh mục
+            select(id="category" name="category" required)
+              option(value="") Chọn danh mục
+              +options(categoryList, 0, formTour.category)
+          .inner-group
+            label.inner-label(for="departureDate") Ngày khởi hành
+            input(type="date" id="departureDate" name="departureDate" value=formTour.departureDateFormat required)
+          .inner-group
+            label.inner-label(for="time") Thời gian
+            input(type="text" id="time" name="time" value=formTour.time placeholder="3 ngày 2 đêm" maxlength="100")
+          .inner-group
+            label.inner-label(for="vehicle") Phương tiện
+            input(type="text" id="vehicle" name="vehicle" value=formTour.vehicle placeholder="Ô tô, máy bay..." maxlength="100")
+          .inner-group.inner-two-col
+            label.inner-label Điểm khởi hành
+            .inner-checkbox-list
+              each item in cityList
+                .inner-checkbox-item
+                  input(type="checkbox" id=`location-${item.id}` name="locations" value=item.id checked=formTour.locations.includes(item.id))
+                  label(for=`location-${item.id}`) #{item.name}
+              if !cityList.length
+                span Chưa có điểm khởi hành. Cần bổ sung địa điểm trước khi tạo tour.
+      section.form-section
+        .form-section-heading
+          span.form-section-number 02
+          div
+            h2 Giá bán và số chỗ
+            p Giá theo từng hành khách, đơn vị Việt Nam đồng.
+        .price-fields
+          each row in [{ key: "Adult", label: "Người lớn" }, { key: "Children", label: "Trẻ em" }, { key: "Baby", label: "Em bé" }]
+            .inner-group
+              label.inner-label(for=`price${row.key}`) Giá gốc · #{row.label}
+              input(type="number" id=`price${row.key}` name=`price${row.key}` value=formTour[`price${row.key}`] min="0" max="1000000000" step="1" placeholder="0")
+          each row in [{ key: "Adult", label: "Người lớn" }, { key: "Children", label: "Trẻ em" }, { key: "Baby", label: "Em bé" }]
+            .inner-group
+              label.inner-label(for=`priceNew${row.key}`) Giá bán · #{row.label}
+              input(type="number" id=`priceNew${row.key}` name=`priceNew${row.key}` value=formTour[`priceNew${row.key}`] min="0" max="1000000000" step="1" placeholder="Dùng giá gốc")
+          each row in [{ key: "Adult", label: "Người lớn" }, { key: "Children", label: "Trẻ em" }, { key: "Baby", label: "Em bé" }]
+            .inner-group
+              label.inner-label(for=`stock${row.key}`) Còn chỗ · #{row.label}
+              input(type="number" id=`stock${row.key}` name=`stock${row.key}` value=formTour[`stock${row.key}`] min="0" max="1000000000" step="1" placeholder="0")
+        p.field-hint Để trống giá bán để dùng giá gốc. Giá bán phải nhỏ hơn hoặc bằng giá gốc.
+      section.form-section
+        .form-section-heading
+          span.form-section-number 03
+          div
+            h2 Hình ảnh
+            p Ảnh rõ nét giúp hành trình thu hút hơn.
+        .form-fields
+          .inner-group
+            label.inner-label(for="avatar") Ảnh đại diện
+            .inner-upload-image(image-default=formTour.avatar)
+              input(type="file" id="avatar" name="avatar" accept="image/*" filepond-image)
+            p.field-hint Ảnh xuất hiện trong danh sách tour.
+          .inner-group
+            label.inner-label(for="images") Bộ sưu tập ảnh
+            .inner-upload-image-multi(list-image-default=JSON.stringify(formTour.images || []))
+              input(type="file" id="images" name="images" accept="image/*" filepond-image-multi multiple data-allow-reorder="true" data-max-files="10")
+            p.field-hint Tối đa 10 ảnh. Kéo thả để thay đổi thứ tự.
+      section.form-section
+        .form-section-heading
+          span.form-section-number 04
+          div
+            h2 Giới thiệu tour
+            p Điểm nổi bật, dịch vụ và thông tin cần biết.
+        .inner-group
+          label.sr-only(for="information") Thông tin tour
+          textarea(id="information" textarea-mce name="information") #{formTour.information}
+      section.form-section
+        .form-section-heading
+          span.form-section-number 05
+          div
+            h2 Lịch trình chi tiết
+            p Chia hành trình theo ngày và kéo thả để sắp xếp.
+        .inner-group.inner-schedule
+          .inner-schedule-list
+            each item, index in (formTour.schedules.length ? formTour.schedules : [{ title: "", description: "" }])
+              .inner-schedule-item
+                .inner-schedule-head
+                  button.inner-schedule-button.inner-move(type="button" title="Kéo để sắp xếp" aria-label="Kéo để sắp xếp lịch trình")
+                    +icon("menu", 17)
+                  input(type="text" value=item.title placeholder="Ngày 1: Khởi hành và khám phá" aria-label="Tiêu đề lịch trình")
+                  button.inner-schedule-button.inner-remove(type="button" title="Xóa ngày" aria-label="Xóa ngày trong lịch trình")
+                    +icon("trash", 16)
+                  button.inner-schedule-button.inner-more(type="button" title="Thu gọn / mở rộng" aria-label="Thu gọn hoặc mở rộng lịch trình" aria-expanded="true")
+                    +icon("chevron", 16)
+                .inner-schedule-body
+                  textarea(id=`schedule-description-${index}` textarea-mce aria-label=`Nội dung lịch trình ${index + 1}`) #{item.description}
+          button.inner-schedule-create(type="button") + Thêm ngày trong lịch trình
+    aside.form-aside
+      .publish-card
+        h2 Thiết lập hiển thị
+        .inner-group
+          label.inner-label(for="status") Trạng thái
+          select(id="status" name="status")
+            option(value="active" selected=formTour.status === "active") Hoạt động
+            option(value="inactive" selected=formTour.status === "inactive") Tạm dừng
+        .inner-group
+          label.inner-label(for="position") Thứ tự hiển thị
+          input(type="number" id="position" name="position" value=formTour.position min="0" step="1" placeholder="Tự động")
+          p.field-hint Số lớn hơn được xếp trước.
+        p.publish-note Tour chỉ hiển thị cho khách khi danh mục và các danh mục cha cùng hoạt động.
+        .inner-button
+          button(type="submit") #{editing ? "Lưu thay đổi" : "Tạo tour mới"}
+        .inner-back
+          a(href=`/${pathAdmin}/tour/list`) Quay lại danh sách
+      .publish-tip
+        strong Trước khi mở bán
+        | Kiểm tra giá, ngày khởi hành và số chỗ còn lại để khách đặt tour thuận lợi.

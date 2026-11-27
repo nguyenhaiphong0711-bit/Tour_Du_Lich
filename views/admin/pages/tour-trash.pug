@@ -1,26 +1,17 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 include ../mixins/change-status.pug
 
 block main
 
-  h1.box-title Thùng rác tour
+  +page-header("Thùng rác tour", "Khôi phục hoặc xóa vĩnh viễn những tour đã đưa vào thùng rác.")
 
   //- Section 5
   .section-5
     .inner-wrap
-      +change-status(
-        `/${pathAdmin}/tour/change-multi`,
-        [
-          {
-            label: "Khôi phục",
-            value: "undo"
-          },
-          {
-            label: "Xóa vĩnh viễn",
-            value: "destroy"
-          }
-        ]
-      )
+      - const trashActions = [{ label: "Khôi phục", value: "undo" }]
+      - if (permissions.includes("tour-delete")) trashActions.push({ label: "Xóa vĩnh viễn", value: "destroy" })
+      +change-status(`/${pathAdmin}/tour/change-multi`, trashActions)
       .inner-search
         <i class="fa-solid fa-magnifying-glass"></i>
         input(type="text" placeholder="Tìm kiếm tour đã xóa" search aria-label="Tìm tour đã xóa")
@@ -79,12 +70,13 @@ block main
                     data-api=`/${pathAdmin}/tour/undo/${item.id}`
                     )
                     <i class="fa-solid fa-rotate-left"></i>
-                  button(
-                    class="inner-delete"
-                    button-destroy
-                    data-api=`/${pathAdmin}/tour/destroy/${item.id}`
-                    )
-                    <i class="fa-regular fa-trash-can"></i>
+                  if permissions.includes("tour-delete")
+                    button(
+                      class="inner-delete"
+                      button-destroy
+                      data-api=`/${pathAdmin}/tour/destroy/${item.id}`
+                      )
+                      <i class="fa-regular fa-trash-can"></i>
   //- End Section 6
 
   include ../partials/section-7.pug

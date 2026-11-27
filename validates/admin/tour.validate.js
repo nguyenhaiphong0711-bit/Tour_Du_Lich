@@ -10,6 +10,7 @@ module.exports.createPost = async (req, res, next) => {
       updatedAt: Joi.date().iso(), clearAvatar: Joi.string().valid("true", "false"),
       name: Joi.string().trim().min(2).max(200).required(), category: Joi.string().hex().length(24).required(),
       position: Joi.number().integer().min(0).empty(""), status: Joi.string().valid("active", "inactive").required(),
+      imageOrder: Joi.string().max(20000),
       avatar: Joi.string().allow(""), images: Joi.string().allow(""), clearImages: Joi.string().valid("true", "false"),
       priceAdult: number, priceChildren: number, priceBaby: number,
       priceNewAdult: number, priceNewChildren: number, priceNewBaby: number,
@@ -35,6 +36,10 @@ module.exports.createPost = async (req, res, next) => {
     const locations = JSON.parse(req.body.locations);
     if(!Array.isArray(locations) || !locations.length || locations.length > 100 || locations.some(id => !/^[a-f0-9]{24}$/i.test(id))) throw new Error("Chọn ít nhất một điểm khởi hành hợp lệ.");
     if(await City.countDocuments({ _id: { $in: locations } }) !== new Set(locations).size) throw new Error("Điểm khởi hành không tồn tại.");
+    if(req.body.imageOrder !== undefined) {
+      const imageOrder = JSON.parse(req.body.imageOrder);
+      if(!Array.isArray(imageOrder) || imageOrder.length > 10 || imageOrder.some(item => typeof item !== "string" && !Number.isInteger(item))) throw new Error("Chỉ được chọn tối đa 10 ảnh hợp lệ.");
+    }
     const schedules = JSON.parse(req.body.schedules);
     if(!Array.isArray(schedules) || schedules.length > 100) throw new Error("Lịch trình không hợp lệ.");
     req.body.schedules = JSON.stringify(schedules.map(item => {

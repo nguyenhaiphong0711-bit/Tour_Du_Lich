@@ -6,10 +6,10 @@ html
     title #{pageTitle}
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css")
     link(rel="stylesheet", href="/admin/assets/css/style.css")
-    link(rel="stylesheet" href="/admin/assets/css/workspace.css")
     script.
       const pathAdmin = "#{pathAdmin}";
   body
+    a.skip-link(href="#main-content") Đến nội dung chính
 
     .page-account
       block main

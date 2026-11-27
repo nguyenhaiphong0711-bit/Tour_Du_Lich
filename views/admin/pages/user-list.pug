@@ -1,8 +1,8 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
-  h1.box-title Khách hàng
-  p.page-description Thông tin tổng hợp từ các đơn đặt tour. Không bao gồm tài khoản quản trị.
+  +page-header("Khách hàng", "Thông tin khách hàng được tổng hợp từ đơn đặt tour.")
   .section-5
     .inner-search
       i.fa-solid.fa-magnifying-glass

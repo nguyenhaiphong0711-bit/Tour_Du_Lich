@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
 
-  h1.box-title Nhóm quyền
+  +page-header("Nhóm quyền", "Quy định những chức năng mà từng nhóm có thể sử dụng.")
 
   .section-5
     .inner-wrap

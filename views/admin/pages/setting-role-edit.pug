@@ -1,8 +1,9 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
   
-  h1.box-title Chỉnh sửa nhóm quyền
+  +page-header("Chỉnh sửa nhóm quyền", "Điều chỉnh các chức năng được phép truy cập.")
 
   //- Section 8
   .section-8

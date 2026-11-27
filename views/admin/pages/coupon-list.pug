@@ -1,8 +1,8 @@
 extends ../layouts/default.pug
+include ../mixins/page-header.pug
 
 block main
-  h1.box-title Mã giảm giá
-  p.page-description Tạo mã mới hoặc nhập lại mã đã có để cập nhật. Mã được kiểm tra lại khi đặt tour.
+  +page-header("Mã giảm giá", "Tạo và quản lý các ưu đãi cho khách đặt tour.")
   .section-8
     form#coupon-admin-form
       .inner-group
