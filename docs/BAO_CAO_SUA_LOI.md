@@ -11,3 +11,5 @@ Giao diện mới dùng sidebar trắng, màu indigo, dashboard dữ liệu th�
 Kiểm tra hiện tại: 47/47 test tích hợp đạt; 81 file JavaScript kiểm tra cú pháp và 59 template Pug biên dịch đạt; kiểm thử trình duyệt đạt; npm audit báo 0 lỗ hổng tại ngày 27/11/2026. Chi tiết bằng chứng và giới hạn kiểm thử dịch vụ thật được ghi trong báo cáo đầy đủ.
 
 Bổ sung điều hướng: khôi phục tên Thông tin liên hệ; đưa Tài khoản quản trị và Phân quyền ra sidebar trực tiếp. Route và kiểm tra quyền được giữ nguyên; xem mục 9 trong báo cáo đầy đủ.
+
+CI bổ sung điều hướng: [45954343033 — đạt](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45954343033). Đã khôi phục nhóm quản trị riêng cho một tài khoản cũ sau xác nhận của chủ tài khoản; nhóm quyền cũ được giữ nguyên.

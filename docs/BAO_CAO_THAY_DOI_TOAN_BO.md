@@ -363,4 +363,6 @@ Server đánh dấu active state để chỉ đánh dấu một mục sidebar đ
 
 Bổ sung kiểm thử cho liên kết trực tiếp, dữ liệu liên hệ/nhóm quyền còn nguyên và chặn truy cập khi thiếu quyền; browser kiểm tra bấm ba liên kết cùng active state. Bộ kiểm thử tích hợp sau bổ sung có 47 trường hợp. Các ảnh trong mục 2 là ảnh chụp đợt trước bổ sung điều hướng này.
 
-Bản bổ sung điều hướng: [`ebc8341`](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/commit/ebc8341b29db95fa431c75ce8faaa46d72618092). [CI kiểm tra bản bổ sung](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45952990054). Các kết quả 45 test ở mục 6 thuộc mốc kiểm tra trước bổ sung này; bộ test hiện có 47 trường hợp.
+Bản bổ sung điều hướng: [`4d47f4a`](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/commit/4d47f4af4ed0d8a3ab8d24a7848dbbe3e37d1547). [CI bản bổ sung — đạt](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45954343033). Các kết quả 45 test ở mục 6 thuộc mốc kiểm tra trước bổ sung này; bộ test hiện có 47 trường hợp.
+
+Sau khi được chủ tài khoản xác nhận rõ phạm vi cấp quyền, đã tạo nhóm quản trị đầy đủ 18 quyền riêng và gán cho đúng một tài khoản quản trị được chỉ định trong database project-5. Đã đọc lại xác nhận quyền mới và nhóm cũ không đổi. Đây là cập nhật tài khoản riêng được phê duyệt, không phải cơ chế tự động nâng quyền trong ứng dụng.
