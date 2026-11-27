@@ -1192,16 +1192,25 @@ if(profileChangePasswordForm) {
 // Sider
 const sider = document.querySelector(".sider");
 if(sider) {
-  const pathNameCurrent = location.pathname;
-  const splitPathNameCurrent = pathNameCurrent.split("/");
-  const menuList = sider.querySelectorAll("a");
+  const pathNameCurrent = location.pathname.replace(/\/$/, "");
+  const menuList = Array.from(sider.querySelectorAll(".inner-menu a"));
+  let activeItem;
+  let activeLength = 0;
   menuList.forEach(item => {
     const href = item.getAttribute("href");
-    const splitHref = href.split("/");
-    if(splitPathNameCurrent[1] == splitHref[1] && splitPathNameCurrent[2] == splitHref[2]) {
-      item.classList.add("active");
+    if(!href.startsWith(`/${pathAdmin}/`)) return;
+    let section = href.replace(/\/list$/, "");
+    if(section === `/${pathAdmin}/profile/edit`) section = `/${pathAdmin}/profile`;
+    const matches = pathNameCurrent === section || pathNameCurrent.startsWith(section + "/");
+    if(matches && section.length > activeLength) {
+      activeItem = item;
+      activeLength = section.length;
     }
-  })
+  });
+  if(activeItem) {
+    activeItem.classList.add("active");
+    activeItem.setAttribute("aria-current", "page");
+  }
 }
 // End Sider
 

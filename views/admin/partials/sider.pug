@@ -44,14 +44,24 @@ nav.sider#admin-sidebar(aria-label="Điều hướng quản trị")
             span Mã giảm giá
       if permissions.includes("contact-view")
         li
-          a(href=`/${pathAdmin}/contact/list` title="Đăng ký nhận tin")
+          a(href=`/${pathAdmin}/contact/list` title="Thông tin liên hệ")
             +icon("mail")
-            span Đăng ký nhận tin
-      if permissions.includes("setting-manage")
+            span Thông tin liên hệ
+    if permissions.includes("setting-manage")
+      .nav-label QUẢN TRỊ HỆ THỐNG
+      ul.inner-menu
         li
-          a(href=`/${pathAdmin}/setting/list` title="Cài đặt hệ thống")
+          a(href=`/${pathAdmin}/setting/account-admin/list` title="Tài khoản quản trị")
+            +icon("users")
+            span Tài khoản quản trị
+        li
+          a(href=`/${pathAdmin}/setting/role/list` title="Phân quyền")
+            +icon("layers")
+            span Phân quyền
+        li
+          a(href=`/${pathAdmin}/setting/list` title="Cài đặt chung")
             +icon("settings")
-            span Cài đặt hệ thống
+            span Cài đặt chung
   .sidebar-bottom
     a.visit-site(href="/" target="_blank" rel="noopener" title="Xem website")
       +icon("external", 18)

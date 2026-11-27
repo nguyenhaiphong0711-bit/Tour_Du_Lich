@@ -179,6 +179,15 @@ let mongo, server, browser, dbPath;
     await page.goto("http://127.0.0.1:5051/admin/" + route, { waitUntil: "networkidle", timeout: 45000 });
     await page.screenshot({ path: `docs/screenshots/${screenshot}.png`, fullPage: true });
   }
+  for(const [label, path] of [["Thông tin liên hệ", "contact/list"], ["Tài khoản quản trị", "setting/account-admin/list"], ["Phân quyền", "setting/role/list"]]) {
+    await page.locator(".sider .inner-menu").getByRole("link", { name: label, exact: true }).click();
+    await page.waitForURL("**/admin/" + path);
+    const activeLinks = page.locator(".sider .inner-menu a.active");
+    if(await activeLinks.count() !== 1 || await activeLinks.first().getAttribute("href") !== "/admin/" + path) throw Error("Wrong active menu for " + path);
+  }
+  await page.locator(".table-2 .inner-edit").first().click();
+  await page.waitForURL("**/admin/setting/role/edit/**");
+  if(await page.locator(".sider .inner-menu a.active").getAttribute("href") !== "/admin/setting/role/list") throw Error("Role edit lost active menu");
   const mobile = await browser.newContext({
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 1,

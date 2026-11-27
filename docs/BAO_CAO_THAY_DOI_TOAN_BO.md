@@ -348,3 +348,17 @@ git diff 1d87a4b9fcae965a06046a58fc1a3827e52c505e main -- public/admin/assets/cs
 ```
 
 Các lệnh trên chỉ đọc. Không cần xóa database, tạo lại tài khoản hoặc reset lịch sử local để đọc báo cáo.
+
+## 9. Bổ sung điều hướng liên hệ và phân quyền
+
+Sau phản hồi về việc khó tìm trang, đã khôi phục nhãn **Thông tin liên hệ** và đưa **Tài khoản quản trị**, **Phân quyền** ra sidebar, trong nhóm **Quản trị hệ thống**. Trang và collection cũ được giữ nguyên. Nhãn “Đăng ký nhận tin” trước đó đã làm mục liên hệ khó nhận ra; phân quyền trước đó phải đi qua Cài đặt hệ thống → Nhóm quyền.
+
+| Mục | Đường dẫn | Quyền cần có |
+|---|---|---|
+| Thông tin liên hệ | `/admin/contact/list` | `contact-view` |
+| Tài khoản quản trị | `/admin/setting/account-admin/list` | `setting-manage` |
+| Phân quyền | `/admin/setting/role/list` | `setting-manage` |
+
+Đã sửa active state để chỉ đánh dấu một mục sidebar đúng nhất, kể cả khi mở form sửa nhóm quyền hoặc tài khoản. Các route và API kiểm tra quyền được giữ nguyên; không tự nâng quyền cho tài khoản thiếu quyền mới. Nếu nhóm cũ chưa có contact-view/setting-manage thì chủ website cần cấp đúng quyền theo README.
+
+Bổ sung kiểm thử cho liên kết trực tiếp, dữ liệu liên hệ/nhóm quyền còn nguyên và chặn truy cập khi thiếu quyền; browser kiểm tra bấm ba liên kết cùng active state. Bộ kiểm thử tích hợp sau bổ sung có 47 trường hợp. Các ảnh trong mục 2 là ảnh chụp đợt trước bổ sung điều hướng này.

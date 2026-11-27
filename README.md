@@ -10,6 +10,16 @@ Website đặt tour với Express, MongoDB/Mongoose và Pug. Backend giữ cấu
 
 Giao diện admin dùng sidebar trắng, điểm nhấn indigo, bảng ghép ảnh/tên tour và biểu mẫu theo nhóm. Vẫn dùng Pug, CSS và JavaScript hiện có. `index.js` là điểm khởi động; `app.js` cấu hình Express để kiểm thử mà không tự mở server.
 
+### Lối vào liên hệ và phân quyền
+
+Sidebar có các mục trực tiếp **Thông tin liên hệ**, **Tài khoản quản trị** và **Phân quyền**:
+
+- `/admin/contact/list`: thông tin liên hệ / email đăng ký nhận tin; cần `contact-view`.
+- `/admin/setting/account-admin/list`: tài khoản quản trị; cần `setting-manage`.
+- `/admin/setting/role/list`: tạo/sửa nhóm và các quyền; cần `setting-manage`.
+
+Nếu nhóm tài khoản cũ thiếu các quyền mới này thì mục tương ứng bị ẩn và truy cập trực tiếp trả 403; đây không phải mất trang hoặc mất dữ liệu. Chủ website có thể gán đúng nhóm/quyền, hoặc dùng lệnh `permissions` cho tài khoản quản trị được chỉ định theo hướng dẫn cập nhật bên dưới.
+
 ## Chạy dự án
 
 Yêu cầu Node.js 22 trở lên và MongoDB Atlas hoặc MongoDB replica set. Đặt tour, hoàn chỗ và xử lý thanh toán dùng transaction; MongoDB standalone không hỗ trợ các luồng này.

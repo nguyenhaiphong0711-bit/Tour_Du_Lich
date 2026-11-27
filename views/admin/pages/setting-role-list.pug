@@ -3,7 +3,7 @@ include ../mixins/page-header.pug
 
 block main
 
-  +page-header("Nhóm quyền", "Quy định những chức năng mà từng nhóm có thể sử dụng.")
+  +page-header("Phân quyền", "Quản lý nhóm quyền và các chức năng được phép sử dụng.")
 
   .section-5
     .inner-wrap
@@ -11,7 +11,7 @@ block main
         i.fa-solid.fa-magnifying-glass
         input(type="search" search placeholder="Tìm kiếm" aria-label="Tìm kiếm")
       .inner-button-create
-        a(href=`/${pathAdmin}/setting/role/create`) + Tạo mới
+        a(href=`/${pathAdmin}/setting/role/create`) + Tạo nhóm quyền
   //- Section 6
   .section-6
     .table-2

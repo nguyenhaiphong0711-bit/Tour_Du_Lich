@@ -231,7 +231,7 @@ module.exports.roleList = async (req, res) => {
   const roleList = await Role.find(find).sort({ createdAt: -1 }).skip(pageInfo.skip).limit(pageInfo.limit);
 
   res.render("admin/pages/setting-role-list", {
-    pageTitle: "Nhóm quyền",
+    pageTitle: "Phân quyền",
     pagination: pageInfo, listCount: roleList.length,
     roleList: roleList
   });

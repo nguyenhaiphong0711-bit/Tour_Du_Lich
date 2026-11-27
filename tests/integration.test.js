@@ -979,3 +979,31 @@ test("Đơn hủy được xác nhận trả tiền thủ công vẫn phải đ�
   assert.ok(saved.paidAt);
   assert.equal((await Tour.findById(tour.id)).stockAdult, 2);
 });
+
+test("Menu có lối vào trực tiếp liên hệ, tài khoản và phân quyền; dữ liệu cũ còn nguyên", async () => {
+  const Contact = require("../models/contact.model");
+  await Contact.create({ email: "lien-he-cu@example.com" });
+  const dashboard = await request(app).get("/admin/dashboard").set("Cookie", cookie);
+  for(const [path, label] of [["contact/list", "Thông tin liên hệ"], ["setting/account-admin/list", "Tài khoản quản trị"], ["setting/role/list", "Phân quyền"]]) {
+    assert.ok(dashboard.text.includes(`href="/admin/${path}"`));
+    assert.ok(dashboard.text.includes(`<span>${label}</span>`));
+    const page = await request(app).get(`/admin/${path}`).set("Cookie", cookie);
+    assert.equal(page.status, 200, path);
+  }
+  const contact = await request(app).get("/admin/contact/list").set("Cookie", cookie);
+  assert.match(contact.text, /lien-he-cu@example.com/);
+  const role = await Role.findById(account.role);
+  const permissionForm = await request(app).get(`/admin/setting/role/edit/${role.id}`).set("Cookie", cookie);
+  assert.equal(permissionForm.status, 200);
+  assert.match(permissionForm.text, /setting-manage/);
+  assert.deepEqual((await Role.findById(role.id)).permissions, role.permissions);
+});
+test("Không có quyền liên hệ/cài đặt vẫn bị chặn khi mở đường dẫn trực tiếp", async () => {
+  await Role.updateOne({ _id: account.role }, { permissions: ["tour-view"] });
+  const page = await request(app).get("/admin/tour/list").set("Cookie", cookie);
+  for(const path of ["contact/list", "setting/account-admin/list", "setting/role/list"]) {
+    assert.doesNotMatch(page.text, new RegExp(`href="/admin/${path}"`));
+    const blocked = await request(app).get(`/admin/${path}`).set("Cookie", cookie);
+    assert.equal(blocked.status, 403, path);
+  }
+});
