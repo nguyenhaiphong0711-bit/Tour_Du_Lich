@@ -1,4 +1,4 @@
-footer.footer
+footer.footer#lien-he
   .container
     .inner-top
       .inner-title Đăng ký nhận lịch trình và ưu đãi mới
@@ -15,6 +15,12 @@ footer.footer
               a(href=`/category/${item.slug}`) #{item.name}
           li
             a(href="/#lien-he") Liên hệ
+          if settingWebsiteInfo.phone
+            li
+              a(href=`tel:${settingWebsiteInfo.phone}`) Gọi #{settingWebsiteInfo.phone}
+          if settingWebsiteInfo.email
+            li
+              a(href=`mailto:${settingWebsiteInfo.email}`) #{settingWebsiteInfo.email}
     .inner-bottom
       .inner-copyright © #{new Date().getFullYear()} #{settingWebsiteInfo.websiteName}
       .inner-logo

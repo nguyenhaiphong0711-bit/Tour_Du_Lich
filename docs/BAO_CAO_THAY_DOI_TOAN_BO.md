@@ -12,11 +12,11 @@ Ngày bàn giao: **27/11/2026**. Repository: [nguyenhaiphong0711-bit/Tour_Du_Lic
 | `9d78b69622064b4d62e8e333e207ecf5a8e89616` | Hoàn thiện responsive và rà dữ liệu cũ; bộ ảnh UI trong báo cáo lấy từ CI tại mốc này. |
 | `efe948b67c3bbf40f0a4e94ca55cbfe7e491d978` | Mã nghiệp vụ hoàn chỉnh sau rà soát: bổ sung cờ đối soát khi xác nhận trả tiền thủ công cho đơn hủy; 45 test tích hợp. |
 
-**Lũy kế so với bản gốc: 132 file, gồm 38 file thêm và 94 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
+**Lũy kế so với bản gốc: 133 file, gồm 38 file thêm và 95 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
 
-Riêng đợt thiết kế lại và báo cáo này có **116 đường dẫn** thay đổi so với `1d87a4b`: 12 thêm, 103 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 132 file.
+Riêng đợt thiết kế lại và báo cáo này có **116 đường dẫn** thay đổi so với `1d87a4b`: 12 thêm, 103 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 133 file.
 
-[Bảng CSV đầy đủ 132 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
+[Bảng CSV đầy đủ 133 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
 
 ## 2. Giao diện admin được làm lại như thế nào
 
@@ -378,3 +378,7 @@ Kiểm chứng bản sửa hiển thị và phong cách: [CI 45956342532](https:
 | AGENTS.md | Chưa có hướng dẫn này. | Lưu quy ước phong cách theo code gốc cho các lần sửa tiếp. |
 | docs/SUA_HIEN_THI_VA_PHONG_CACH_CODE.md | Chưa có. | Báo cáo nguyên nhân từ dữ liệu thật và cách sửa. |
 | views/client/pages/tour-detail.pug | Nút đặt hiển thị dù dữ liệu chưa đủ. | Vẫn xem tour; chỉ có nút thêm giỏ khi đủ lịch/chỗ/điểm đi. |
+
+## 11. Khôi phục Tin Tức Mới ở trang chủ
+
+Khôi phục section-8 và mixin blog theo bố cục gốc: một bài lớn ở giữa, bốn bài nhỏ hai bên, dùng đủ ảnh blog-1 đến blog-5 đang có. Bỏ khối Cùng lên kế hoạch cho chuyến đi đã thay nhầm vị trí này. Tham số ảnh/tiêu đề được bổ sung vào blog-item-1 để tái sử dụng bố cục cũ. Liên kết Liên hệ trỏ tới footer qua id lien-he. Đây là khối tin tĩnh như mã gốc, chưa thêm hệ thống quản lý bài viết hoặc trang chi tiết tin tức.

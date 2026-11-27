@@ -1,14 +1,14 @@
-mixin blog-item-1()
+mixin blog-item-1(image = "/assets/images/blog-1.jpg", title = "Homestay “cổ tích” giữa Đà Lạt mộng mơ")
   .blog-item
     a(href="#")
       .inner-image
         img(
-          alt="" 
-          src="/assets/images/blog-1.jpg"
+          alt=title
+          src=image
           )
       .inner-content
         .inner-date 24/04/2025
-        h3.inner-title Homestay “cổ tích” giữa Đà Lạt mộng mơ
+        h3.inner-title #{title}
 
 
 mixin blog-item-2()
@@ -16,7 +16,7 @@ mixin blog-item-2()
     a(href="#")
       .inner-image
         img(
-          alt="" 
+          alt=""
           src="/assets/images/blog-2.jpg"
           )
       .inner-content

@@ -1,5 +1,6 @@
 extends ../layouts/default.pug
 include ../mixins/product.pug
+include ../mixins/blog.pug
 
 block main
   // Section 1
@@ -128,12 +129,21 @@ block main
           p.no-data Chưa có tour đang mở bán trong danh mục này.
         .inner-button
           a.button-outline(href=`/category/${section.category.slug}`) Xem tất cả
-  .section-4#lien-he
+  // Section 8
+  .section-8
     .container
-      h2.box-title Cùng lên kế hoạch cho chuyến đi
-      p Liên hệ để được tư vấn lịch trình và điểm khởi hành phù hợp.
-      if settingWebsiteInfo.phone
-        a.button-outline(href=`tel:${settingWebsiteInfo.phone}`) Gọi #{settingWebsiteInfo.phone}
-      if settingWebsiteInfo.email
-        p
-          a(href=`mailto:${settingWebsiteInfo.email}`) #{settingWebsiteInfo.email}
+      h2.box-title(
+        data-aos-duration="800"
+        data-aos="fade-up"
+        ) Tin Tức Mới
+      .inner-wrap(
+        data-aos-delay="150"
+        data-aos-duration="800"
+        data-aos="fade-up"
+        )
+        +blog-item-1()
+        +blog-item-2()
+        +blog-item-1("/assets/images/blog-4.jpg", "Đặc sản không thể bỏ qua khi đến với Đà Nẵng - Hội An")
+        +blog-item-1("/assets/images/blog-3.jpg", "Đảo Phú Quý Bình Thuận - Hot trend năm 2024")
+        +blog-item-1("/assets/images/blog-5.jpg", "Trekking cắm trại tại Đà Lạt - Cảm nhận Đà Lạt qua từng bước chân")
+  // End Section 8
