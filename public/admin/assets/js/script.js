@@ -1491,15 +1491,6 @@ if(boxPagination) {
   }
 }
 // End Box Pagination
-// Active navigation
-const currentPath = window.location.pathname;
-document.querySelectorAll(".sider a[href]").forEach(link => {
-  const href = link.getAttribute("href");
-  if(href && href !== "/" && (currentPath === href || currentPath.startsWith(href.replace(/\/(list|create)$/, "") + "/"))) {
-    link.classList.add("active"); link.setAttribute("aria-current", "page");
-  }
-});
-
 // Category filter
 const filterCategory = document.querySelector("[filter-category]");
 if(filterCategory) {
