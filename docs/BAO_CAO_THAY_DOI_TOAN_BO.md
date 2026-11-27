@@ -382,3 +382,7 @@ Kiểm chứng bản sửa hiển thị và phong cách: [CI 45956342532](https:
 ## 11. Khôi phục Tin Tức Mới ở trang chủ
 
 Khôi phục section-8 và mixin blog theo bố cục gốc: một bài lớn ở giữa, bốn bài nhỏ hai bên, dùng đủ ảnh blog-1 đến blog-5 đang có. Bỏ khối Cùng lên kế hoạch cho chuyến đi đã thay nhầm vị trí này. Tham số ảnh/tiêu đề được bổ sung vào blog-item-1 để tái sử dụng bố cục cũ. Liên kết Liên hệ trỏ tới footer qua id lien-he. Đây là khối tin tĩnh như mã gốc, chưa thêm hệ thống quản lý bài viết hoặc trang chi tiết tin tức.
+
+## 12. Giỏ hàng khi chuyển sang thanh toán
+
+Đồng bộ lại giỏ và tổng tiền sau khi tạo đơn, khi quay lại từ thanh toán hoặc thay đổi tab. Chặn bấm gửi đơn lặp khi đang xử lý, bỏ phản hồi tải giỏ cũ đến muộn và xử lý lỗi kết nối. Browser có ca ZaloPay ngay lần đầu gửi một tour hợp lệ rồi quay lại giỏ; trang chuyển thanh toán được giả lập, không gọi cổng thật. Việc này không xác nhận merchant ZaloPay thực tế đã hoạt động.

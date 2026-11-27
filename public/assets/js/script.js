@@ -403,6 +403,8 @@ if(couponForm) {
 // Order Form
 const orderForm = document.querySelector("#order-form");
 if(orderForm) {
+  let submitting = false;
+  const submitButton = orderForm.querySelector("button[type=submit], .inner-button button");
   const validator = new JustValidate('#order-form');
 
   validator
@@ -432,6 +434,9 @@ if(orderForm) {
       },
     ])
     .onSuccess((event) => {
+      if(submitting) {
+        return;
+      }
       const fullName = event.target.fullName.value;
       const phone = event.target.phone.value;
       const note = event.target.note.value;
@@ -444,6 +449,8 @@ if(orderForm) {
       })
 
       if(cart.length > 0) {
+        submitting = true;
+        submitButton.disabled = true;
         const dataFinal = {
           fullName: fullName,
           phone: phone,
@@ -473,6 +480,8 @@ if(orderForm) {
                 .locationFrom));
               cart = cart.filter(item => !placed.has(item.tourId + ":" + item.locationFrom));
               saveCart(cart);
+              drawMiniCart();
+              drawCart();
 
               switch(paymentMethod) {
                 case "money":
@@ -495,8 +504,17 @@ if(orderForm) {
 
             }
           })
+          .catch(() => {
+            notify.error("Chưa gửi được yêu cầu đặt tour. Vui lòng thử lại.");
+          })
+          .finally(() => {
+            submitting = false;
+            submitButton.disabled = false;
+          });
       } else {
-        notify.error("Vui lòng đặt ít nhất 1 tour!");
+        drawCart();
+        drawMiniCart();
+        notify.error("Vui lòng chọn ít nhất một tour có số lượng khách lớn hơn 0. Giỏ hàng đã được cập nhật.");
       }
     })
 
@@ -699,7 +717,9 @@ if(boxTourDetail && boxTourDetail.querySelector(".inner-button-add-cart")) {
 // End Box Tour Detail
 
 // Page Cart
+let cartRequestVersion = 0;
 const drawCart = () => {
+  const requestVersion = ++cartRequestVersion;
   const cart = JSON.stringify(readCart());
 
   fetch(`/cart/detail`, {
@@ -711,6 +731,9 @@ const drawCart = () => {
     })
     .then(res => res.json())
     .then(data => {
+      if(requestVersion !== cartRequestVersion) {
+        return;
+      }
       if(data.code == "error") {
         notify.error(data.message);
       }
@@ -889,3 +912,20 @@ if(pageCart) {
   drawCart();
 }
 // End Page Cart
+
+// Đồng bộ giỏ khi quay lại từ trang thanh toán hoặc thay đổi ở tab khác.
+window.addEventListener("pageshow", (event) => {
+  if(pageCart && event.persisted) {
+    drawCart();
+    drawMiniCart();
+  }
+});
+
+window.addEventListener("storage", (event) => {
+  if(event.key === "cart") {
+    drawMiniCart();
+    if(pageCart) {
+      drawCart();
+    }
+  }
+});

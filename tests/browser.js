@@ -14,6 +14,10 @@ const {
 const tempPath = fs.mkdtempSync(path.join(process.cwd(), ".test-tmp-"));
 process.env.TMPDIR = tempPath;
 process.env.JWT_SECRET = "preview-local-test-secret-at-least-32-characters";
+process.env.ZALOPAY_APPID = "test-app";
+process.env.ZALOPAY_KEY1 = "test-key-one";
+process.env.ZALOPAY_KEY2 = "test-key-two";
+process.env.ZALOPAY_DOMAIN = "https://payment.example.test";
 let mongo, server, browser, dbPath;
 (async () => {
   dbPath = fs.mkdtempSync(path.join(process.cwd(), ".test-db-"));
@@ -354,6 +358,43 @@ let mongo, server, browser, dbPath;
   if(formWidth > 391) {
     throw Error("Mobile form overflow " + formWidth);
   }
+  // ZaloPay lần đầu phải gửi đúng tour; quay lại không giữ giỏ cũ trên màn hình.
+  await page.goto("http://127.0.0.1:5051/cart", { waitUntil: "networkidle" });
+  await page.evaluate(item => localStorage.setItem("cart", JSON.stringify([item])), {
+    tourId: tours[1].id,
+    locationFrom: city.id,
+    checked: true,
+    quantityAdult: 1,
+    quantityChildren: 0,
+    quantityBaby: 0
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  await page.fill("#fullname-input", "Khách kiểm tra ZaloPay");
+  await page.fill("#phone-input", "0901234567");
+  await page.check("#methodZaloPay");
+  await page.route("**/order/payment-zalopay?**", route => route.fulfill({
+    status: 200,
+    contentType: "text/html",
+    body: "<h1>Payment handoff test</h1>"
+  }));
+  const checkoutResponse = page.waitForResponse(response => response.url().endsWith("/order/create") && response.request().method() === "POST");
+  await page.locator("#order-form .inner-button button").click();
+  const checkout = await checkoutResponse;
+  const sent = checkout.request().postDataJSON();
+  if(sent.paymentMethod !== "zalopay" || sent.items.length !== 1 || sent.items[0].quantityAdult !== 1) {
+    throw Error("Wrong first ZaloPay checkout payload");
+  }
+  const createdOrder = await checkout.json();
+  if(createdOrder.code !== "success") {
+    throw Error("ZaloPay order creation failed: " + JSON.stringify(createdOrder));
+  }
+  await page.waitForURL("**/order/payment-zalopay?**");
+  await page.goBack({ waitUntil: "networkidle" });
+  await page.waitForFunction(() => document.querySelectorAll("[cart-list] .inner-tour-item").length === 0);
+  if(await page.locator("[cart-total]").textContent() !== "0") {
+    throw Error("Cart total is stale after returning from payment");
+  }
+  await page.unroute("**/order/payment-zalopay?**");
   for(const broken of ["{", "{}", '[null,1,{"tourId":"bad"}]']) {
     await page.evaluate(value => localStorage.setItem("cart", value), broken);
     await page.goto("http://127.0.0.1:5051/cart", {
