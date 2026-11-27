@@ -798,3 +798,20 @@ test("Tour trong danh mục tạm dừng vẫn sửa được ở admin, không 
   assert.equal(response.body.code, "success");
   assert.equal((await request(app).get(`/tour/detail/${tour.slug}`)).status, 302);
 });
+
+
+test("Đăng nhập cùng origin không bị domain ngrok cũ chặn, origin bên ngoài vẫn bị từ chối", async () => {
+  const previous = process.env.WEBSITE_DOMAIN;
+  process.env.WEBSITE_DOMAIN = "https://old-preview.example.com";
+  try {
+    for(const host of ["localhost:5000", "127.0.0.1:5000"]) {
+      const response = await request(app).post("/admin/account/login").set("Host", host).set("Origin", `http://${host}`).send({ email: account.email, password: "Admin123!" });
+      assert.equal(response.body.code, "success", JSON.stringify(response.body));
+    }
+    const external = await request(app).post("/admin/account/login").set("Host", "localhost:5000").set("Origin", "https://untrusted.example.com").send({ email: account.email, password: "Admin123!" });
+    assert.equal(external.status, 403);
+  } finally {
+    if(previous === undefined) delete process.env.WEBSITE_DOMAIN;
+    else process.env.WEBSITE_DOMAIN = previous;
+  }
+});

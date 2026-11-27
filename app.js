@@ -18,8 +18,11 @@ app.use((req, res, next) => {
   if(req.path.startsWith("/admin") || req.path.startsWith("/order")) res.set("Cache-Control", "no-store");
   if(!["GET", "HEAD", "OPTIONS"].includes(req.method) && req.path.startsWith("/admin")) {
     const origin = req.get("origin");
-    const expected = process.env.WEBSITE_DOMAIN ? new URL(process.env.WEBSITE_DOMAIN).origin : `${req.protocol}://${req.get("host")}`;
-    if(origin && origin !== expected) return res.status(403).json({ code: "error", message: "Nguồn yêu cầu không hợp lệ." });
+    const allowedOrigins = new Set([new URL(`${req.protocol}://${req.get("host")}`).origin]);
+    if(process.env.WEBSITE_DOMAIN) {
+      try { allowedOrigins.add(new URL(process.env.WEBSITE_DOMAIN).origin); } catch (error) { /* Địa chỉ hiện tại vẫn được kiểm tra độc lập. */ }
+    }
+    if(origin && !allowedOrigins.has(origin)) return res.status(403).json({ code: "error", message: "Nguồn yêu cầu không hợp lệ. Vui lòng mở trang đăng nhập từ đúng địa chỉ website." });
   }
   next();
 });
