@@ -967,3 +967,15 @@ test("Tài khoản có mã nhóm quyền cũ không hợp lệ vẫn mở đư�
   assert.equal(response.status, 200);
   assert.match(response.text, /Chưa gán nhóm quyền/);
 });
+
+test("Đơn hủy được xác nhận trả tiền thủ công vẫn phải đánh dấu đối soát", async () => {
+  const order = await booking.create(payload({ paymentMethod: "bank" }));
+  const body = { fullName: order.fullName, phone: order.phone, note: "", paymentMethod: "bank", paymentStatus: "paid", status: "cancel" };
+  const response = await request(app).patch(`/admin/order/edit/${order.id}`).set("Cookie", cookie).send(body);
+  assert.equal(response.body.code, "success");
+  const saved = await Order.findById(order.id);
+  assert.equal(saved.paymentReview, true);
+  assert.equal(saved.stockReleased, true);
+  assert.ok(saved.paidAt);
+  assert.equal((await Tour.findById(tour.id)).stockAdult, 2);
+});

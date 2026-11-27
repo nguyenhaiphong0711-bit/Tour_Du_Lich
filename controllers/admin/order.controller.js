@@ -81,8 +81,8 @@ module.exports.editPatch = async (req, res) => {
       if(data.status === "done" && data.paymentStatus !== "paid") throw new Error("Cần xác nhận thanh toán trước khi hoàn thành.");
       if(data.status === "cancel" && order.status !== "cancel") {
         await bookingHelper.release(order, session);
-        if(order.paymentStatus === "paid") order.paymentReview = true;
       }
+      if(data.status === "cancel" && data.paymentStatus === "paid") order.paymentReview = true;
       if(order.paymentStatus !== "paid" && data.paymentStatus === "paid") order.paidAt = new Date();
       Object.assign(order, data, { updatedBy: req.account.id });
       await order.save({ session });
