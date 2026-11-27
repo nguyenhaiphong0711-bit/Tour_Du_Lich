@@ -63,7 +63,7 @@ Tài khoản chưa có nhóm quyền vẫn vào được thông tin cá nhân, n
 
 Tự tạo danh mục với tên tùy ý rồi gán tour vào danh mục. Trang chủ hiển thị các danh mục gốc đang hoạt động, lấy tối đa 8 tour mỗi nhóm và bao gồm tour trong danh mục con nhiều cấp. Danh mục ưu tiên được đưa lên trước. Menu sắp theo vị trí và hỗ trợ nhiều cấp. Danh mục bị xóa/tạm dừng làm cả nhánh ẩn phía khách nhưng giữ dữ liệu tour trong admin để có thể khôi phục.
 
-Khu tour giờ chót lấy tour giảm giá, còn chỗ và khởi hành trong 30 ngày tới. Tour quá ngày đi/hết chỗ bị ẩn khỏi danh sách mở bán. Form sửa tour có kiểm tra thời điểm cập nhật để không ghi đè số chỗ vừa có khách đặt; khi báo xung đột cần tải lại biểu mẫu. Sau mỗi lần lưu thành công form nhận phiên bản mới để lưu tiếp. Ảnh cũ được giữ theo URL đã có của chính tour; chỉ ảnh mới được tải lên. Bỏ ảnh khỏi biểu mẫu rồi lưu sẽ xóa tham chiếu trong dữ liệu tour.
+Khối Khám phá các tour lấy tour hoạt động theo vị trí. Tour thiếu lịch/hết chỗ vẫn xem được; giỏ hàng và tạo đơn kiểm tra điều kiện đặt riêng. Form sửa tour có kiểm tra thời điểm cập nhật để không ghi đè số chỗ vừa có khách đặt; khi báo xung đột cần tải lại biểu mẫu. Sau mỗi lần lưu thành công form nhận phiên bản mới để lưu tiếp. Ảnh cũ được giữ theo URL đã có của chính tour; chỉ ảnh mới được tải lên. Bỏ ảnh khỏi biểu mẫu rồi lưu sẽ xóa tham chiếu trong dữ liệu tour.
 
 ## Đơn hàng và thanh toán
 

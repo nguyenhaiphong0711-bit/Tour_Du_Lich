@@ -12,11 +12,11 @@ Ngày bàn giao: **27/11/2026**. Repository: [nguyenhaiphong0711-bit/Tour_Du_Lic
 | `9d78b69622064b4d62e8e333e207ecf5a8e89616` | Hoàn thiện responsive và rà dữ liệu cũ; bộ ảnh UI trong báo cáo lấy từ CI tại mốc này. |
 | `efe948b67c3bbf40f0a4e94ca55cbfe7e491d978` | Mã nghiệp vụ hoàn chỉnh sau rà soát: bổ sung cờ đối soát khi xác nhận trả tiền thủ công cho đơn hủy; 45 test tích hợp. |
 
-**Lũy kế so với bản gốc: 129 file, gồm 36 file thêm và 93 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
+**Lũy kế so với bản gốc: 132 file, gồm 38 file thêm và 94 file sửa.** Con số bao gồm mã nguồn, cấu hình, lockfile, test, tài liệu và 5 ảnh minh chứng. Đây là số file khác nhau giữa bản gốc và trạng thái bàn giao, không cộng trùng một file qua nhiều commit.
 
-Riêng đợt thiết kế lại và báo cáo này có **61 đường dẫn** thay đổi so với `1d87a4b`: 10 thêm, 50 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 129 file.
+Riêng đợt thiết kế lại và báo cáo này có **116 đường dẫn** thay đổi so với `1d87a4b`: 12 thêm, 103 sửa, 1 xóa. `public/admin/assets/css/workspace.css` là file bị xóa trong đợt này; nó chưa có ở bản gốc `676cd20`, nên không xuất hiện trong danh sách lũy kế 132 file.
 
-[Bảng CSV đầy đủ 129 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
+[Bảng CSV đầy đủ 132 file](DANH_SACH_FILE_THAY_DOI.csv) có trạng thái theo cả hai mốc. Ký hiệu **A**: thêm, **M**: sửa, **D**: xóa. Danh sách mô tả từng file ở mục 7.
 
 ## 2. Giao diện admin được làm lại như thế nào
 
@@ -64,9 +64,9 @@ Các phần UI dùng lại được thêm đúng thư mục: `views/admin/mixins
 | Nhóm | Quy tắc sau sửa | Tác động |
 |---|---|---|
 | Danh mục | Admin tự tạo tên và quan hệ cha/con; ngăn vòng lặp; nhánh bị xóa/tạm dừng được ẩn phía khách. | Không có phân loại bắt buộc “tour nước ngoài”. |
-| Tour lên trang khách | Tour chưa xóa, hoạt động, nhánh danh mục được phép hiện, chưa qua ngày đi và còn ít nhất một loại chỗ. | Cùng điều kiện cho trang chủ, danh mục, tìm kiếm và chi tiết. |
+| Tour lên trang khách | Tour chưa xóa, hoạt động và nhánh danh mục được phép hiện. Dữ liệu cũ chưa gán danh mục được xem trong danh sách tổng hợp. | Cùng điều kiện cho trang chủ, danh mục, tìm kiếm và chi tiết. |
 | Trang chủ | Sinh khối theo danh mục gốc đang hoạt động, lấy cả tour nhiều cấp; tối đa 8 tour/nhóm; danh mục ưu tiên lên trước. | CRUD danh mục/tour thay đổi nội dung trang chủ theo dữ liệu. |
-| Tour giờ chót | Tour giảm giá, còn mở bán, khởi hành trong 30 ngày. | Bỏ nội dung ưu đãi minh họa không có dữ liệu. |
+| Khối tổng hợp tour | Tour hoạt động theo vị trí, không bắt buộc giảm giá/ngày đi. | Thay bộ lọc giờ chót đã làm dữ liệu cũ bị ẩn. |
 | Giá và số chỗ | Số nguyên không âm; giá bán không vượt giá gốc; giá người lớn của tour hoạt động >0; kiểm tra điểm khởi hành. | Chặn dữ liệu sai trước khi lưu. |
 | Đặt tour | Lấy giá từ DB, validate khách/số lượng/điểm đi; trừ chỗ và tạo đơn trong transaction. | Hai khách không cùng mua số chỗ cuối; lỗi một item rollback cả đơn. |
 | Giữ chỗ | Đơn online mới giữ 30 phút; tác vụ kiểm tra mỗi phút; hủy/hết hạn hoàn chỗ một lần. | Đơn đã thanh toán không tự hết hạn; đơn cũ thiếu expiry không bị hủy hàng loạt. |
@@ -118,7 +118,7 @@ Danh sách admin giữ các tour tạm dừng/quá ngày để quản trị. Th�
 
 Không có thao tác sửa/xóa dữ liệu sản xuất hoặc tự cấp quyền cho tài khoản thực trong đợt kiểm tra này.
 
-## 6. Kết quả quét và kiểm chứng
+## 6. Kết quả quét và kiểm chứng mốc efe948b (trước các bổ sung)
 
 | Kiểm tra | Kết quả |
 |---|---|
@@ -188,9 +188,9 @@ Các mô tả dưới đây là **lũy kế so với `676cd20`**. Những file k
 | **M** `controllers/admin/tour.controller.js` | Lọc dữ liệu, upload gallery và cập nhật tồn chỗ có thể sai; lưu biểu mẫu lặp thiếu phiên bản mới. | Bộ lọc và phân trang thật; summary; map danh mục; action theo quyền; optimistic updatedAt; giữ/sắp/xóa ảnh qua imageOrder; trả phiên bản mới; kiểm tra tồn tại khi xóa. | CRUD tour phản ánh trang khách và tránh ghi đè chỗ vừa bán. |
 | **M** `controllers/admin/user.controller.js` | Trang khách hàng dùng dữ liệu minh họa. | Tổng hợp khách theo số điện thoại từ đơn, tổng chi đã trả/chưa hủy; tìm kiếm và giới hạn trang hợp lệ. | Không tạo hệ tài khoản khách riêng. |
 | **M** `controllers/client/cart.controller.js` | Dữ liệu giỏ hàng chưa kiểm tra đầy đủ, coupon chỉ là giao diện mẫu. | Đọc tour/giá/chỗ/địa điểm từ server, kiểm tra cấu trúc; thêm API xem trước giảm giá. | Giá coupon và giỏ hàng được kiểm tra lại phía server. |
-| **M** `controllers/client/category.controller.js` | Hiển thị nhánh con chưa đầy đủ; có thể hiện nhánh bị ẩn. | Kiểm tra toàn nhánh, lấy tour con nhiều cấp, lọc điều kiện mở bán; lọc HTML cũ khi render. | CRUD danh mục ảnh hưởng đúng danh sách phía khách. |
+| **M** `controllers/client/category.controller.js` | Hiển thị nhánh con chưa đầy đủ; có thể hiện nhánh bị ẩn. | Kiểm tra toàn nhánh, lấy tour con nhiều cấp, lọc điều kiện hiển thị; lọc HTML cũ khi render. | CRUD danh mục ảnh hưởng đúng danh sách phía khách. |
 | **M** `controllers/client/contact.controller.js` | Email request được dùng trực tiếp trước kiểm tra đăng ký cũ. | Validate, trim và lowercase email trước khi kiểm tra đăng ký đã có. | Đăng ký nhận tin, không phải gửi newsletter tự động. |
-| **M** `controllers/client/home.controller.js` | Các khối tour/danh mục và nội dung mẫu viết cố định. | Sinh các khối theo danh mục admin; tối đa 8 tour/nhóm; ưu tiên cấu hình; giờ chót theo giảm giá và ngày đi. | Không có quy tắc bắt buộc danh mục tour nước ngoài. |
+| **M** `controllers/client/home.controller.js` | Các khối tour/danh mục và nội dung mẫu viết cố định. | Sinh các khối theo danh mục admin; tối đa 8 tour/nhóm; ưu tiên cấu hình; khối tổng hợp lấy tour hoạt động theo vị trí. | Không có quy tắc bắt buộc danh mục tour nước ngoài. |
 | **M** `controllers/client/order.controller.js` | Tạo đơn/thanh toán tin nhiều dữ liệu từ trình duyệt và thiếu theo dõi giao dịch. | Gọi booking helper, tạo reference Payment, kiểm tra callback VNPay/ZaloPay; thêm IPN và trang lỗi; xử lý timeout. | Đặt chỗ và xác nhận thanh toán có kiểm tra chữ ký/số tiền. |
 | **M** `controllers/client/search.controller.js` | Tìm kiếm có thể trả tour không còn mở và xử lý điều kiện chưa đồng nhất. | Dùng visibleFilter và validate điều kiện tìm kiếm; định dạng tour nhất quán. | Tìm kiếm tuân thủ trạng thái danh mục/tour. |
 | **M** `controllers/client/tour.controller.js` | Chi tiết tour có thể hiện tour ẩn hoặc HTML cũ chưa lọc. | Dùng visibleFilter; breadcrumb đủ cấp; lọc information/schedules khi render. | Chặn tour không mở và HTML nguy hiểm từ dữ liệu cũ. |
@@ -207,7 +207,7 @@ Các mô tả dưới đây là **lũy kế so với `676cd20`**. Những file k
 | **M** `helpers/generate.helper.js` | Mã ngẫu nhiên dựa Math.random. | Sinh số ngẫu nhiên bằng crypto. | OTP và mã đơn khó đoán hơn; unique index vẫn kiểm tra trùng. |
 | **M** `helpers/mail.helper.js` | Gửi mail chưa trả Promise để controller xử lý kết quả. | Trả kết quả transporter.sendMail. | Controller biết gửi mail thành công/thất bại. |
 | **A** `helpers/payment.helper.js` | Chưa có xử lý giao dịch tập trung, chống lặp/đến muộn đầy đủ. | HMAC/sort VNPay, timingSafeEqual, settle trong transaction; cờ đối soát nếu muộn/trùng. | Thanh toán an toàn hơn, không tự giữ lại chỗ đã hoàn. |
-| **A** `helpers/tour.helper.js` | Các trang khách tự định nghĩa điều kiện tour khác nhau. | visibleFilter dùng chung, decorate giá giảm/ngày đi an toàn. | Ẩn tour hết chỗ, quá ngày hoặc nhánh danh mục ẩn. |
+| **A** `helpers/tour.helper.js` | Các trang khách tự định nghĩa điều kiện tour khác nhau. | visibleFilter dùng chung, decorate giá giảm/ngày đi an toàn. | Ẩn nhánh danh mục bị xóa/tạm dừng; ngày và chỗ được kiểm tra riêng khi đặt. |
 | **M** `middlewares/admin/auth.middleware.js` | Phiên/role thiếu kiểm tra đủ; thiếu nhóm dễ mất trang quản lý hoặc lỗi render. | Kiểm tra tài khoản active, tokenVersion/purpose, reset token; khởi tạo permissions=[]; nhóm cũ sai ID vẫn vào hồ sơ. | ACL server, thu hồi phiên, không tự mở quyền khi thiếu nhóm. |
 | **A** `middlewares/admin/rate-limit.middleware.js` | Chưa có giới hạn cho các endpoint này. | Giới hạn đăng nhập, OTP và tạo đơn theo cửa sổ thời gian. | Hạn chế thử mật khẩu/OTP và gửi đơn liên tục. |
 | **M** `middlewares/client/category.middleware.js` | Menu danh mục chưa dùng cây đa cấp nhất quán. | Nạp và dựng cây theo vị trí/trạng thái cho header. | Menu sinh từ danh mục admin. |
@@ -370,3 +370,11 @@ Sau khi được chủ tài khoản xác nhận rõ phạm vi cấp quyền, đ�
 ## 10. Sửa hiển thị dữ liệu cũ và phong cách code
 
 [Báo cáo bổ sung](SUA_HIEN_THI_VA_PHONG_CACH_CODE.md) ghi nguyên nhân từ dữ liệu thật, việc tách điều kiện xem/đặt tour và trình bày lại 69 file JavaScript theo code gốc. Quy tắc hiển thị trong mục bổ sung thay cho điều kiện ẩn tour thiếu lịch/hết chỗ ở các mục lịch sử phía trên. Có 49 test tích hợp sau đợt này. Số file trong các mục trước là snapshot của lần bàn giao trước; CSV được cập nhật theo trạng thái mới.
+
+Kiểm chứng bản sửa hiển thị và phong cách: [CI 45956342532](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45956342532) đạt 49/49 test và browser, không ghi nhận lỗi JS; có ca mở chi tiết tour null lịch/hết chỗ trên trình duyệt.
+
+| File bổ sung so với bảng ở mục 7 | Trước | Sau |
+|---|---|---|
+| AGENTS.md | Chưa có hướng dẫn này. | Lưu quy ước phong cách theo code gốc cho các lần sửa tiếp. |
+| docs/SUA_HIEN_THI_VA_PHONG_CACH_CODE.md | Chưa có. | Báo cáo nguyên nhân từ dữ liệu thật và cách sửa. |
+| views/client/pages/tour-detail.pug | Nút đặt hiển thị dù dữ liệu chưa đủ. | Vẫn xem tour; chỉ có nút thêm giỏ khi đủ lịch/chỗ/điểm đi. |

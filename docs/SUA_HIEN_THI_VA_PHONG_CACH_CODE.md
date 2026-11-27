@@ -11,3 +11,5 @@ Khối tổng hợp trang chủ được đổi thành “Khám phá các tour�
 Kiểm tra: 49 test tích hợp đạt; 81 JS kiểm tra cú pháp, 59 Pug biên dịch đạt. Hai ca mới kiểm tra tour null lịch/hết chỗ vẫn xem được nhưng bị chặn đặt, và tour cũ chưa gán danh mục vẫn hiện. Kết quả trình duyệt được kiểm tra riêng trên GitHub Actions.
 
 Bỏ các gợi ý Nhật Bản/Singapore/50 tours viết cố định trong ô tìm kiếm. Gợi ý hiện lấy tên, ảnh và thời gian từ tour thật được controller trả về.
+
+[CI xác minh](https://github.com/nguyenhaiphong0711-bit/Tour_Du_Lich/actions/runs/45956342532): 49/49 test, browser đạt, không ghi nhận lỗi JS; desktop và mobile không tràn trang.
